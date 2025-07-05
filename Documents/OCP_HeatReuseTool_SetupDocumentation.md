@@ -12,8 +12,8 @@
 ```python
 
 # Complete Heat Reuse Tool setup and run
-!git clone https://github.com/ahliana/OCP_HeatReuseTool.git
-%cd OCP_HeatReuseTool
+!git clone https://github.com/ahliana/OCP-CE-HR-Economics-Tool.git
+%cd OCP-CE-HR-Economics-Tool
 !pip install -q pandas numpy matplotlib ipywidgets
 from google.colab import output
 output.enable_custom_widget_manager()
@@ -62,25 +62,32 @@ import autostart
 5. **Download the project**:
    - Open PowerShell
    - Navigate where you want the project (e.g., `cd Desktop`)
-   - Run: `git clone https://github.com/ahliana/OCP_HeatReuseTool.git`
+   - Run: `git clone https://github.com/ahliana/OCP-CE-HR-Economics-Tool.git`
    - If you don't have Git: Download ZIP from GitHub and extract
    - You should see all files in the left Explorer panel
 
 6. **Open project in VSCode**:
    - In VSCode: File → Open Folder
-   - Select the `OCP_HeatReuseTool` folder
+   - Select the `OCP-CE-HR-Economics-Tool` folder
    - You should see all files in the left Explorer panel
 
 7. **Create virtual environment**:
-   - Open VSCode terminal: View → Terminal (this should open PowerShell on Windows)
+   - Open VSCode terminal: View → Terminal (this should open a PowerShell Terminal at the bottom of VSCode)
    - Run these commands:
 ```powershell
 
-# Windows PowerShell - Create virtual environment
+##### WINDOWS #####
+## PowerShell - Create virtual environment
 python -m venv .venv
-
-# Activate it
+## Activate it
 .\.venv\Scripts\Activate.ps1
+---
+
+##### MAC/LINUX #####
+## PowerShell - Create virtual environment
+python3 -m venv .venv
+## Activate it
+source .venv/bin/activate
 
 # You should see (.venv) in your terminal prompt
 
