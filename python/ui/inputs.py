@@ -121,7 +121,7 @@ def create_interface_layout(widgets_dict, outputs_dict):
         outputs_dict['system_params'],                           # 1. System Parameters
         outputs_dict['cost_analysis'],                           # 2. Cost Analysis (now separate)
         outputs_dict['charts'],                                  # 3. Charts
-        outputs_dict.get('smart_recommendations', widgets.Output()), # 4. Smart Recommendations
+        # outputs_dict.get('smart_recommendations', widgets.Output()), # 4. Smart Recommendations
         outputs_dict.get('visual_summary', widgets.Output())    # 5. System Overview Cards
     ], layout=widgets.Layout(margin='10px'))
 
