@@ -9,10 +9,8 @@ ipykernel>=6.15.0
 pandas>=1.5.0
 numpy>=1.20.0
 
-
 # Visualization
 matplotlib>=3.5.0
-
 
 # Physics and Engineering Calculations
 scipy>=1.9.0
