@@ -26,6 +26,11 @@ try:
     import warnings
     warnings.filterwarnings('ignore', category=FutureWarning, module='pandas')
     
+    import logging
+    logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)  
+
+    
 except ImportError as e:
     # Don't define functions if imports fail
     raise ImportError(f"Cannot import required physics modules: {e}")
@@ -81,12 +86,24 @@ def get_PipeSize_Suggested(F1):
     Get suggested pipe size using CEILING lookup (engineering safe)
     Returns the SMALLEST pipe size that can handle the flow (size >= required)
     """
+    msg="get_PipeSize_Suggested"
+    logger.info(msg)
+    print(msg)
+    msg = f"Parameter F1={F1}"
+    logger.info(msg)
+    print(msg)
+        
     try:
         F1_float = float(F1)
+        msg = f"F1_float={F1_float}"
+        logger.info(msg)
+        print(msg)        
         
         # Check if PIPSZ data exists using the data module
         if not is_csv_loaded('PIPSZ'):
-            print("❌ PIPSZ CSV not found")
+            msg="PIPSZ CSV not found"
+            logger.info(msg)
+            print(msg)
             return 0  # Default fallback
         
         # Get and examine PIPSZ data using the data module
@@ -95,8 +112,10 @@ def get_PipeSize_Suggested(F1):
             return 0
         
         pipsz_df = pipsz_df.copy()
-        # print(f"🔍 CEILING lookup for pipe size: flow F1={F1_float}")
-        # print(f"📊 PIPSZ data shape: {pipsz_df.shape}")
+
+        msg = f"PIPSZ data shape: {pipsz_df.shape}"
+        logger.info(msg)
+        print(msg)
         
         # Convert columns to numeric
         pipsz_df = pipsz_df.astype(float)  # Convert DataFrame to float
@@ -112,28 +131,47 @@ def get_PipeSize_Suggested(F1):
         # Debug info
         flow_capacities = valid_rows.iloc[:, 0].values
         pipe_sizes = valid_rows.iloc[:, 1].values
-        # print(f"📊 Available flow capacities: min={min(flow_capacities)}, max={max(flow_capacities)}")
-        # print(f"📊 First few flow/size pairs: {list(zip(flow_capacities[:5], pipe_sizes[:5]))}")
+        msg = f"Available flow capacities: min={min(flow_capacities)}, max={max(flow_capacities)}"
+        logger.info(msg)
+        print(msg)
+        msg = f" First few flow/size pairs: {list(zip(flow_capacities[:5], pipe_sizes[:5]))}"
+        logger.info(msg)
+        print(msg)
         
         # Find the CEILING - first flow capacity >= required flow
         adequate_rows = valid_rows[valid_rows.iloc[:, 0] >= F1_float]
-        
+        msg = f"adequate_rows: {adequate_rows}"
+        logger.info(msg)
+        print(msg)
+                
         if adequate_rows.empty:
-            print(f"❌ No pipe size available for flow {F1_float} l/m. Max available: {max(flow_capacities)}")
+            msg = f"❌ No pipe size available for flow {F1_float} l/m. Max available: {max(flow_capacities)}"
+            logger.info(msg)
+            print(msg)
             return max(pipe_sizes)  # Return largest available as fallback
         
         # Get the first (smallest) adequate pipe size
         selected_row = adequate_rows.iloc[0]
         selected_flow_capacity = selected_row.iloc[0]
         selected_pipe_size = selected_row.iloc[1]
-        
-        # print(f"✅ CEILING match found: Flow capacity {selected_flow_capacity} >= {F1_float} → Pipe Size {selected_pipe_size}")
-        # print(f"🔧 Engineering validation: Pipe can handle {selected_flow_capacity} l/m >= required {F1_float} l/m ✓")
+
+        msg = f"selected_pipe_size: {selected_pipe_size}"
+        logger.info(msg)
+        print(msg)
+                
+        # msg = f"✅ CEILING match found: Flow capacity {selected_flow_capacity} >= {F1_float} → Pipe Size {selected_pipe_size}"
+        # logger.info(msg)
+        # print(msg)
+        # msg = f"🔧 Engineering validation: Pipe can handle {selected_flow_capacity} l/m >= required {F1_float} l/m ✓"
+        # logger.info(msg)
+        # print(msg)
         
         return selected_pipe_size
         
     except Exception as e:
-        print(f"❌ Error in get_PipeSize_Suggested: {e}")
+        msg = f"❌ Error in get_PipeSize_Suggested: {e}"
+        logger.info(msg)
+        print(msg)
         return 0  # Default fallback
 
 def get_PipeLength(F1, T1, T2):
@@ -301,47 +339,6 @@ def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
         return 0
 
 
-def get_PipeCost_perMeter_Old(flow_rate, pipe_type="sched40"):
-    """
-    Get pipe cost per meter based on flow rate and pipe type.
-    """
-    try:
-        # First get pipe size
-        pipe_size = get_PipeSize_Suggested(flow_rate)
-        if pipe_size == 0:
-            return 0
-        
-        # Check if PIPCOST data exists
-        if not is_csv_loaded('PIPCOST'):
-            print("❌ PIPCOST CSV not found")
-            return 0
-        
-        # Get cost from PIPCOST
-        pipcost_df = get_csv_data('PIPCOST')
-        if pipcost_df is None:
-            return 0
-            
-        # Convert to numeric
-        pipcost_df = pipcost_df.copy()
-        pipcost_df.iloc[:, 0] = pipcost_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
-        
-        # Determine column index based on pipe type
-        col_index = 1 if pipe_type.lower() == "sched40" else 2
-        pipcost_df.iloc[:, col_index] = pipcost_df.iloc[:, col_index].apply(universal_float_convert)
-        
-        # Find matching pipe size
-        matching_rows = pipcost_df[pipcost_df.iloc[:, 0] >= pipe_size]
-        
-        if matching_rows.empty:
-            print(f"❌ No cost data for pipe size {pipe_size}")
-            return 0
-        
-        cost = matching_rows.iloc[0, col_index]
-        return cost
-        
-    except Exception as e:
-        print(f"❌ Error in get_PipeCost_perMeter: {e}")
-        return 0
 
 def get_PipeCost_Total(F1, T1, T2, pipe_type="sched40"):
     """
@@ -368,13 +365,19 @@ def get_PipeCost_Total(F1, T1, T2, pipe_type="sched40"):
 
 
 # =============================================================================
-# DEFINE SYSTEM FUNCTIONS THAT USE  LOOKUPS
+# DEFINE SYSTEM FUNCTIONS THAT USE LOOKUPS
 # =============================================================================
 
 def get_system_sizing(system_data):
-    """
-    CORRECTED: Now uses get_PipeSize_Suggested formula function and data module
-    """
+
+    msg = f"get_system_sizing"
+    logger.info(msg)
+    print(msg)
+    
+    msg = f"Input: system_data: {system_data}"
+    logger.info(msg)
+    print(msg)
+    
     if not system_data:
         return None
     
@@ -405,13 +408,22 @@ def get_system_sizing(system_data):
         'room_size': room_size or 12.5,
         'primary_pipe_size': max(pipe_size_f1 or 100, pipe_size_f2 or 100)
     }
+
+    msg = f"get_system_sizing: sizing_data: {sizing_data}"
+    logger.info(msg)
+    print(msg)
     
     return sizing_data
 
 def calculate_system_costs(system_data, sizing_data):
-    """
-    CORRECTED: Now uses formula functions and data module for all calculations
-    """
+
+    msg = f"calculate_system_costs"
+    logger.info(msg)
+    print(msg)
+    msg = f"Inputs: system_data={system_data}, sizing_data={sizing_data}"
+    logger.info(msg)
+    print(msg)
+        
     if not system_data or not sizing_data:
         return None
     
@@ -422,14 +434,26 @@ def calculate_system_costs(system_data, sizing_data):
     T2 = system_data['T2']
     
     total_pipe_length = get_PipeLength(F1, T1, T2)
+    msg = f"total_pipe_length: {total_pipe_length}"
+    logger.info(msg)
+    print(msg)
     
     pipe_cost_per_meter = get_PipeCost_perMeter(F1, "sched40")
+    msg = f"pipe_cost_per_meter: {pipe_cost_per_meter}"
+    logger.info(msg)
+    print(msg)
     
-    # CORRECTED: Use get_PipeCost_Total formula for total pipe cost
+    # Use get_PipeCost_Total formula for total pipe cost
     total_pipe_cost = get_PipeCost_Total(F1, T1, T2, "sched40")
+    msg = f"total_pipe_cost: {total_pipe_cost}"
+    logger.info(msg)
+    print(msg)
     
     # Calculate valve costs using formula-determined pipe size
     primary_pipe_size = get_PipeSize_Suggested(max(F1, F2))  # Use formula function
+    msg = f"primary_pipe_size: {primary_pipe_size}"
+    logger.info(msg)
+    print(msg)
     
     control_valve_cost = 0
     isolation_valve_cost = 0
@@ -441,12 +465,22 @@ def calculate_system_costs(system_data, sizing_data):
             cvalv_df = cvalv_df.copy()
             # Convert cost column to numeric
             cvalv_df.iloc[:, 1] = cvalv_df.iloc[:, 1].apply(universal_float_convert)
+            msg = f"cvalv_df: {cvalv_df}"
+            logger.info(msg)
+            print(msg)
             
             # Look for exact match on pipe size
-            pipe_size_str = str(int(primary_pipe_size))
+            pipe_size_str = str(universal_float_convert(int(primary_pipe_size)))
+            msg = f"pipe_size_str: {pipe_size_str}"
+            logger.info(msg)
+            print(msg)
+
             for idx, row in cvalv_df.iterrows():
                 if str(row.iloc[0]).strip() == pipe_size_str:
                     control_valve_cost = row.iloc[1]
+                    msg = f"control_valve_cost: {control_valve_cost}"
+                    logger.info(msg)
+                    print(msg)
                     break
     
     # Use data module for IVALV access
@@ -457,14 +491,19 @@ def calculate_system_costs(system_data, sizing_data):
             # Convert cost column to numeric
             ivalv_df.iloc[:, 1] = ivalv_df.iloc[:, 1].apply(universal_float_convert)
             
-            # Look for exact match on pipe size
-            pipe_size_str = str(int(primary_pipe_size))
+
             for idx, row in ivalv_df.iterrows():
                 if str(row.iloc[0]).strip() == pipe_size_str:
                     isolation_valve_cost = row.iloc[1]
+                    msg = f"isolation_valve_cost: {isolation_valve_cost}"
+                    logger.info(msg)
+                    print(msg)
                     break
     
     total_valve_cost = (control_valve_cost + isolation_valve_cost) * 4  # 4 of each type
+    msg = f"total_valve_cost: {total_valve_cost}"
+    logger.info(msg)
+    print(msg)
     
     # Other costs
     hx_cost = system_data['hx_cost']
@@ -484,39 +523,46 @@ def calculate_system_costs(system_data, sizing_data):
         'installation_cost': installation_cost,
         'total_cost': total_cost
     }
+    msg = f"cost_data: {cost_data}"
+    logger.info(msg)
+    print(msg)
     
     return cost_data
 
 def get_complete_system_analysis(power, t1, temp_diff, approach):
-    """
-    CORRECTED: Complete system analysis using formula functions and data module
-    """
-    # print(f"\n🔧 COMPLETE SYSTEM ANALYSIS")
-    # print(f"Input: {power}MW, {t1}°C, +{temp_diff}°C, approach {approach}")
+
+    msg = f"get_complete_system_analysis"
+    logger.info(msg)
+    print(msg)
     
-    # Step 1: Get system data from ALLHX
+    msg = f"Input: {power}MW, {t1}°C, +{temp_diff}°C, approach {approach}"
+    logger.info(msg)
+    print(msg)
+    
+    # Get system data from ALLHX
     system_data = lookup_allhx_data(power, t1, temp_diff, approach)
     if not system_data:
-        print("❌ ALLHX lookup failed")
+        msg = "❌ ALLHX lookup failed"
+        logger.info(msg)
+        print(msg)
         return None
     
-    # print("✅ ALLHX lookup successful")
-    
-    # Step 2: Calculate sizing using corrected formula functions
+    # Calculate sizing using corrected formula functions
     sizing_data = get_system_sizing(system_data)
     if not sizing_data:
-        print("❌ System sizing failed")
+        msg = "❌ System sizing failed"
+        logger.info(msg)
+        print(msg)
         return None
     
-    # print("✅ System sizing successful")
-    
-    # Step 3: Calculate costs using corrected formula functions
+    # Calculate costs using corrected formula functions
     cost_data = calculate_system_costs(system_data, sizing_data)
     if not cost_data:
-        print("❌ Cost calculation failed")
+        msg = "❌ Cost calculation failed"
+        logger.info(msg)
+        print(msg)
         return None
     
-    # print("✅ Cost calculation successful")
     
     # Additional validation using formulas
     F1 = system_data['F1']
@@ -525,12 +571,28 @@ def get_complete_system_analysis(power, t1, temp_diff, approach):
     T2 = system_data['T2']
     T3 = system_data['T3']
     T4 = system_data['T4']
+    msg = f"system_data, F1 = {F1}, F2 = {F2}, T1 = {T1}, T2 = {T2}, T3 = {T3}, T4 = {T4}"
+    logger.info(msg)
+    print(msg)
     
     # Validate calculations using formula functions
     calculated_mw = get_MW_divd(F1, T1, T2)
     delta_t_tcs = get_DeltaT_TCS(T1, T2)
     delta_t_fws = get_DeltaT_FWS(T3, T4)
     approach_calc = get_Approach(T1, T4)
+
+    msg = f"calculated_mw = {calculated_mw}"
+    logger.info(msg)
+    print(msg)
+    msg = f"delta_t_tcs = {delta_t_tcs}"
+    logger.info(msg)
+    print(msg)
+    msg = f"delta_t_fws = {delta_t_fws}"
+    logger.info(msg)
+    print(msg)
+    msg = f"approach_calc = {approach_calc}"
+    logger.info(msg)
+    print(msg)
     
     # print(f"🔬 Formula validation:")
     # print(f"  Calculated MW: {calculated_mw}")
@@ -563,8 +625,8 @@ def get_complete_system_analysis(power, t1, temp_diff, approach):
         }
     }
     
-    # print(f"🎉 Complete system analysis finished successfully!")
-    # print(f"📊 Summary: {system_data['power']}MW system, €{round(cost_data['total_cost']):,} total cost")
+    # print(f"Complete system analysis finished successfully")
+    # print(f"Summary: {system_data['power']}MW system, €{round(cost_data['total_cost']):,} total cost")
     
     return complete_analysis
 

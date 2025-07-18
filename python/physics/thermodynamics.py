@@ -944,15 +944,15 @@ def safe_import():
     """Safely import required modules with fallbacks."""
     global universal_float_convert
     
-    try:
-        from ..data.converter import universal_float_convert
-    except ImportError:
-        # Fallback implementation for testing
-        def universal_float_convert(value):
-            """Simplified fallback for standalone testing."""
-            if isinstance(value, str):
-                return float(value.replace(',', '.'))
-            return float(value)
+    # try:
+    #     from ..data.converter import universal_float_convert
+    # except ImportError:
+    #     # Fallback implementation for testing
+    #     def universal_float_convert(value):
+    #         """Simplified fallback for standalone testing."""
+    #         if isinstance(value, str):
+    #             return float(value.replace(',', '.'))
+    #         return float(value)
 
 # Initialize safe imports
 safe_import()

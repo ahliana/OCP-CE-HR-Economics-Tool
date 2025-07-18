@@ -12,6 +12,10 @@ import pandas as pd
 from data.loader import get_csv_data, is_csv_loaded
 from data.converter import universal_float_convert
 
+import logging
+logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)  
+
 def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float) -> Optional[Dict[str, Any]]:
     """
     ALLHX lookup using proper data filtering and type consistency.
@@ -34,7 +38,14 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
         >>> if result:
         ...     print(f"F1={result['F1']}, F2={result['F2']}")
     """
-    
+
+    msg = f"lookup_allhx_data"
+    logger.info(msg)
+    print(msg)    
+    msg = f"Input: power: {power}, t1: {t1}, temp_diff: {temp_diff}, approach: {approach}"
+    logger.info(msg)
+    print(msg)
+       
     t2 = t1 + temp_diff
     
     # Check if ALLHX data is loaded
@@ -50,14 +61,14 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     # Make a copy to avoid modifying the original
     df = df.copy()
     
-    # print(f"🔍 ALLHX lookup: Power={power}, T1={t1}, TempDiff={temp_diff}, T2={t2}, Approach={approach}")
+    # print(f"ALLHX lookup: Power={power}, T1={t1}, TempDiff={temp_diff}, T2={t2}, Approach={approach}")
     
     # Clean data - remove header rows
     df = df[df['wha'].astype(str).str.strip() != 'A']
     df = df[df['wha'].astype(str).str.strip() != 'wha']
     
     # Convert to consistent numeric types using universal converter
-    numeric_columns = ['wha', 'T1', 'itdt', 'T2', 'TCSapp', 'F1', 'F2', 'T3', 'T4', 
+    numeric_columns = ['wha', 'T1', 'itdt', 'T2', 'TCSapp', 'F1', 'T4', 'T3', 'F2', 
                        'FWSapp', 'costHX', 'areaHX', 'Hxweight', 'CO2_Footprint']
     
     for col in numeric_columns:
@@ -67,7 +78,7 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     # Remove invalid rows
     valid_df = df[(df['wha'] > 0) & (df['T1'] > 0) & (df['itdt'] > 0) & (df['TCSapp'] > 0)]
     
-    # print(f"📊 Valid data rows: {len(valid_df)}")
+    # print(f"Valid data rows: {len(valid_df)}")
     
     if len(valid_df) == 0:
         print("❌ No valid data after conversion")
@@ -93,7 +104,7 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
         (valid_df['TCSapp'] == approach)
     ]
     
-    # print(f"🎯 Exact matches found: {len(matches)}")
+    # print(f"Exact matches found: {len(matches)}")
     
     if len(matches) == 0:
         print("❌ No exact match found")
@@ -114,6 +125,10 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
         'approach': approach,
         'temp_diff': temp_diff
     }
+    
+    msg = f"lookup_allhx_data result = {result}"
+    logger.info(msg)
+    print(msg)
     
     # print(f"✅ Match found: F1={result['F1']}, F2={result['F2']}, HX_Cost=€{result['hx_cost']}")
     
