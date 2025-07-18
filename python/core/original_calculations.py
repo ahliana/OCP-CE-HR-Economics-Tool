@@ -215,7 +215,7 @@ def get_PipeLength(F1, T1, T2):
         print(f"❌ Error in get_PipeLength: {e}")
         return 0
 
-def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
+def get_PipeCost_perMeter(flow_rate, pipe_type):
     """
     Get pipe cost per meter based on flow rate and pipe type.
     European-first approach using DN sizes with conversion to match cost data.
@@ -226,7 +226,10 @@ def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
         if dn_size == 0:
             print("❌ No suitable pipe size found")
             return 0
-        
+        msg=f"dn_size = {dn_size}"
+        logger.info(msg)
+        print(msg)
+                
         # print(f"🔍 European pipe sizing: DN{dn_size} for flow {flow_rate} L/min")
         
         # Check if PIPCOST data exists
@@ -244,7 +247,7 @@ def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
         pipcost_df.iloc[:, 0] = pipcost_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
         
         # Determine column index based on pipe type
-        col_index = 1 if pipe_type.lower() == "sched40" else 2
+        col_index = 1 if pipe_type.lower() == "stainless" else 2
         pipcost_df.iloc[:, col_index] = pipcost_df.iloc[:, col_index].apply(universal_float_convert)
         
         # Convert European DN size to match PIPCOST data format
@@ -254,7 +257,9 @@ def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
         if not matching_rows.empty:
             # Direct DN match found
             cost = matching_rows.iloc[0, col_index]
-            # print(f"✅ Direct DN match: DN{dn_size} → €{cost}/m")
+            msg=f"cost = {cost}"
+            logger.info(msg)
+            print(msg)
             return cost
         
         # Option 2: Convert DN to American inches using units.py conversion
@@ -340,7 +345,7 @@ def get_PipeCost_perMeter(flow_rate, pipe_type="sched40"):
 
 
 
-def get_PipeCost_Total(F1, T1, T2, pipe_type="sched40"):
+def get_PipeCost_Total(F1, T1, T2, pipe_type="Stainless"):
     """
     Calculate total pipe cost based on flow, temperatures, and pipe type.
     """
@@ -438,13 +443,13 @@ def calculate_system_costs(system_data, sizing_data):
     logger.info(msg)
     print(msg)
     
-    pipe_cost_per_meter = get_PipeCost_perMeter(F1, "sched40")
+    pipe_cost_per_meter = get_PipeCost_perMeter(F1, "Stainless")
     msg = f"pipe_cost_per_meter: {pipe_cost_per_meter}"
     logger.info(msg)
     print(msg)
     
     # Use get_PipeCost_Total formula for total pipe cost
-    total_pipe_cost = get_PipeCost_Total(F1, T1, T2, "sched40")
+    total_pipe_cost = get_PipeCost_Total(F1, T1, T2, "Stainless")
     msg = f"total_pipe_cost: {total_pipe_cost}"
     logger.info(msg)
     print(msg)
@@ -500,7 +505,7 @@ def calculate_system_costs(system_data, sizing_data):
                     print(msg)
                     break
     
-    total_valve_cost = (control_valve_cost + isolation_valve_cost) * 4  # 4 of each type
+    total_valve_cost = (4 * isolation_valve_cost) + control_valve_cost
     msg = f"total_valve_cost: {total_valve_cost}"
     logger.info(msg)
     print(msg)
