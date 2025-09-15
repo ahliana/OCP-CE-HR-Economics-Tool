@@ -335,24 +335,24 @@ def log_mean_temperature_difference(hot_inlet: float, hot_outlet: float,
     cold_outlet = universal_float_convert(cold_outlet)
     
     if flow_arrangement == 'counterflow':
-        delta_t1 = hot_inlet - cold_outlet
-        delta_t2 = hot_outlet - cold_inlet
+        delta_T1 = hot_inlet - cold_outlet
+        delta_T2 = hot_outlet - cold_inlet
     elif flow_arrangement == 'parallel':
-        delta_t1 = hot_inlet - cold_inlet
-        delta_t2 = hot_outlet - cold_outlet
+        delta_T1 = hot_inlet - cold_inlet
+        delta_T2 = hot_outlet - cold_outlet
     else:
         raise ValueError(f"Flow arrangement '{flow_arrangement}' not implemented")
     
     # Check for valid temperature differences
-    if delta_t1 <= 0 or delta_t2 <= 0:
-        raise ValueError(f"Invalid temperature differences: ΔT1={delta_t1}, ΔT2={delta_t2}")
+    if delta_T1 <= 0 or delta_T2 <= 0:
+        raise ValueError(f"Invalid temperature differences: ΔT1={delta_T1}, ΔT2={delta_T2}")
     
     # Calculate LMTD
-    if abs(delta_t1 - delta_t2) < 1e-6:
+    if abs(delta_T1 - delta_T2) < 1e-6:
         # When temperature differences are equal
-        return delta_t1
+        return delta_T1
     else:
-        return (delta_t1 - delta_t2) / math.log(delta_t1 / delta_t2)
+        return (delta_T1 - delta_T2) / math.log(delta_T1 / delta_T2)
 
 
 def heat_exchanger_effectiveness(hot_capacity_rate: float, cold_capacity_rate: float,

@@ -56,11 +56,11 @@ def datacenter_cooling_analysis(server_power_kw: float, supply_temp_c: float = 1
     """
     # Validate inputs
     if server_power_kw <= 0:
-        raise ValueError("Server power must be positive")
+        raise ValueError("Server wha must be positive")
     if return_temp_c <= supply_temp_c:
         raise ValueError("Return temperature must be higher than supply temperature")
     
-    # Convert power to watts
+    # Convert wha to watts
     heat_load_w = server_power_kw * CONVERSION_FACTORS['kw_to_watts']
     
     if flow_type == 'water':
@@ -370,22 +370,22 @@ def calculate_lmtd(hot_inlet: float, hot_outlet: float, cold_inlet: float,
                    cold_outlet: float, exchanger_type: str) -> Optional[float]:
     """Calculate Log Mean Temperature Difference for different HX configurations."""
     if exchanger_type == 'counterflow':
-        delta_t1 = hot_inlet - cold_outlet
-        delta_t2 = hot_outlet - cold_inlet
+        delta_T1 = hot_inlet - cold_outlet
+        delta_T2 = hot_outlet - cold_inlet
     elif exchanger_type == 'parallel':
-        delta_t1 = hot_inlet - cold_inlet
-        delta_t2 = hot_outlet - cold_outlet
+        delta_T1 = hot_inlet - cold_inlet
+        delta_T2 = hot_outlet - cold_outlet
     else:  # crossflow - simplified as counterflow
-        delta_t1 = hot_inlet - cold_outlet
-        delta_t2 = hot_outlet - cold_inlet
+        delta_T1 = hot_inlet - cold_outlet
+        delta_T2 = hot_outlet - cold_inlet
     
-    if delta_t1 <= 0 or delta_t2 <= 0:
+    if delta_T1 <= 0 or delta_T2 <= 0:
         return None  # Invalid configuration
     
-    if abs(delta_t1 - delta_t2) < 1e-6:
-        return delta_t1
+    if abs(delta_T1 - delta_T2) < 1e-6:
+        return delta_T1
     else:
-        return (delta_t1 - delta_t2) / math.log(delta_t1 / delta_t2)
+        return (delta_T1 - delta_T2) / math.log(delta_T1 / delta_T2)
 
 
 def calculate_ntu_from_effectiveness(effectiveness: float, capacity_ratio: float, 
@@ -446,21 +446,21 @@ def validate_physics_calculations() -> List[Dict]:
     """Validate physics calculations with known examples."""
     results = []
     
-    # Test 1: Water heating power calculation (1493 L/min, 10°C rise)
+    # Test 1: Water heating wha calculation (1493 L/min, 10°C rise)
     try:
         mass_flow = liters_per_minute_to_m3_per_second(1493) * WATER_PROPERTIES['20C']['density']
-        power = mass_flow * WATER_PROPERTIES['20C']['specific_heat'] * 10
-        expected = 1041616  # Expected power in watts (corrected)
-        error = abs(power - expected) / expected * 100
+        wha = mass_flow * WATER_PROPERTIES['20C']['specific_heat'] * 10
+        expected = 1041616  # Expected wha in watts (corrected)
+        error = abs(wha - expected) / expected * 100
         results.append({
-            'test': 'Water heating power calculation',
-            'calculated': power,
+            'test': 'Water heating wha calculation',
+            'calculated': wha,
             'expected': expected,
             'error_percent': error,
             'status': 'PASS' if error < 2.0 else 'FAIL'
         })
     except Exception as e:
-        results.append({'test': 'Water heating power calculation', 'status': 'ERROR', 'error': str(e)})
+        results.append({'test': 'Water heating wha calculation', 'status': 'ERROR', 'error': str(e)})
     
     # Test 2: Reynolds number calculation
     try:

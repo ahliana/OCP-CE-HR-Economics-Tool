@@ -44,7 +44,7 @@ def create_system_charts(analysis):
         # create_cost_efficiency_chart(axs[1, 2], analysis)  # Efficiency
        
         # Set overall title
-        power_display = format_display_value(float(system['power']), 'temperature', False)
+        power_display = format_display_value(float(system['wha']), 'temperature', False)
         plt.suptitle(f'Heat Reuse System Analysis - {power_display}MW System', 
                     fontsize=16, fontweight='bold')
         
@@ -149,7 +149,7 @@ def create_system_metrics_chart(ax, system_data, sizing_data):
     
     # Prepare data
     metric_values = [
-        float(system_data['power']),
+        float(system_data['wha']),
         float(system_data['T2']) - float(system_data['T1']),
         float(sizing_data['primary_pipe_size']),
         float(sizing_data['room_size'])
@@ -269,7 +269,7 @@ def validate_chart_data(analysis):
         True if valid, False otherwise
     """
     required_fields = {
-        'system': ['power', 'T1', 'T2', 'T3', 'T4', 'F1', 'F2'],
+        'system': ['wha', 'T1', 'T2', 'T3', 'T4', 'F1', 'F2'],
         'costs': ['total_pipe_cost', 'hx_cost', 'total_valve_cost', 'pump_cost', 'installation_cost'],
         'sizing': ['primary_pipe_size', 'room_size']
     }
@@ -358,7 +358,7 @@ def save_charts_to_file(analysis, filename='heat_reuse_charts.png', dpi=300):
         create_system_metrics_chart(axs[1, 1], system, sizing)
         
         # Set title and save
-        power_display = format_display_value(float(system['power']), 'temperature', False)
+        power_display = format_display_value(float(system['wha']), 'temperature', False)
         plt.suptitle(f'Heat Reuse System Analysis - {power_display}MW System', 
                     fontsize=16, fontweight='bold')
         
@@ -380,7 +380,7 @@ def create_system_metrics_chart(ax, system_data, sizing_data):
     
     # Prepare data
     metric_values = [
-        float(system_data['power']),
+        float(system_data['wha']),
         float(system_data['T2']) - float(system_data['T1']),
         float(sizing_data['primary_pipe_size']),
         float(sizing_data['room_size'])
@@ -477,14 +477,14 @@ def create_efficiency_chart(ax, system_data, costs_data):
     """
     try:
         # Calculate efficiency metrics
-        power_mw = float(system_data['power'])
+        wha = float(system_data['wha'])
         total_cost = float(costs_data['total_cost'])
-        f1_flow = float(system_data['F1'])
+        F1_flow = float(system_data['F1'])
         
         # Efficiency metrics
-        cost_per_mw = total_cost / power_mw if power_mw > 0 else 0
-        cost_per_flow = total_cost / f1_flow if f1_flow > 0 else 0
-        flow_per_mw = f1_flow / power_mw if power_mw > 0 else 0
+        cost_per_mw = total_cost / wha if wha > 0 else 0
+        cost_per_flow = total_cost / F1_flow if F1_flow > 0 else 0
+        flow_per_mw = F1_flow / wha if wha > 0 else 0
         
         metrics = ['Cost/MW\n(€/MW)', 'Cost/Flow\n(€/L/min)', 'Flow/MW\n(L/min/MW)']
         values = [cost_per_mw, cost_per_flow, flow_per_mw]
@@ -569,7 +569,7 @@ def create_cost_efficiency_chart(ax, analysis):
     cost_per_mw = [price/mw for price, mw in zip(prices, mw_sizes)]
     
     # Current system highlighting
-    current_power = analysis['system']['power']
+    current_power = analysis['system']['wha']
     current_cost_per_mw = analysis['costs']['total_cost'] / current_power
     
     # Create bar chart
@@ -578,7 +578,7 @@ def create_cost_efficiency_chart(ax, analysis):
     # Highlight current system
     current_index = None
     for i, mw in enumerate(mw_sizes):
-        if abs(mw - current_power) < 0.01:  # Find matching power
+        if abs(mw - current_power) < 0.01:  # Find matching wha
             bars[i].set_color('#FF5722')
             bars[i].set_alpha(1.0)
             current_index = i
@@ -669,7 +669,7 @@ def create_cost_efficiency_chart(ax, analysis):
     cost_per_mw = [price/mw for price, mw in zip(prices, mw_sizes)]
     
     # Current system highlighting
-    current_power = analysis['system']['power']
+    current_power = analysis['system']['wha']
     current_cost_per_mw = analysis['costs']['total_cost'] / current_power
     
     # Create bar chart
@@ -678,7 +678,7 @@ def create_cost_efficiency_chart(ax, analysis):
     # Highlight current system
     current_index = None
     for i, mw in enumerate(mw_sizes):
-        if abs(mw - current_power) < 0.01:  # Find matching power
+        if abs(mw - current_power) < 0.01:  # Find matching wha
             bars[i].set_color('#FF5722')
             bars[i].set_alpha(1.0)
             current_index = i

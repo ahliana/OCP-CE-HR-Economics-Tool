@@ -43,16 +43,16 @@ def create_calculate_handler(widgets_dict, outputs_dict, core_functions):
             
             # Get values from widgets
             values = get_widget_values(widgets_dict)
-            power = values['power']
-            t1 = values['t1']
-            temp_diff = values['temp_diff']
+            wha = values['wha']
+            T1 = values['T1']
+            itdt = values['itdt']
             approach = values['approach']
             
             # Clear loading message and validate inputs
             clear_all_outputs(outputs_dict)
             
             # Validate inputs
-            errors = validate_user_inputs(power, t1, temp_diff, approach)
+            errors = validate_user_inputs(wha, T1, itdt, approach)
             if errors:
                 display_validation_errors(outputs_dict['system_params'], errors)
                 return
@@ -61,7 +61,7 @@ def create_calculate_handler(widgets_dict, outputs_dict, core_functions):
             display_loading_message(outputs_dict['system_params'], "Running system analysis...")
             
             # Get complete system analysis using core functions
-            analysis = core_functions['get_complete_system_analysis'](power, t1, temp_diff, approach)
+            analysis = core_functions['get_complete_system_analysis'](wha, T1, itdt, approach)
             
             # Clear loading message
             clear_all_outputs(outputs_dict)
@@ -109,8 +109,8 @@ def create_dropdown_change_handler(widget_name, widgets_dict, validation_callbac
             
             # Run validation
             errors = validate_user_inputs(
-                values['power'], values['t1'], 
-                values['temp_diff'], values['approach']
+                values['wha'], values['T1'], 
+                values['itdt'], values['approach']
             )
             
             # Call validation callback with results
@@ -250,7 +250,7 @@ def attach_handlers_to_widgets(widgets_dict, outputs_dict, core_functions, enabl
         validation_callback = create_real_time_validation_callback(outputs_dict)
         
         # Attach to each dropdown
-        for widget_name in ['power', 't1', 'temp_diff', 'approach']:
+        for widget_name in ['wha', 'T1', 'itdt', 'approach']:
             widget_key = f"{widget_name}_widget"
             if widget_key in widgets_dict:
                 change_handler = create_dropdown_change_handler(
@@ -277,7 +277,7 @@ def detach_handlers_from_widgets(widgets_dict, handlers_dict):
             pass
         
         # Detach change handlers
-        for widget_name in ['power', 't1', 'temp_diff', 'approach']:
+        for widget_name in ['wha', 'T1', 'itdt', 'approach']:
             handler_key = f"{widget_name}_change"
             widget_key = f"{widget_name}_widget"
             
@@ -316,9 +316,9 @@ def create_debug_handler(widgets_dict, outputs_dict):
             
             debug_info = f"""
             Debug Information:
-            - Power: {values['power']}
-            - T1: {values['t1']}
-            - Temperature Diff: {values['temp_diff']}
+            - wha: {values['wha']}
+            - T1: {values['T1']}
+            - Temperature Diff: {values['itdt']}
             - Approach: {values['approach']}
             
             Widget States:
@@ -500,21 +500,21 @@ def create_batch_calculate_handler(widgets_dict, outputs_dict, core_functions, p
             
             for i, params in enumerate(parameter_sets):
                 # Update progress
-                progress_msg = f"Processing set {i+1}/{len(parameter_sets)}: Power={params['power']}MW, T1={params['t1']}°C"
+                progress_msg = f"Processing set {i+1}/{len(parameter_sets)}: wha={params['wha']}MW, T1={params['T1']}°C"
                 clear_all_outputs(outputs_dict)
                 display_loading_message(outputs_dict['system_params'], progress_msg)
                 
                 # Validate parameters
                 errors = validate_user_inputs(
-                    params['power'], params['t1'], 
-                    params['temp_diff'], params['approach']
+                    params['wha'], params['T1'], 
+                    params['itdt'], params['approach']
                 )
                 
                 if not errors:
                     # Calculate
                     analysis = core_functions['get_complete_system_analysis'](
-                        params['power'], params['t1'], 
-                        params['temp_diff'], params['approach']
+                        params['wha'], params['T1'], 
+                        params['itdt'], params['approach']
                     )
                     
                     if analysis:

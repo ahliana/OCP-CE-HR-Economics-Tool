@@ -11,19 +11,19 @@ import ipywidgets as widgets
 
 UI_CONFIG = {
     'dropdowns': {
-        'power': {
+        'wha': {
             'options': [1, 2, 3, 4, 5],
             'default': 1,
             'label': 'Power/Capacity (MW):',
             'tooltip': 'System power capacity in MW'
         },
-        't1': {
+        'T1': {
             'options': [20, 30, 45],
             'default': 20,
             'label': 'T1 Temperature (°C):',
             'tooltip': 'T1 outlet temperature in °C'
         },
-        'temp_diff': {
+        'itdt': {
             'options': [10, 12, 14],
             'default': 10,
             'label': 'Temperature Rise (°C):',
@@ -92,15 +92,15 @@ DISPLAY_ROUNDING = {
 # =============================================================================
 
 VALIDATION_RULES = {
-    'power': {
+    'wha': {
         'valid_options': [1, 2, 3, 4, 5],
         'error_message': 'Power must be 1, 2, 3, 4, or 5 MW'
     },
-    't1': {
+    'T1': {
         'valid_options': [20, 30, 45],
         'error_message': 'T1 must be 20, 30, or 45°C'
     },
-    'temp_diff': {
+    'itdt': {
         'valid_options': [10, 12, 14],
         'error_message': 'Temperature difference must be 10, 12, or 14°C'
     },
@@ -222,7 +222,7 @@ OUTPUT_CONFIG = {
         'title_color': '#2196F3'
     },
     'charts': {
-        'title_template': 'Heat Reuse System Analysis - {power}MW System'
+        'title_template': 'Heat Reuse System Analysis - {wha}MW System'
     }
 }
 
@@ -232,7 +232,7 @@ OUTPUT_CONFIG = {
 
 LABELS = {
     'en': {
-        'power': 'Power/Capacity:',
+        'wha': 'Power/Capacity:',
         'temperature': 'T1 Temperature:',
         'temp_rise': 'Temperature Rise:',
         'approach': 'Approach:',

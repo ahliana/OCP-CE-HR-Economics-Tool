@@ -16,7 +16,7 @@ import logging
 logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)  
 
-def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float) -> Optional[Dict[str, Any]]:
+def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Optional[Dict[str, Any]]:
     """
     ALLHX lookup using proper data filtering and type consistency.
     
@@ -24,9 +24,9 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     and maintains the same functionality while using the modular data access.
     
     Args:
-        power: System power in MW
-        t1: Inlet temperature in °C
-        temp_diff: Temperature difference in °C  
+        wha: System wha in MW
+        T1: Inlet temperature in °C
+        itdt: Temperature difference in °C  
         approach: Approach value
     
     Returns:
@@ -42,11 +42,11 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     msg = f"lookup_allhx_data"
     logger.info(msg)
     print(msg)    
-    msg = f"Input: power: {power}, t1: {t1}, temp_diff: {temp_diff}, approach: {approach}"
+    msg = f"Input: wha: {wha}, T1: {T1}, itdt: {itdt}, approach: {approach}"
     logger.info(msg)
     print(msg)
        
-    t2 = t1 + temp_diff
+    T2 = T1 + itdt
     
     # Check if ALLHX data is loaded
     if not is_csv_loaded('ALLHX'):
@@ -61,7 +61,7 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     # Make a copy to avoid modifying the original
     df = df.copy()
     
-    # print(f"ALLHX lookup: Power={power}, T1={t1}, TempDiff={temp_diff}, T2={t2}, Approach={approach}")
+    # print(f"ALLHX lookup: wha={wha}, T1={T1}, TempDiff={itdt}, T2={T2}, Approach={approach}")
     
     # Clean data - remove header rows
     df = df[df['wha'].astype(str).str.strip() != 'A']
@@ -85,22 +85,22 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
         return None
     
     # Debug: Show available combinations
-    power_values = sorted(valid_df['wha'].unique())
-    t1_values = sorted(valid_df['T1'].unique()) 
-    temp_diff_values = sorted(valid_df['itdt'].unique())
+    wha_values = sorted(valid_df['wha'].unique())
+    T1_values = sorted(valid_df['T1'].unique()) 
+    itdt_values = sorted(valid_df['itdt'].unique())
     approach_values = sorted(valid_df['TCSapp'].unique())
     
     # print("Available combinations:")
-    # print(f"  Power (wha): {power_values}")
-    # print(f"  T1: {t1_values}")
-    # print(f"  TempDiff (itdt): {temp_diff_values}")
+    # print(f"  wha (wha): {wha_values}")
+    # print(f"  T1: {T1_values}")
+    # print(f"  TempDiff (itdt): {itdt_values}")
     # print(f"  Approach (TCSapp): {approach_values}")
     
     # Find exact matches
     matches = valid_df[
-        (valid_df['wha'] == power) & 
-        (valid_df['T1'] == t1) & 
-        (valid_df['itdt'] == temp_diff) & 
+        (valid_df['wha'] == wha) & 
+        (valid_df['T1'] == T1) & 
+        (valid_df['itdt'] == itdt) & 
         (valid_df['TCSapp'] == approach)
     ]
     
@@ -114,7 +114,7 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
     match = matches.iloc[0]
     
     result = {
-        'power': power,
+        'wha': wha,
         'F1': match['F1'],
         'F2': match['F2'], 
         'T1': match['T1'],
@@ -123,14 +123,14 @@ def lookup_allhx_data(power: float, t1: float, temp_diff: float, approach: float
         'T4': match['T4'],
         'hx_cost': match['costHX'],
         'approach': approach,
-        'temp_diff': temp_diff
+        'itdt': itdt
     }
     
     msg = f"lookup_allhx_data result = {result}"
     logger.info(msg)
     print(msg)
     
-    # print(f"✅ Match found: F1={result['F1']}, F2={result['F2']}, HX_Cost=€{result['hx_cost']}")
+    # print(f"✅ Match found: F1={result['F1']}, F2={result['F2']}, HX_Cost=€{result['HX_cost']}")
     
     return result
 

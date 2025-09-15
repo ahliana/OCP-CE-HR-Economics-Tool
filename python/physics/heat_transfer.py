@@ -306,24 +306,24 @@ def log_mean_temperature_difference(hot_inlet, hot_outlet, cold_inlet, cold_outl
         float: LMTD [K or °C]
     """
     if flow_arrangement == 'counterflow':
-        delta_t1 = hot_inlet - cold_outlet
-        delta_t2 = hot_outlet - cold_inlet
+        delta_T1 = hot_inlet - cold_outlet
+        delta_T2 = hot_outlet - cold_inlet
     elif flow_arrangement == 'parallel':
-        delta_t1 = hot_inlet - cold_inlet  
-        delta_t2 = hot_outlet - cold_outlet
+        delta_T1 = hot_inlet - cold_inlet  
+        delta_T2 = hot_outlet - cold_outlet
     else:
         raise ValueError("Unsupported flow arrangement. Use 'counterflow' or 'parallel'")
     
     # Check for physical validity
-    if delta_t1 <= 0 or delta_t2 <= 0:
+    if delta_T1 <= 0 or delta_T2 <= 0:
         raise ValueError(f"Invalid temperature configuration for {flow_arrangement} flow")
     
     # Calculate LMTD
-    if abs(delta_t1 - delta_t2) < 1e-6:
+    if abs(delta_T1 - delta_T2) < 1e-6:
         # When temperature differences are equal
-        return delta_t1
+        return delta_T1
     else:
-        return (delta_t1 - delta_t2) / math.log(delta_t1 / delta_t2)
+        return (delta_T1 - delta_T2) / math.log(delta_T1 / delta_T2)
 
 
 def effectiveness_ntu_method(capacity_rate_min, capacity_rate_max, ntu, 

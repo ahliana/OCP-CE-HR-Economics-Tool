@@ -23,7 +23,7 @@ try:
     )
     from .thermodynamics import sensible_heat_transfer
     from .units import liters_per_minute_to_m3_per_second
-except ImportError:
+except ImportError as e:
     # Don't define functions if imports fail
     raise ImportError(f"Cannot import required modules: {e}")
  
@@ -95,15 +95,15 @@ def lmtd_counterflow(hot_inlet: float, hot_outlet: float,
     if not validation['valid']:
         raise ValueError(f"Invalid heat exchanger configuration: {validation['errors']}")
     
-    delta_t1 = hot_inlet - cold_outlet
-    delta_t2 = hot_outlet - cold_inlet
+    delta_T1 = hot_inlet - cold_outlet
+    delta_T2 = hot_outlet - cold_inlet
     
     # Handle special case where temperature differences are equal
-    if abs(delta_t1 - delta_t2) < 1e-6:
-        return delta_t1
+    if abs(delta_T1 - delta_T2) < 1e-6:
+        return delta_T1
     
     # Standard LMTD calculation
-    return (delta_t1 - delta_t2) / math.log(delta_t1 / delta_t2)
+    return (delta_T1 - delta_T2) / math.log(delta_T1 / delta_T2)
 
 
 def lmtd_parallel(hot_inlet: float, hot_outlet: float, 
@@ -129,13 +129,13 @@ def lmtd_parallel(hot_inlet: float, hot_outlet: float,
     if not validation['valid']:
         raise ValueError(f"Invalid heat exchanger configuration: {validation['errors']}")
     
-    delta_t1 = hot_inlet - cold_inlet
-    delta_t2 = hot_outlet - cold_outlet
+    delta_T1 = hot_inlet - cold_inlet
+    delta_T2 = hot_outlet - cold_outlet
     
-    if abs(delta_t1 - delta_t2) < 1e-6:
-        return delta_t1
+    if abs(delta_T1 - delta_T2) < 1e-6:
+        return delta_T1
     
-    return (delta_t1 - delta_t2) / math.log(delta_t1 / delta_t2)
+    return (delta_T1 - delta_T2) / math.log(delta_T1 / delta_T2)
 
 
 def lmtd_crossflow(hot_inlet: float, hot_outlet: float, 

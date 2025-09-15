@@ -243,7 +243,7 @@ def display_calculation_summary(output_area, summary_data):
     """
     with output_area:
         try:
-            power = summary_data.get('power_mw', 'N/A')
+            wha = summary_data.get('wha', 'N/A')
             total_cost = summary_data.get('total_cost_eur', 'N/A')
             
             html_content = f"""
@@ -251,7 +251,7 @@ def display_calculation_summary(output_area, summary_data):
                         border-radius: 8px; border: 2px solid #dee2e6; margin: 10px 0; text-align: center;">
                 <h4 style="margin-top: 0; color: #495057;">📊 Quick Summary</h4>
                 <p style="margin: 5px 0; font-size: 16px;">
-                    <strong>System Power:</strong> {power} MW | 
+                    <strong>System wha:</strong> {wha} MW | 
                     <strong>Total Cost:</strong> €{total_cost:,} 
                 </p>
             </div>
@@ -381,9 +381,9 @@ def display_smart_recommendations(output_area, analysis):
             costs = analysis['costs']
             sizing = analysis['sizing']
             
-            power = system['power']
+            wha = system['wha']
             total_cost = costs['total_cost']
-            cost_per_mw = total_cost / power
+            cost_per_mw = total_cost / wha
             
             # Generate smart insights
             recommendations = generate_smart_insights(analysis)
@@ -419,9 +419,9 @@ def display_visual_summary_cards(output_area, analysis):
             costs = analysis['costs']
             sizing = analysis['sizing']
             
-            power = system['power']
+            wha = system['wha']
             total_cost = costs['total_cost']
-            cost_per_mw = total_cost / power
+            cost_per_mw = total_cost / wha
             
             # Get effectiveness estimate
             effectiveness = calculate_effectiveness(analysis)
@@ -431,7 +431,7 @@ def display_visual_summary_cards(output_area, analysis):
             
             # Create cards HTML
             cards_html = create_summary_cards_html(
-                power=power,
+                wha=wha,
                 total_cost=total_cost,
                 cost_per_mw=cost_per_mw,
                 effectiveness=effectiveness,

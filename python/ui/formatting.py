@@ -131,14 +131,14 @@ def create_validation_errors_html(errors):
 # INPUT VALIDATION FUNCTIONS
 # =============================================================================
 
-def validate_user_inputs(power, t1, temp_diff, approach):
+def validate_user_inputs(wha, T1, itdt, approach):
     """
     Validate user inputs against configured rules.
     
     Args:
-        power: Selected power value
-        t1: Selected T1 temperature
-        temp_diff: Selected temperature difference
+        wha: Selected wha value
+        T1: Selected T1 temperature
+        itdt: Selected temperature difference
         approach: Selected approach value
     
     Returns:
@@ -146,20 +146,20 @@ def validate_user_inputs(power, t1, temp_diff, approach):
     """
     errors = []
     
-    # Validate power
-    power_rule = VALIDATION_RULES['power']
-    if power not in power_rule['valid_options']:
-        errors.append(f"{power_rule['error_message']} (got {power})")
+    # Validate wha
+    wha_rule = VALIDATION_RULES['wha']
+    if wha not in wha_rule['valid_options']:
+        errors.append(f"{wha_rule['error_message']} (got {wha})")
     
     # Validate T1
-    t1_rule = VALIDATION_RULES['t1']
-    if t1 not in t1_rule['valid_options']:
-        errors.append(f"{t1_rule['error_message']} (got {t1})")
+    T1_rule = VALIDATION_RULES['T1']
+    if T1 not in T1_rule['valid_options']:
+        errors.append(f"{T1_rule['error_message']} (got {T1})")
     
     # Validate temperature difference
-    temp_diff_rule = VALIDATION_RULES['temp_diff']
-    if temp_diff not in temp_diff_rule['valid_options']:
-        errors.append(f"{temp_diff_rule['error_message']} (got {temp_diff})")
+    itdt_rule = VALIDATION_RULES['itdt']
+    if itdt not in itdt_rule['valid_options']:
+        errors.append(f"{itdt_rule['error_message']} (got {itdt})")
     
     # Validate approach
     approach_rule = VALIDATION_RULES['approach']
@@ -292,9 +292,9 @@ def generate_smart_insights(analysis):
         system = analysis['system']
         costs = analysis['costs']
         
-        power = system['power']
+        wha = system['wha']
         total_cost = costs['total_cost']
-        cost_per_mw = total_cost / power
+        cost_per_mw = total_cost / wha
         
         # Get heat exchanger effectiveness if available
         effectiveness = analysis.get('validation', {}).get('hx_effectiveness', 0.75)  # Default estimate
@@ -307,21 +307,21 @@ def generate_smart_insights(analysis):
         else:
             recommendations.append("✅ Good cost efficiency for this system size")
         
-        # Power size recommendations
-        if power < 1.5:
-            next_size_cost_per_mw = estimate_cost_per_mw(power + 0.5)
+        # wha size recommendations
+        if wha < 1.5:
+            next_size_cost_per_mw = estimate_cost_per_mw(wha + 0.5)
             improvement = ((cost_per_mw - next_size_cost_per_mw) / cost_per_mw) * 100
             if improvement > 10:
-                recommendations.append(f"🎯 Scaling to {power + 0.5} MW could improve cost efficiency by {improvement:.0f}%")
+                recommendations.append(f"🎯 Scaling to {wha + 0.5} MW could improve cost efficiency by {improvement:.0f}%")
         
         # Temperature recommendations
-        t1 = system['T1']
-        t2 = system['T2']
-        temp_rise = t2 - t1
+        T1 = system['T1']
+        T2 = system['T2']
+        temp_rise = T2 - T1
         
-        if t1 == 20:
+        if T1 == 20:
             recommendations.append("🌟 Optimal T1 temperature for server cooling compatibility")
-        elif t1 < 18:
+        elif T1 < 18:
             recommendations.append("❄️ Low T1 may require additional server cooling consideration")
         
         if temp_rise >= 12:
@@ -337,9 +337,9 @@ def generate_smart_insights(analysis):
             recommendations.append("✅ Meets European minimum approach temperature requirements")
         
         # Flow rate insights
-        f1 = system['F1']
-        f2 = system['F2']
-        if abs(f1 - f2) / max(f1, f2) < 0.1:
+        F1 = system['F1']
+        F2 = system['F2']
+        if abs(F1 - F2) / max(F1, F2) < 0.1:
             recommendations.append("⚖️ Well-balanced flow rates for optimal heat transfer")
         
     except Exception as e:
@@ -349,7 +349,7 @@ def generate_smart_insights(analysis):
 
 def estimate_cost_per_mw(target_mw):
     """
-    Estimate cost per MW for a target power size.
+    Estimate cost per MW for a target wha size.
     Based on your MW price data trends.
     """
     # Simplified estimation based on your price data
@@ -472,7 +472,7 @@ def calculate_effectiveness(analysis):
     
     return hx_analysis['effectiveness']
 
-def create_summary_cards_html(power, total_cost, cost_per_mw, effectiveness, rating_info, eu_compliant):
+def create_summary_cards_html(wha, total_cost, cost_per_mw, effectiveness, rating_info, eu_compliant):
     """
     Create HTML for visual summary cards.
     """
@@ -489,7 +489,7 @@ def create_summary_cards_html(power, total_cost, cost_per_mw, effectiveness, rat
                     🏢 System Performance
                 </h4>
                 <div style="margin-bottom: 10px;">
-                    <strong>{power} MW</strong> Heat Recovery System
+                    <strong>{wha} MW</strong> Heat Recovery System
                 </div>
                 <div style="margin-bottom: 10px;">
                     Effectiveness: <strong>{effectiveness:.1%}</strong>

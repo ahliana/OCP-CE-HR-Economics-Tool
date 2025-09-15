@@ -13,7 +13,7 @@ try:
     from typing import Dict, Optional, List, Tuple, Union
 
     from physics.constants import WATER_PROPERTIES
-    from physics.units import (liters_per_minute_to_m3_per_second, m3_per_second_to_liters_per_minute)
+    from physics.units import (liters_per_minute_to_m3_per_second, m3_per_second_to_liters_per_minute, european_dn_pipe_sizes, american_nominal_pipe_sizes, dn_to_nominal_inches)
     from physics.thermodynamics import sensible_heat_transfer
 
     # Import data access functions
@@ -38,8 +38,8 @@ except ImportError as e:
 # =============================================================================
 # DEFINE FUNCTIONS
 # =============================================================================
-def quick_power_calculation(flow_lpm: float, temp_rise_c: float, fluid: str = 'water') -> float:
-    """Quick power calculation compatible with existing code."""
+def quick_wha_calculation(flow_lpm: float, temp_rise_c: float, fluid: str = 'water') -> float:
+    """Quick wha calculation compatible with existing code."""
     if fluid == 'water':
         props = WATER_PROPERTIES['30C']  # Representative properties
         mass_flow = liters_per_minute_to_m3_per_second(flow_lpm) * props['density']
@@ -49,7 +49,7 @@ def quick_power_calculation(flow_lpm: float, temp_rise_c: float, fluid: str = 'w
 
 
 def get_MW(F1: float, T1: float, T2: float) -> float:
-    return quick_power_calculation(F1, T2 - T1)
+    return quick_wha_calculation(F1, T2 - T1)
 
 
 def get_MW_divd(F1: float, T1: float, T2: float) -> float:
@@ -176,11 +176,11 @@ def get_PipeSize_Suggested(F1):
 
 def get_PipeLength(F1, T1, T2):
     """
-    Calculate pipe length based on power requirement using ROOM lookup.
+    Calculate pipe length based on wha requirement using ROOM lookup.
     """
     try:
-        # Calculate power requirement
-        power_mw = get_MW_divd(F1, T1, T2)
+        # Calculate wha requirement
+        wha = get_MW_divd(F1, T1, T2)
         
         # Check if ROOM data exists
         if not is_csv_loaded('ROOM'):
@@ -195,19 +195,19 @@ def get_PipeLength(F1, T1, T2):
         # Convert to numeric and find appropriate length
         room_df = room_df.copy()
         room_df = room_df.astype(float)  # Convert DataFrame to float
-        room_df.iloc[:, 0] = room_df.iloc[:, 0].apply(universal_float_convert)  # Power capacity
+        room_df.iloc[:, 0] = room_df.iloc[:, 0].apply(universal_float_convert)  # wha capacity
         room_df.iloc[:, 1] = room_df.iloc[:, 1].apply(universal_float_convert)  # Length
         
         # Find ceiling match
-        adequate_rows = room_df[room_df.iloc[:, 0] >= power_mw]
+        adequate_rows = room_df[room_df.iloc[:, 0] >= wha]
         
         if adequate_rows.empty:
-            print(f"❌ No room size available for power {power_mw} MW")
+            print(f"❌ No room size available for wha {wha} MW")
             return 0
         
         # Get the first (smallest) adequate room
         length = adequate_rows.iloc[0, 1]
-        # print(f"✅ Room length: {length} m for {power_mw} MW")
+        # print(f"✅ Room length: {length} m for {wha} MW")
         
         return length
         
@@ -264,7 +264,6 @@ def get_PipeCost_perMeter(flow_rate, pipe_type):
         
         # Option 2: Convert DN to American inches using units.py conversion
         try:
-            from units import dn_to_nominal_inches
             american_inches = dn_to_nominal_inches(dn_size)
             
             if american_inches:
@@ -306,11 +305,9 @@ def get_PipeCost_perMeter(flow_rate, pipe_type):
         
         # Use European DN standards to find closest match
         try:
-            from units import european_dn_pipe_sizes
             dn_inner_diameter = european_dn_pipe_sizes().get(dn_size, dn_size)
             
             # Convert available inch sizes to mm for comparison
-            from units import american_nominal_pipe_sizes
             american_sizes = american_nominal_pipe_sizes()
             
             closest_size = None
@@ -387,10 +384,10 @@ def get_system_sizing(system_data):
         return None
     
     # Use formula functions for pipe sizing
-    pipe_size_f1 = get_PipeSize_Suggested(system_data['F1'])
-    pipe_size_f2 = get_PipeSize_Suggested(system_data['F2'])
+    pipe_size_F1 = get_PipeSize_Suggested(system_data['F1'])
+    pipe_size_F2 = get_PipeSize_Suggested(system_data['F2'])
     
-    # Get room size based on power using existing ROOM lookup with data module
+    # Get room size based on wha using existing ROOM lookup with data module
     room_size = None
     if is_csv_loaded('ROOM'):
         room_df = get_csv_data('ROOM')
@@ -398,20 +395,20 @@ def get_system_sizing(system_data):
             room_df = room_df.copy()
             # Convert columns to numeric
             room_df = room_df.astype(float)  # Convert DataFrame to float
-            room_df.iloc[:, 0] = room_df.iloc[:, 0].apply(universal_float_convert)  # Power column
+            room_df.iloc[:, 0] = room_df.iloc[:, 0].apply(universal_float_convert)  # wha column
             room_df.iloc[:, 1] = room_df.iloc[:, 1].apply(universal_float_convert)  # Room size column
             
             for idx, row in room_df.iterrows():
-                power_val = row.iloc[0]
-                if power_val >= system_data['power']:
+                wha = row.iloc[0]
+                if wha >= system_data['wha']:
                     room_size = row.iloc[1]
                     break
     
     sizing_data = {
-        'pipe_size_f1': pipe_size_f1 or 100,  # Default fallback
-        'pipe_size_f2': pipe_size_f2 or 100,
+        'pipe_size_F1': pipe_size_F1 or 100,  # Default fallback
+        'pipe_size_F2': pipe_size_F2 or 100,
         'room_size': room_size or 12.5,
-        'primary_pipe_size': max(pipe_size_f1 or 100, pipe_size_f2 or 100)
+        'primary_pipe_size': max(pipe_size_F1 or 100, pipe_size_F2 or 100)
     }
 
     msg = f"get_system_sizing: sizing_data: {sizing_data}"
@@ -512,7 +509,7 @@ def calculate_system_costs(system_data, sizing_data):
     
     # Other costs
     hx_cost = system_data['hx_cost']
-    pump_cost = system_data['power'] * 5000  # Estimated
+    pump_cost = system_data['wha'] * 5000  # Estimated
     installation_cost = 10000  # Placeholder
     total_cost = total_pipe_cost + total_valve_cost + hx_cost + pump_cost + installation_cost
     
@@ -534,18 +531,18 @@ def calculate_system_costs(system_data, sizing_data):
     
     return cost_data
 
-def get_complete_system_analysis(power, t1, temp_diff, approach):
+def get_complete_system_analysis(wha, T1, itdt, approach):
 
     msg = f"get_complete_system_analysis"
     logger.info(msg)
     print(msg)
     
-    msg = f"Input: {power}MW, {t1}°C, +{temp_diff}°C, approach {approach}"
+    msg = f"Input: {wha}MW, {T1}°C, +{itdt}°C, approach {approach}"
     logger.info(msg)
     print(msg)
     
     # Get system data from ALLHX
-    system_data = lookup_allhx_data(power, t1, temp_diff, approach)
+    system_data = lookup_allhx_data(wha, T1, itdt, approach)
     if not system_data:
         msg = "❌ ALLHX lookup failed"
         logger.info(msg)
@@ -617,13 +614,13 @@ def get_complete_system_analysis(power, t1, temp_diff, approach):
             'approach_calculated': approach_calc
         },
         'summary': {
-            'power_mw': system_data['power'],
-            't1_celsius': system_data['T1'],
-            't2_celsius': system_data['T2'],
+            'wha': system_data['wha'],
+            'T1_celsius': system_data['T1'],
+            'T2_celsius': system_data['T2'],
             't3_celsius': system_data['T3'],
             't4_celsius': system_data['T4'],
-            'f1_flow': system_data['F1'],
-            'f2_flow': system_data['F2'],
+            'F1_flow': system_data['F1'],
+            'F2_flow': system_data['F2'],
             'pipe_size': sizing_data['primary_pipe_size'],
             'room_size': sizing_data['room_size'],
             'total_cost_eur': round(cost_data['total_cost'])
@@ -631,7 +628,7 @@ def get_complete_system_analysis(power, t1, temp_diff, approach):
     }
     
     # print(f"Complete system analysis finished successfully")
-    # print(f"Summary: {system_data['power']}MW system, €{round(cost_data['total_cost']):,} total cost")
+    # print(f"Summary: {system_data['wha']}MW system, €{round(cost_data['total_cost']):,} total cost")
     
     return complete_analysis
 

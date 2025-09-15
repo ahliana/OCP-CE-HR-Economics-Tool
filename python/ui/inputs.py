@@ -105,18 +105,18 @@ def create_interface_layout(widgets_dict, outputs_dict):
     # Input section - 2x2 grid for the dropdowns
     input_grid = widgets.VBox([
         widgets.HBox([
-            widgets_dict['power_widget'],
-            widgets_dict['t1_widget']
+            widgets_dict['wha_widget'],
+            widgets_dict['T1_widget']
         ]),
         widgets.HBox([
-            widgets_dict['temp_diff_widget'],
+            widgets_dict['itdt_widget'],
             widgets_dict['approach_widget']
         ])
     ])
     
     # Complete vertical layout: inputs, button, then all outputs
     return widgets.VBox([
-        input_grid,                                              # Power/T1, TempRise/Approach
+        input_grid,                                              # wha/T1, TempRise/Approach
         widgets_dict['calculate_button'],                        # Calculate button
         outputs_dict['system_params'],                           # 1. System Parameters
         outputs_dict['cost_analysis'],                           # 2. Cost Analysis (now separate)
@@ -140,9 +140,9 @@ def get_widget_values(widgets_dict):
         Dictionary of widget values
     """
     return {
-        'power': widgets_dict['power_widget'].value,
-        't1': widgets_dict['t1_widget'].value,
-        'temp_diff': widgets_dict['temp_diff_widget'].value,
+        'wha': widgets_dict['wha_widget'].value,
+        'T1': widgets_dict['T1_widget'].value,
+        'itdt': widgets_dict['itdt_widget'].value,
         'approach': widgets_dict['approach_widget'].value
     }
 
@@ -203,8 +203,8 @@ def validate_widget_values(widgets_dict):
     
     values = get_widget_values(widgets_dict)
     return validate_user_inputs(
-        values['power'],
-        values['t1'],
-        values['temp_diff'],
+        values['wha'],
+        values['T1'],
+        values['itdt'],
         values['approach']
     )
