@@ -39,7 +39,6 @@ except ImportError as e:
 # DEFINE FUNCTIONS
 # =============================================================================
 def quick_wha_calculation(flow_lpm: float, temp_rise_c: float, fluid: str = 'water') -> float:
-    """Quick wha calculation compatible with existing code."""
     if fluid == 'water':
         props = WATER_PROPERTIES['30C']  # Representative properties
         mass_flow = liters_per_minute_to_m3_per_second(flow_lpm) * props['density']
@@ -70,7 +69,6 @@ def get_oftkrdt(T3, T4):
         return 0.0
 
 def get_Approach(T1, T4):
-    """Calculate approach temperature"""
     try:
         return float(T4) - float(T1)
     except Exception as e:
@@ -161,12 +159,6 @@ def get_PipeSize_Suggested(F1):
         logger.info(msg)
         print(msg)
                 
-        # msg = f"✅ CEILING match found: Flow capacity {selected_flow_capacity} >= {F1_float} → Pipe Size {selected_pipe_size}"
-        # logger.info(msg)
-        # print(msg)
-        # msg = f"🔧 Engineering validation: Pipe can handle {selected_flow_capacity} l/m >= required {F1_float} l/m ✓"
-        # logger.info(msg)
-        # print(msg)
         
         return selected_pipe_size
         
@@ -209,7 +201,6 @@ def get_PipeLength(F1, T1, T2):
         
         # Get the first (smallest) adequate room
         length = adequate_rows.iloc[0, 1]
-        # print(f"✅ Room length: {length} m for {wha} MW")
         
         return length
         
@@ -232,8 +223,6 @@ def get_PipeCost_perMeter(flow_rate, pipe_type):
         logger.info(msg)
         print(msg)
                 
-        # print(f"🔍 European pipe sizing: DN{dn_size} for flow {flow_rate} L/min")
-        
         # Check if PIPCOST data exists
         if not is_csv_loaded('PIPCOST'):
             print("❌ PIPCOST CSV not found")
@@ -581,28 +570,24 @@ def get_complete_system_analysis(wha, T1, itdt, approach):
     
     # Validate calculations using formula functions
     calculated_mw = get_MW_divd(F1, T1, T2)
-    delta_t_tcs = get_itdt(T1, T2)
-    delta_t_fws = get_oftkrdt(T3, T4)
+    itdt = get_itdt(T1, T2)
+    oftkrdt = get_oftkrdt(T3, T4)
     approach_calc = get_Approach(T1, T4)
 
     msg = f"calculated_mw = {calculated_mw}"
     logger.info(msg)
     print(msg)
-    msg = f"delta_t_tcs = {delta_t_tcs}"
+    msg = f"itdt = {itdt}"
     logger.info(msg)
     print(msg)
-    msg = f"delta_t_fws = {delta_t_fws}"
+    msg = f"oftkrdt = {oftkrdt}"
     logger.info(msg)
     print(msg)
     msg = f"approach_calc = {approach_calc}"
     logger.info(msg)
     print(msg)
     
-    # print(f"🔬 Formula validation:")
-    # print(f"  Calculated MW: {calculated_mw}")
-    # print(f"  Delta T TCS: {delta_t_tcs}°C")
-    # print(f"  Delta T FWS: {delta_t_fws}°C")
-    # print(f"  Approach: {approach_calc}")
+
     
     # Combine all data
     complete_analysis = {
@@ -611,26 +596,23 @@ def get_complete_system_analysis(wha, T1, itdt, approach):
         'costs': cost_data,
         'validation': {
             'calculated_mw': calculated_mw,
-            'delta_t_tcs': delta_t_tcs,
-            'delta_t_fws': delta_t_fws,
+            'itdt': itdt,
+            'oftkrdt': oftkrdt,
             'approach_calculated': approach_calc
         },
         'summary': {
             'wha': system_data['wha'],
-            'T1_celsius': system_data['T1'],
-            'T2_celsius': system_data['T2'],
-            't3_celsius': system_data['T3'],
-            't4_celsius': system_data['T4'],
-            'F1_flow': system_data['F1'],
-            'F2_flow': system_data['F2'],
+            'T1': system_data['T1'],
+            'T2': system_data['T2'],
+            'T3': system_data['T3'],
+            'T4': system_data['T4'],
+            'F1': system_data['F1'],
+            'F2': system_data['F2'],
             'pipe_size': sizing_data['primary_pipe_size'],
             'room_size': sizing_data['room_size'],
             'total_cost_eur': round(cost_data['total_cost'])
         }
     }
-    
-    # print(f"Complete system analysis finished successfully")
-    # print(f"Summary: {system_data['wha']}MW system, €{round(cost_data['total_cost']):,} total cost")
     
     return complete_analysis
 

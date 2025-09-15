@@ -479,12 +479,12 @@ def create_efficiency_chart(ax, system_data, costs_data):
         # Calculate efficiency metrics
         wha = float(system_data['wha'])
         total_cost = float(costs_data['total_cost'])
-        F1_flow = float(system_data['F1'])
+        F1 = float(system_data['F1'])
         
         # Efficiency metrics
         cost_per_mw = total_cost / wha if wha > 0 else 0
-        cost_per_flow = total_cost / F1_flow if F1_flow > 0 else 0
-        flow_per_mw = F1_flow / wha if wha > 0 else 0
+        cost_per_flow = total_cost / F1 if F1 > 0 else 0
+        flow_per_mw = F1 / wha if wha > 0 else 0
         
         metrics = ['Cost/MW\n(€/MW)', 'Cost/Flow\n(€/L/min)', 'Flow/MW\n(L/min/MW)']
         values = [cost_per_mw, cost_per_flow, flow_per_mw]
