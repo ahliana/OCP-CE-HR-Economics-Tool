@@ -30,7 +30,7 @@ UI_CONFIG = {
             'tooltip': 'Temperature difference (T2 - T1) in °C'
         },
         'approach': {
-            'options': [2, 3, 5],
+            'options': [2, 3, 4, 5],
             'default': 2,
             'label': 'Approach (°C):',
             'tooltip': 'System approach value in °C'
@@ -105,7 +105,7 @@ VALIDATION_RULES = {
         'error_message': 'Temperature difference must be 10, 12, or 14°C'
     },
     'approach': {
-        'valid_options': [2, 3, 5],
+        'valid_options': [2, 3, 4, 5],
         'error_message': 'Approach must be 2, 3, or 5'
     }
 }

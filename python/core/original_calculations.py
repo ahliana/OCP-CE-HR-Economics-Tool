@@ -35,8 +35,47 @@ except ImportError as e:
     # Don't define functions if imports fail
     raise ImportError(f"Cannot import required physics modules: {e}")
 
+
+
 # =============================================================================
-# DEFINE FUNCTIONS
+# DEFINE DATA DICTIONARY VARIABLE FUNCTIONS
+# =============================================================================
+
+# TEMPERATURE DELTAS
+# Delta T for TCS = itdt = Temperature Rise
+def get_itdt(T1, T2):
+    try:
+        return float(T2) - float(T1)
+    except Exception as e:
+        return 0.0
+    
+# Delta T for FWS = oftkrdt = Temperature Drop
+def get_oftkrdt(T3, T4):
+    try:
+        return float(T3) - float(T4)
+    except Exception as e:
+        return 0.0
+
+
+# PRESSURE DROPS
+# Delta P for TCS or IT = dpit
+def get_dpit(P1, P2):
+    try:
+        return float(P2) - float(P1)
+    except Exception as e:
+        return 0.0
+    
+# Delta P for FWS or Offtaker = oftkrdp 
+def get_oftkrdp(P3, P4):
+    try:
+        return float(P4) - float(P3)
+    except Exception as e:
+        return 0.0
+
+
+
+# =============================================================================
+# DEFINE MISCELLANEOUS FUNCTIONS
 # =============================================================================
 def quick_wha_calculation(flow_lpm: float, temp_rise_c: float, fluid: str = 'water') -> float:
     if fluid == 'water':
@@ -53,20 +92,6 @@ def get_MW(F1: float, T1: float, T2: float) -> float:
 
 def get_MW_divd(F1: float, T1: float, T2: float) -> float:
     return get_MW(F1, T1, T2) / 1_000_000
-
-# Delta T for TCS = itdt
-def get_itdt(T1, T2):
-    try:
-        return float(T2) - float(T1)
-    except Exception as e:
-        return 0.0
-    
-# Delta T for FWS = oftkrdt
-def get_oftkrdt(T3, T4):
-    try:
-        return float(T3) - float(T4)
-    except Exception as e:
-        return 0.0
 
 def get_Approach(T1, T4):
     try:
