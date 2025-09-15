@@ -288,8 +288,8 @@ def display_detailed_breakdown(output_area, analysis, show_validation=True):
                             border-radius: 5px; margin: 10px 0; border: 1px solid #ffeaa7;">
                     <h4 style="margin-top: 0;">🔬 Validation Results</h4>
                     <p><strong>Calculated MW:</strong> {validation.get('calculated_mw', 'N/A')}</p>
-                    <p><strong>Delta T TCS:</strong> {validation.get('delta_t_tcs', 'N/A')}°C</p>
-                    <p><strong>Delta T FWS:</strong> {validation.get('delta_t_fws', 'N/A')}°C</p>
+                    <p><strong>Delta T TCS:</strong> {validation.get('itdt', 'N/A')}°C</p>
+                    <p><strong>Delta T FWS:</strong> {validation.get('oftkrdt', 'N/A')}°C</p>
                     <p><strong>Approach:</strong> {validation.get('approach_calculated', 'N/A')}</p>
                 </div>
                 """

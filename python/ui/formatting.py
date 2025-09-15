@@ -241,14 +241,14 @@ def extract_delta_t_values(system_data):
         List of (label, formatted_value) tuples for Delta T values
     """
     # Import the calculation functions
-    from core.original_calculations import get_DeltaT_TCS, get_DeltaT_FWS
+    from core.original_calculations import get_itdt, get_oftkrdt
     
-    delta_t_tcs = get_DeltaT_TCS(system_data['T1'], system_data['T2'])
-    delta_t_fws = get_DeltaT_FWS(system_data['T3'], system_data['T4'])
+    itdt = get_itdt(system_data['T1'], system_data['T2'])
+    oftkrdt = get_oftkrdt(system_data['T3'], system_data['T4'])
     
     return [
-        ("Delta T for TCS (IT Medium):", format_display_value(delta_t_tcs, 'temperature', True, '°C')),
-        ("Delta T for FWS (Heating Medium):", format_display_value(delta_t_fws, 'temperature', True, '°C'))
+        ("Delta T for TCS (IT Medium):", format_display_value(itdt, 'temperature', True, '°C')),
+        ("Delta T for FWS (Heating Medium):", format_display_value(oftkrdt, 'temperature', True, '°C'))
     ]
 
 # =============================================================================

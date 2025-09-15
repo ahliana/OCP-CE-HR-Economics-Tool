@@ -55,13 +55,15 @@ def get_MW(F1: float, T1: float, T2: float) -> float:
 def get_MW_divd(F1: float, T1: float, T2: float) -> float:
     return get_MW(F1, T1, T2) / 1_000_000
 
-def get_DeltaT_TCS(T1, T2):
+# Delta T for TCS = itdt
+def get_itdt(T1, T2):
     try:
         return float(T2) - float(T1)
     except Exception as e:
         return 0.0
     
-def get_DeltaT_FWS(T3, T4):
+# Delta T for FWS = oftkrdt
+def get_oftkrdt(T3, T4):
     try:
         return float(T3) - float(T4)
     except Exception as e:
@@ -579,8 +581,8 @@ def get_complete_system_analysis(wha, T1, itdt, approach):
     
     # Validate calculations using formula functions
     calculated_mw = get_MW_divd(F1, T1, T2)
-    delta_t_tcs = get_DeltaT_TCS(T1, T2)
-    delta_t_fws = get_DeltaT_FWS(T3, T4)
+    delta_t_tcs = get_itdt(T1, T2)
+    delta_t_fws = get_oftkrdt(T3, T4)
     approach_calc = get_Approach(T1, T4)
 
     msg = f"calculated_mw = {calculated_mw}"
