@@ -12,6 +12,8 @@ European Standards: EN 12975, EN 14511, VDI Heat Atlas
 import math
 from .constants import WATER_PROPERTIES, CONVERSION_FACTORS
 from .units import celsius_to_kelvin, kelvin_to_celsius
+from . import engineering_calculations
+from . import fluid_mechanics
 
 def prandtl_number(specific_heat, dynamic_viscosity, thermal_conductivity):
     """
@@ -33,24 +35,24 @@ def prandtl_number(specific_heat, dynamic_viscosity, thermal_conductivity):
     return (specific_heat * dynamic_viscosity) / thermal_conductivity
 
 
-def reynolds_number(velocity, characteristic_length, kinematic_viscosity):
-    """
-    Calculate Reynolds number for flow characterization.
+# def reynolds_number(velocity, characteristic_length, kinematic_viscosity):
+#     """
+#     Calculate Reynolds number for flow characterization.
     
-    Formula: Re = V × L / ν
-    Reference: VDI Heat Atlas, Section L1
+#     Formula: Re = V × L / ν
+#     Reference: VDI Heat Atlas, Section L1
     
-    Args:
-        velocity (float): Flow velocity [m/s]
-        characteristic_length (float): Characteristic length (diameter for pipes) [m]
-        kinematic_viscosity (float): Kinematic viscosity [m²/s]
+#     Args:
+#         velocity (float): Flow velocity [m/s]
+#         characteristic_length (float): Characteristic length (diameter for pipes) [m]
+#         kinematic_viscosity (float): Kinematic viscosity [m²/s]
     
-    Returns:
-        float: Reynolds number [dimensionless]
-    """
-    if kinematic_viscosity <= 0:
-        raise ValueError("Kinematic viscosity must be positive")
-    return velocity * characteristic_length / kinematic_viscosity
+#     Returns:
+#         float: Reynolds number [dimensionless]
+#     """
+#     if kinematic_viscosity <= 0:
+#         raise ValueError("Kinematic viscosity must be positive")
+#     return velocity * characteristic_length / kinematic_viscosity
 
 
 def graetz_number(reynolds, prandtl, length_diameter_ratio):
@@ -383,7 +385,7 @@ def pipe_flow_analysis(flow_rate_lpm, pipe_diameter_mm, temperature_c=20,
         dict: Complete flow analysis including heat transfer coefficients
     """
     # Get water properties at operating temperature
-    props = get_water_properties_interpolated(temperature_c)
+    # props = get_water_properties_interpolated(temperature_c)
     
     # Convert units
     flow_rate_m3s = flow_rate_lpm * CONVERSION_FACTORS['liters_to_m3'] / CONVERSION_FACTORS['minutes_to_seconds']
@@ -392,8 +394,8 @@ def pipe_flow_analysis(flow_rate_lpm, pipe_diameter_mm, temperature_c=20,
     
     # Calculate flow parameters
     velocity = flow_rate_m3s / pipe_area_m2
-    reynolds = reynolds_number(velocity, pipe_diameter_m, props['kinematic_viscosity'])
-    prandtl = props['prandtl_number']
+    reynolds = fluid_mechanics.reynolds_number(velocity, pipe_diameter_m, engineering_calculations.props['kinematic_viscosity'])
+    prandtl = engineering_calculations.props['prandtl_number']
     
     # Determine flow regime
     if reynolds < 2300:
@@ -410,7 +412,7 @@ def pipe_flow_analysis(flow_rate_lpm, pipe_diameter_mm, temperature_c=20,
     else:
         nusselt = nusselt_number_pipe_universal(reynolds, prandtl)
     
-    h_coeff = heat_transfer_coefficient(nusselt, props['thermal_conductivity'], pipe_diameter_m)
+    h_coeff = heat_transfer_coefficient(nusselt, engineering_calculations.props['thermal_conductivity'], pipe_diameter_m)
     
     return {
         'flow_rate_lpm': flow_rate_lpm,
@@ -423,66 +425,66 @@ def pipe_flow_analysis(flow_rate_lpm, pipe_diameter_mm, temperature_c=20,
         'heat_transfer_coefficient': h_coeff,
         'pipe_diameter_mm': pipe_diameter_mm,
         'pipe_area_m2': pipe_area_m2,
-        'fluid_properties': props
+        'fluid_properties': engineering_calculations.props
     }
 
 
-def get_water_properties_interpolated(temperature_c):
-    """
-    Get water properties with interpolation for any temperature.
-    Compatibility function for existing system.
+# def get_water_properties_interpolated(temperature_c):
+#     """
+#     Get water properties with interpolation for any temperature.
+#     Compatibility function for existing system.
     
-    Args:
-        temperature_c (float): Temperature [°C]
+#     Args:
+#         temperature_c (float): Temperature [°C]
     
-    Returns:
-        dict: Water properties at specified temperature
-    """
-    # Temperature bounds check
-    if temperature_c < 0:
-        temperature_c = 0
-        print(f"Warning: Temperature below 0°C, using 0°C properties")
-    elif temperature_c > 100:
-        temperature_c = 100
-        print(f"Warning: Temperature above 100°C, using 100°C properties")
+#     Returns:
+#         dict: Water properties at specified temperature
+#     """
+#     # Temperature bounds check
+#     if temperature_c < 0:
+#         temperature_c = 0
+#         print(f"Warning: Temperature below 0°C, using 0°C properties")
+#     elif temperature_c > 100:
+#         temperature_c = 100
+#         print(f"Warning: Temperature above 100°C, using 100°C properties")
     
-    if temperature_c <= 20:
-        return WATER_PROPERTIES['20C']
-    elif temperature_c <= 30:
-        if temperature_c == 30:
-            return WATER_PROPERTIES['30C']
-        # Linear interpolation between 20°C and 30°C
-        factor = (temperature_c - 20) / (30 - 20)
-        props_20 = WATER_PROPERTIES['20C']
-        props_30 = WATER_PROPERTIES['30C']
+#     if temperature_c <= 20:
+#         return WATER_PROPERTIES['20C']
+#     elif temperature_c <= 30:
+#         if temperature_c == 30:
+#             return WATER_PROPERTIES['30C']
+#         # Linear interpolation between 20°C and 30°C
+#         factor = (temperature_c - 20) / (30 - 20)
+#         props_20 = WATER_PROPERTIES['20C']
+#         props_30 = WATER_PROPERTIES['30C']
         
-        return {
-            'density': props_20['density'] + factor * (props_30['density'] - props_20['density']),
-            'specific_heat': props_20['specific_heat'] + factor * (props_30['specific_heat'] - props_20['specific_heat']),
-            'thermal_conductivity': props_20['thermal_conductivity'] + factor * (props_30['thermal_conductivity'] - props_20['thermal_conductivity']),
-            'dynamic_viscosity': props_20['dynamic_viscosity'] + factor * (props_30['dynamic_viscosity'] - props_20['dynamic_viscosity']),
-            'kinematic_viscosity': props_20['kinematic_viscosity'] + factor * (props_30['kinematic_viscosity'] - props_20['kinematic_viscosity']),
-            'prandtl_number': props_20['prandtl_number'] + factor * (props_30['prandtl_number'] - props_20['prandtl_number']),
-        }
-    elif temperature_c <= 45:
-        if temperature_c == 45:
-            return WATER_PROPERTIES['45C']
-        # Linear interpolation between 30°C and 45°C
-        factor = (temperature_c - 30) / (45 - 30)
-        props_30 = WATER_PROPERTIES['30C']
-        props_45 = WATER_PROPERTIES['45C']
+#         return {
+#             'density': props_20['density'] + factor * (props_30['density'] - props_20['density']),
+#             'specific_heat': props_20['specific_heat'] + factor * (props_30['specific_heat'] - props_20['specific_heat']),
+#             'thermal_conductivity': props_20['thermal_conductivity'] + factor * (props_30['thermal_conductivity'] - props_20['thermal_conductivity']),
+#             'dynamic_viscosity': props_20['dynamic_viscosity'] + factor * (props_30['dynamic_viscosity'] - props_20['dynamic_viscosity']),
+#             'kinematic_viscosity': props_20['kinematic_viscosity'] + factor * (props_30['kinematic_viscosity'] - props_20['kinematic_viscosity']),
+#             'prandtl_number': props_20['prandtl_number'] + factor * (props_30['prandtl_number'] - props_20['prandtl_number']),
+#         }
+#     elif temperature_c <= 45:
+#         if temperature_c == 45:
+#             return WATER_PROPERTIES['45C']
+#         # Linear interpolation between 30°C and 45°C
+#         factor = (temperature_c - 30) / (45 - 30)
+#         props_30 = WATER_PROPERTIES['30C']
+#         props_45 = WATER_PROPERTIES['45C']
         
-        return {
-            'density': props_30['density'] + factor * (props_45['density'] - props_30['density']),
-            'specific_heat': props_30['specific_heat'] + factor * (props_45['specific_heat'] - props_30['specific_heat']),
-            'thermal_conductivity': props_30['thermal_conductivity'] + factor * (props_45['thermal_conductivity'] - props_30['thermal_conductivity']),
-            'dynamic_viscosity': props_30['dynamic_viscosity'] + factor * (props_45['dynamic_viscosity'] - props_30['dynamic_viscosity']),
-            'kinematic_viscosity': props_30['kinematic_viscosity'] + factor * (props_45['kinematic_viscosity'] - props_30['kinematic_viscosity']),
-            'prandtl_number': props_30['prandtl_number'] + factor * (props_45['prandtl_number'] - props_30['prandtl_number']),
-        }
-    else:
-        # Beyond 45°C, use 45°C properties
-        return WATER_PROPERTIES['45C']
+#         return {
+#             'density': props_30['density'] + factor * (props_45['density'] - props_30['density']),
+#             'specific_heat': props_30['specific_heat'] + factor * (props_45['specific_heat'] - props_30['specific_heat']),
+#             'thermal_conductivity': props_30['thermal_conductivity'] + factor * (props_45['thermal_conductivity'] - props_30['thermal_conductivity']),
+#             'dynamic_viscosity': props_30['dynamic_viscosity'] + factor * (props_45['dynamic_viscosity'] - props_30['dynamic_viscosity']),
+#             'kinematic_viscosity': props_30['kinematic_viscosity'] + factor * (props_45['kinematic_viscosity'] - props_30['kinematic_viscosity']),
+#             'prandtl_number': props_30['prandtl_number'] + factor * (props_45['prandtl_number'] - props_30['prandtl_number']),
+#         }
+#     else:
+#         # Beyond 45°C, use 45°C properties
+#         return WATER_PROPERTIES['45C']
 
 
 # =============================================================================
@@ -505,7 +507,7 @@ def validate_heat_transfer_correlations():
         velocity = 2.0
         diameter = 0.1
         
-        re = reynolds_number(velocity, diameter, props['kinematic_viscosity'])
+        re = fluid_mechanics.reynolds_number(velocity, diameter, props['kinematic_viscosity'])
         pr = props['prandtl_number']
         nu = nusselt_number_turbulent_pipe(re, pr)
         h = heat_transfer_coefficient(nu, props['thermal_conductivity'], diameter)

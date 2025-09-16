@@ -440,8 +440,8 @@ def calculate_flow_from_velocity(velocity_ms: float, diameter_mm: float) -> floa
     
     return flow_lpm
 
-def reynolds_number(velocity_ms: float, diameter_mm: float, 
-                   kinematic_viscosity: float = 1.004e-6) -> float:
+# def reynolds_number(velocity_ms: float, diameter_mm: float, 
+#                    kinematic_viscosity: float = 1.004e-6) -> float:
     """
     Calculate Reynolds number.
     

@@ -174,7 +174,7 @@ def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75,
         'shaft_power_w': shaft_power,
         'pump_efficiency': efficiency
     }
-    
+
     if include_motor_efficiency:
         electrical_power = shaft_power / motor_efficiency
         result.update({
@@ -184,7 +184,6 @@ def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75,
         })
     
     return result
-
 
 def pipe_velocity(volume_flow_rate, diameter):
     """
