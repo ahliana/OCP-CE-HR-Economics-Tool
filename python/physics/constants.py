@@ -10,16 +10,17 @@ European/Metric standards prioritized throughout
 """
 
 import math
+from scipy import constants as scipy_const
 
 # =============================================================================
 # UNIVERSAL PHYSICAL CONSTANTS (NIST 2018/CODATA 2018)
 # =============================================================================
 
-STEFAN_BOLTZMANN = 5.670374419e-8    # W/(m²·K⁴) - Stefan-Boltzmann constant
-GAS_CONSTANT = 8.314462618           # J/(mol·K) - Universal gas constant  
-AVOGADRO = 6.02214076e23            # mol⁻¹ - Avogadro constant
-BOLTZMANN = 1.380649e-23            # J/K - Boltzmann constant
-PLANCK = 6.62607015e-34             # J·s - Planck constant
+STEFAN_BOLTZMANN = scipy_const.Stefan_Boltzmann  # W/(m²·K⁴) - From CODATA via scipy.constants
+GAS_CONSTANT = scipy_const.R                     # J/(mol·K) - From CODATA via scipy.constants
+AVOGADRO = 6.02214076e23                        # mol⁻¹ - Avogadro constant
+BOLTZMANN = 1.380649e-23                        # J/K - Boltzmann constant
+PLANCK = 6.62607015e-34                         # J·s - Planck constant
 
 # =============================================================================
 # STANDARD CONDITIONS & REFERENCE VALUES (European/ISO Standards)
