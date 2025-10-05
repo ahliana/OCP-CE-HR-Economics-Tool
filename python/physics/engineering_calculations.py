@@ -320,31 +320,25 @@ def heat_exchanger_analysis(hot_inlet: float, hot_outlet: float, cold_inlet: flo
 
 def get_water_properties_interpolated(temperature_c: float) -> Dict:
     """
-    Get water properties with linear interpolation between tabulated values.
-    
+    Get water properties using CoolProp for accurate thermodynamic data.
+
+    This function now uses CoolProp internally via get_water_properties(),
+    providing continuous property values at any temperature instead of
+    linear interpolation between tabulated values.
+
     Args:
         temperature_c (float): Temperature [°C]
-    
+
     Returns:
-        dict: Interpolated water properties
+        dict: Water properties at the specified temperature
+
+    Notes:
+        - Backward compatible with previous function signature
+        - Now provides more accurate properties via CoolProp
+        - Falls back to interpolated tabulated values if CoolProp fails
     """
-    if temperature_c <= 20:
-        return WATER_PROPERTIES['20C']
-    elif temperature_c <= 30:
-        if temperature_c == 30:
-            return WATER_PROPERTIES['30C']
-        # Linear interpolation between 20°C and 30°C
-        factor = (temperature_c - 20) / (30 - 20)
-        return interpolate_properties(WATER_PROPERTIES['20C'], WATER_PROPERTIES['30C'], factor)
-    elif temperature_c <= 45:
-        if temperature_c == 45:
-            return WATER_PROPERTIES['45C']
-        # Linear interpolation between 30°C and 45°C
-        factor = (temperature_c - 30) / (45 - 30)
-        return interpolate_properties(WATER_PROPERTIES['30C'], WATER_PROPERTIES['45C'], factor)
-    else:
-        # Extrapolation beyond 45°C (use 45°C properties with warning)
-        return WATER_PROPERTIES['45C']
+    # Use CoolProp wrapper which handles interpolation/fallback internally
+    return get_water_properties(temperature_c)
 
 
 def interpolate_properties(props1: Dict, props2: Dict, factor: float) -> Dict:

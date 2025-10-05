@@ -11,8 +11,9 @@ European standards and correlations prioritized
 
 import math
 from .constants import (
-    WATER_PROPERTIES, AIR_PROPERTIES, STEEL_PROPERTIES, 
-    VELOCITY_LIMITS, VALIDATION_DATA, EUROPEAN_PIPE_SIZES
+    WATER_PROPERTIES, AIR_PROPERTIES, STEEL_PROPERTIES,
+    VELOCITY_LIMITS, VALIDATION_DATA, EUROPEAN_PIPE_SIZES,
+    get_water_properties, get_air_properties
 )
 
 # =============================================================================
@@ -43,21 +44,10 @@ def reynolds_number(velocity, diameter, kinematic_viscosity=None,
     """
     if kinematic_viscosity is None:
         if fluid == 'water':
-            # Enhanced temperature selection with more options
-            if temperature_c <= 25:
-                props = WATER_PROPERTIES['20C']
-            elif temperature_c <= 37.5:
-                props = WATER_PROPERTIES['30C']
-            elif temperature_c <= 52.5:
-                props = WATER_PROPERTIES['45C']
-            else:
-                props = WATER_PROPERTIES['60C']
+            props = get_water_properties(temperature_c)
             kinematic_viscosity = props['kinematic_viscosity']
         elif fluid == 'air':
-            if temperature_c <= 27.5:
-                props = AIR_PROPERTIES['20C']
-            else:
-                props = AIR_PROPERTIES['35C']
+            props = get_air_properties(temperature_c)
             kinematic_viscosity = props['kinematic_viscosity']
         else:
             raise ValueError("Must provide kinematic_viscosity for non-standard fluids")
@@ -230,14 +220,7 @@ def select_pipe_size_european(flow_rate_m3s, max_velocity=None, fluid='water',
     
     # Get fluid properties
     if fluid == 'water':
-        if temperature_c <= 25:
-            props = WATER_PROPERTIES['20C']
-        elif temperature_c <= 37.5:
-            props = WATER_PROPERTIES['30C']
-        elif temperature_c <= 52.5:
-            props = WATER_PROPERTIES['45C']
-        else:
-            props = WATER_PROPERTIES['60C']
+        props = get_water_properties(temperature_c)
     else:
         raise ValueError("Only water fluid supported currently")
     
@@ -327,14 +310,7 @@ def pipe_system_analysis(flow_rate_m3s, pipe_length_m, dn_size,
     
     # Get fluid properties
     if fluid == 'water':
-        if temperature_c <= 25:
-            props = WATER_PROPERTIES['20C']
-        elif temperature_c <= 37.5:
-            props = WATER_PROPERTIES['30C']
-        elif temperature_c <= 52.5:
-            props = WATER_PROPERTIES['45C']
-        else:
-            props = WATER_PROPERTIES['60C']
+        props = get_water_properties(temperature_c)
     else:
         raise ValueError("Only water fluid supported currently")
     

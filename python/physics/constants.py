@@ -11,6 +11,7 @@ European/Metric standards prioritized throughout
 
 import math
 from scipy import constants as scipy_const
+import CoolProp.CoolProp as CP
 
 # =============================================================================
 # UNIVERSAL PHYSICAL CONSTANTS (NIST 2018/CODATA 2018)
@@ -117,6 +118,156 @@ AIR_PROPERTIES = {
         'gas_constant_specific': 287.1,      # J/(kg·K)
     },
 }
+
+# =============================================================================
+# COOLPROP WRAPPER FUNCTIONS (Dynamic Property Calculation)
+# Reference: CoolProp library - NIST REFPROP-quality thermodynamic data
+# =============================================================================
+
+def get_water_properties(temp_c: float, pressure_pa: float = 101325) -> dict:
+    """
+    Get water properties using CoolProp for accurate thermodynamic calculations.
+
+    Args:
+        temp_c (float): Temperature [°C]
+        pressure_pa (float): Pressure [Pa], default = 101325 Pa (1 atm)
+
+    Returns:
+        dict: Water properties with keys:
+            - 'density': kg/m³
+            - 'specific_heat': J/(kg·K)
+            - 'thermal_conductivity': W/(m·K)
+            - 'dynamic_viscosity': Pa·s
+            - 'kinematic_viscosity': m²/s
+            - 'prandtl_number': dimensionless
+
+    Notes:
+        - Uses CoolProp's high-accuracy IAPWS formulation
+        - Falls back to tabulated values if CoolProp fails
+        - Temperature range: 0-100°C (liquid water)
+    """
+    try:
+        # CoolProp uses Kelvin for temperature
+        temp_k = temp_c + 273.15
+
+        # Get properties from CoolProp
+        density = CP.PropsSI('D', 'T', temp_k, 'P', pressure_pa, 'Water')
+        specific_heat = CP.PropsSI('C', 'T', temp_k, 'P', pressure_pa, 'Water')
+        thermal_conductivity = CP.PropsSI('L', 'T', temp_k, 'P', pressure_pa, 'Water')
+        dynamic_viscosity = CP.PropsSI('V', 'T', temp_k, 'P', pressure_pa, 'Water')
+
+        # Calculate derived properties
+        kinematic_viscosity = dynamic_viscosity / density
+        prandtl_number = specific_heat * dynamic_viscosity / thermal_conductivity
+
+        return {
+            'density': density,
+            'specific_heat': specific_heat,
+            'thermal_conductivity': thermal_conductivity,
+            'dynamic_viscosity': dynamic_viscosity,
+            'kinematic_viscosity': kinematic_viscosity,
+            'prandtl_number': prandtl_number,
+        }
+
+    except Exception as e:
+        # Fallback to interpolated tabulated values if CoolProp fails
+        import warnings
+        warnings.warn(f"CoolProp failed for water at {temp_c}°C: {e}. Using tabulated values.")
+
+        # Simple interpolation from tabulated values
+        if temp_c <= 20:
+            return WATER_PROPERTIES['20C']
+        elif temp_c <= 30:
+            factor = (temp_c - 20) / 10
+            return _interpolate_properties(WATER_PROPERTIES['20C'], WATER_PROPERTIES['30C'], factor)
+        elif temp_c <= 45:
+            factor = (temp_c - 30) / 15
+            return _interpolate_properties(WATER_PROPERTIES['30C'], WATER_PROPERTIES['45C'], factor)
+        elif temp_c <= 60:
+            factor = (temp_c - 45) / 15
+            return _interpolate_properties(WATER_PROPERTIES['45C'], WATER_PROPERTIES['60C'], factor)
+        else:
+            return WATER_PROPERTIES['60C']
+
+
+def get_air_properties(temp_c: float, pressure_pa: float = 101325) -> dict:
+    """
+    Get air properties using CoolProp for accurate thermodynamic calculations.
+
+    Args:
+        temp_c (float): Temperature [°C]
+        pressure_pa (float): Pressure [Pa], default = 101325 Pa (1 atm)
+
+    Returns:
+        dict: Air properties with keys:
+            - 'density': kg/m³
+            - 'specific_heat': J/(kg·K)
+            - 'thermal_conductivity': W/(m·K)
+            - 'dynamic_viscosity': Pa·s
+            - 'kinematic_viscosity': m²/s
+            - 'prandtl_number': dimensionless
+
+    Notes:
+        - Uses CoolProp's air mixture model (dry air)
+        - Falls back to tabulated values if CoolProp fails
+        - Temperature range: -50 to 100°C
+    """
+    try:
+        # CoolProp uses Kelvin for temperature
+        temp_k = temp_c + 273.15
+
+        # Get properties from CoolProp (using 'Air' as the fluid)
+        density = CP.PropsSI('D', 'T', temp_k, 'P', pressure_pa, 'Air')
+        specific_heat = CP.PropsSI('C', 'T', temp_k, 'P', pressure_pa, 'Air')
+        thermal_conductivity = CP.PropsSI('L', 'T', temp_k, 'P', pressure_pa, 'Air')
+        dynamic_viscosity = CP.PropsSI('V', 'T', temp_k, 'P', pressure_pa, 'Air')
+
+        # Calculate derived properties
+        kinematic_viscosity = dynamic_viscosity / density
+        prandtl_number = specific_heat * dynamic_viscosity / thermal_conductivity
+
+        return {
+            'density': density,
+            'specific_heat': specific_heat,
+            'thermal_conductivity': thermal_conductivity,
+            'dynamic_viscosity': dynamic_viscosity,
+            'kinematic_viscosity': kinematic_viscosity,
+            'prandtl_number': prandtl_number,
+        }
+
+    except Exception as e:
+        # Fallback to interpolated tabulated values if CoolProp fails
+        import warnings
+        warnings.warn(f"CoolProp failed for air at {temp_c}°C: {e}. Using tabulated values.")
+
+        # Simple interpolation from tabulated values
+        if temp_c <= 20:
+            return AIR_PROPERTIES['20C']
+        elif temp_c <= 35:
+            factor = (temp_c - 20) / 15
+            return _interpolate_properties(AIR_PROPERTIES['20C'], AIR_PROPERTIES['35C'], factor)
+        else:
+            return AIR_PROPERTIES['35C']
+
+
+def _interpolate_properties(props1: dict, props2: dict, factor: float) -> dict:
+    """
+    Helper function to linearly interpolate between two property dictionaries.
+
+    Args:
+        props1 (dict): Properties at lower temperature
+        props2 (dict): Properties at higher temperature
+        factor (float): Interpolation factor [0-1]
+
+    Returns:
+        dict: Interpolated properties
+    """
+    result = {}
+    for key in props1.keys():
+        if key in props2:
+            result[key] = props1[key] + factor * (props2[key] - props1[key])
+    return result
+
 
 # =============================================================================
 # EUROPEAN PIPE SIZING (EN 10220/EN ISO 1127) - DN System
