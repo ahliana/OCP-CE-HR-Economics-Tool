@@ -10,6 +10,7 @@ European standards and correlations prioritized
 """
 
 import math
+import fluids
 from .constants import (
     WATER_PROPERTIES, AIR_PROPERTIES, STEEL_PROPERTIES,
     VELOCITY_LIMITS, VALIDATION_DATA, EUROPEAN_PIPE_SIZES,
@@ -20,24 +21,25 @@ from .constants import (
 # FUNDAMENTAL FLOW CALCULATIONS
 # =============================================================================
 
-def reynolds_number(velocity, diameter, kinematic_viscosity=None, 
+def reynolds_number(velocity, diameter, kinematic_viscosity=None,
                    temperature_c=20, fluid='water'):
     """
     Calculate Reynolds number for pipe flow.
-    
+
+    # Using fluids library for industry-standard correlations
     Formula: Re = ρVD/μ = VD/ν
     Reference: Any fluid mechanics textbook, VDI Heat Atlas
-    
+
     Args:
         velocity (float): Average velocity [m/s]
         diameter (float): Pipe diameter [m]
         kinematic_viscosity (float, optional): Kinematic viscosity [m²/s]
         temperature_c (float): Temperature for property lookup [°C]
         fluid (str): Fluid type ('water' or 'air')
-    
+
     Returns:
         float: Reynolds number [dimensionless]
-        
+
     Example:
         >>> reynolds_number(2.0, 0.1, temperature_c=20)
         199203.19
@@ -51,114 +53,114 @@ def reynolds_number(velocity, diameter, kinematic_viscosity=None,
             kinematic_viscosity = props['kinematic_viscosity']
         else:
             raise ValueError("Must provide kinematic_viscosity for non-standard fluids")
-    
-    return velocity * diameter / kinematic_viscosity
+
+    # Using fluids library for standardized Reynolds number calculation
+    return fluids.Reynolds(V=velocity, D=diameter, nu=kinematic_viscosity)
 
 
 def friction_factor_laminar(reynolds_number):
     """
     Calculate friction factor for laminar pipe flow.
-    
+
+    # Using fluids library for industry-standard correlations
     Formula: f = 64/Re (for Re < 2300)
     Reference: Moody diagram, laminar flow region
-    
+
     Args:
         reynolds_number (float): Reynolds number
-    
+
     Returns:
         float: Darcy friction factor [dimensionless]
-    
+
     Raises:
         ValueError: If Reynolds number indicates turbulent flow
     """
     if reynolds_number >= VALIDATION_DATA['reynolds_transition']['critical_re']:
         raise ValueError(f"Use turbulent friction factor correlation for Re >= {VALIDATION_DATA['reynolds_transition']['critical_re']}")
-    
-    return 64.0 / reynolds_number
+
+    # Using fluids library - automatically handles laminar regime
+    # eD=0 indicates smooth pipe (for consistency with original laminar assumption)
+    return fluids.friction_factor(Re=reynolds_number, eD=0)
 
 
 def friction_factor_turbulent(reynolds_number, relative_roughness=0.0):
     """
     Calculate friction factor for turbulent pipe flow.
-    
-    For smooth pipes, uses Petukhov correlation (VDI Heat Atlas recommended):
-    f = (0.790 ln(Re) - 1.64)^(-2)  for 3000 < Re < 5×10⁶
-    
-    For rough pipes, uses Haaland approximation of Colebrook equation.
-    
-    Reference: VDI Heat Atlas, Petukhov correlation
-    
+
+    # Using fluids library for industry-standard correlations
+    Uses Colebrook-White equation (industry standard) via the fluids library.
+    For smooth pipes (eD=0), automatically selects appropriate correlation.
+    For rough pipes, uses Colebrook-White implicit equation.
+
+    Reference: fluids library implements multiple correlations (Colebrook, Haaland, etc.)
+
     Args:
         reynolds_number (float): Reynolds number (Re > 2300)
         relative_roughness (float): ε/D, pipe roughness ratio
-    
+
     Returns:
         float: Darcy friction factor [dimensionless]
-    
+
     Raises:
         ValueError: If Reynolds number indicates laminar flow
     """
     critical_re = VALIDATION_DATA['reynolds_transition']['critical_re']
     if reynolds_number < critical_re:
         raise ValueError(f"Use laminar friction factor correlation for Re < {critical_re}")
-    
-    if relative_roughness == 0.0:  # Smooth pipe
-        # Petukhov correlation for smooth pipes (VDI Heat Atlas)
-        if reynolds_number > 5e6:
-            # Use Blasius for very high Re
-            return 0.3164 / (reynolds_number ** 0.25)
-        else:
-            return (0.790 * math.log(reynolds_number) - 1.64) ** (-2)
-    else:
-        # Haaland approximation of Colebrook equation (European preference)
-        term1 = (relative_roughness / 3.7) ** 1.11
-        term2 = 6.9 / reynolds_number
-        return (-1.8 * math.log10(term1 + term2)) ** (-2)
+
+    # Using fluids library - handles smooth and rough pipes automatically
+    # Uses Colebrook-White correlation for turbulent flow (industry standard)
+    return fluids.friction_factor(Re=reynolds_number, eD=relative_roughness)
 
 
 def pressure_drop_pipe(friction_factor, length, diameter, velocity, density):
     """
     Calculate pressure drop in pipe using Darcy-Weisbach equation.
-    
+
+    # Darcy-Weisbach formula (standard equation - no library wrapper needed)
     Formula: ΔP = f × (L/D) × (ρV²/2)
     Reference: Darcy-Weisbach equation, fluid mechanics fundamentals
-    
+
     Args:
         friction_factor (float): Darcy friction factor
         length (float): Pipe length [m]
         diameter (float): Pipe diameter [m]
         velocity (float): Average velocity [m/s]
         density (float): Fluid density [kg/m³]
-    
+
     Returns:
         float: Pressure drop [Pa]
     """
+    # Direct Darcy-Weisbach equation (no fluids wrapper exists for pre-calculated f)
+    # This is the fundamental equation - no need for library wrapper
     return friction_factor * (length / diameter) * (density * velocity**2 / 2)
 
 
-def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75, 
+def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75,
                        include_motor_efficiency=True, motor_efficiency=0.92):
     """
     Calculate pump power requirement (European standard calculation).
-    
+
+    # Fundamental hydraulic power equation (no library wrapper needed)
     Formula: P_shaft = (Q × ΔP) / η_pump
              P_electrical = P_shaft / η_motor (if motor efficiency included)
-    
+
     Reference: VDI 2056, European pump efficiency standards
-    
+
     Args:
         volume_flow_rate (float): Volume flow rate [m³/s]
         pressure_head (float): Pressure head [Pa]
         efficiency (float): Pump hydraulic efficiency [dimensionless]
         include_motor_efficiency (bool): Include motor efficiency in calculation
         motor_efficiency (float): Motor efficiency [dimensionless]
-    
+
     Returns:
         dict: Power requirements with breakdown
     """
+    # Hydraulic power: P = Q × ΔP (fundamental equation)
     hydraulic_power = volume_flow_rate * pressure_head
     shaft_power = hydraulic_power / efficiency
-    
+
     result = {
         'hydraulic_power_w': hydraulic_power,
         'shaft_power_w': shaft_power,
@@ -172,22 +174,24 @@ def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75,
             'motor_efficiency': motor_efficiency,
             'overall_efficiency': efficiency * motor_efficiency
         })
-    
+
     return result
 
 def pipe_velocity(volume_flow_rate, diameter):
     """
     Calculate average flow velocity in pipe.
-    
+
+    # Fundamental continuity equation (no library wrapper needed)
     Formula: V = Q / A = Q / (πD²/4)
-    
+
     Args:
         volume_flow_rate (float): Volume flow rate [m³/s]
         diameter (float): Pipe diameter [m]
-    
+
     Returns:
         float: Average velocity [m/s]
     """
+    # Direct calculation using continuity equation
     area = math.pi * diameter**2 / 4
     return volume_flow_rate / area
 
