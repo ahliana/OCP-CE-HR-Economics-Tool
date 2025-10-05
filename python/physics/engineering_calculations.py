@@ -16,26 +16,15 @@ European Standards Compliant:
 
 import math
 from typing import Dict, Optional, List, Tuple, Union
+from .constants import *
 
-# Import dependencies (these need to be created in the physics module)
+
 try:
-    from .constants import WATER_PROPERTIES, CONVERSION_FACTORS, EUROPEAN_PIPE_SIZES
-    from .thermodynamics import heat_capacity_flow, sensible_heat_transfer
-    from .fluid_mechanics import reynolds_number, pipe_velocity, pressure_drop
-    from .units import (celsius_to_kelvin, celsius_to_fahrenheit, 
-                       liters_per_minute_to_m3_per_second, m3_per_second_to_liters_per_minute)
-    from .materials import get_pipe_properties, get_material_properties
-except ImportError:
-
-
-    
-    # European DN pipe sizes with inner diameters (mm)
-    EUROPEAN_PIPE_SIZES = {
-        15: 15.8, 20: 20.9, 25: 26.6, 32: 35.1, 40: 40.9, 50: 52.5,
-        65: 62.7, 80: 77.9, 100: 102.3, 125: 131.8, 150: 154.1,
-        200: 202.7, 250: 254.5, 300: 303.2, 350: 336.5, 400: 387.3,
-        500: 489.0, 600: 587.6, 700: 686.2, 800: 784.8, 900: 883.4, 1000: 982.0
-    }
+    from .units import (liters_per_minute_to_m3_per_second, m3_per_second_to_liters_per_minute)
+except ImportError as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 def datacenter_cooling_analysis(server_power_kw: float, supply_temp_c: float = 18, 
