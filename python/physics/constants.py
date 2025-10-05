@@ -171,6 +171,8 @@ DATACENTER_STANDARDS = {
 
 # =============================================================================
 # CONVERSION FACTORS (Metric/European First)
+# NOTE: These factors are kept for backward compatibility and direct calculation.
+# The units.py module now uses pint for unit-safe conversions internally.
 # =============================================================================
 
 CONVERSION_FACTORS = {

@@ -18,6 +18,10 @@ Key Features:
 
 import math
 from typing import Union, Dict, Tuple, Optional
+import pint  # Using pint for unit safety
+
+# Initialize pint UnitRegistry
+ureg = pint.UnitRegistry()
 
 # Import constants from the constants module
 try:
@@ -32,12 +36,24 @@ except ImportError:
 # =============================================================================
 
 def celsius_to_kelvin(celsius: float) -> float:
-    """Convert Celsius to Kelvin (European standard)."""
-    return celsius + CONVERSION_FACTORS['celsius_to_kelvin']
+    """
+    Convert Celsius to Kelvin (European standard).
+    # Using pint for unit safety
+    """
+    # For offset units (Celsius, Fahrenheit), use Quantity constructor
+    quantity = ureg.Quantity(celsius, ureg.degC)
+    result = quantity.to(ureg.kelvin)
+    return result.magnitude
 
 def kelvin_to_celsius(kelvin: float) -> float:
-    """Convert Kelvin to Celsius."""
-    return kelvin - CONVERSION_FACTORS['celsius_to_kelvin']
+    """
+    Convert Kelvin to Celsius.
+    # Using pint for unit safety
+    """
+    # Kelvin is not an offset unit, can use standard approach
+    quantity = ureg.Quantity(kelvin, ureg.kelvin)
+    result = quantity.to(ureg.degC)
+    return result.magnitude
 
 def celsius_to_fahrenheit(celsius: float) -> float:
     """Convert Celsius to Fahrenheit (for American compatibility)."""
@@ -60,12 +76,22 @@ def temperature_difference_c_to_k(delta_c: float) -> float:
 # =============================================================================
 
 def liters_per_minute_to_m3_per_second(lpm: float) -> float:
-    """Convert L/min to m³/s (European standard flow conversion)."""
-    return lpm * CONVERSION_FACTORS['liters_to_m3'] / CONVERSION_FACTORS['minutes_to_seconds']
+    """
+    Convert L/min to m³/s (European standard flow conversion).
+    # Using pint for unit safety
+    """
+    quantity = lpm * ureg.liter / ureg.minute
+    result = quantity.to(ureg.meter**3 / ureg.second)
+    return result.magnitude
 
 def m3_per_second_to_liters_per_minute(m3s: float) -> float:
-    """Convert m³/s to L/min."""
-    return m3s / CONVERSION_FACTORS['liters_to_m3'] * CONVERSION_FACTORS['minutes_to_seconds']
+    """
+    Convert m³/s to L/min.
+    # Using pint for unit safety
+    """
+    quantity = m3s * ureg.meter**3 / ureg.second
+    result = quantity.to(ureg.liter / ureg.minute)
+    return result.magnitude
 
 def liters_per_hour_to_liters_per_minute(lph: float) -> float:
     """Convert L/h to L/min (European industrial standard)."""
@@ -440,16 +466,16 @@ def calculate_flow_from_velocity(velocity_ms: float, diameter_mm: float) -> floa
     
     return flow_lpm
 
-# def reynolds_number(velocity_ms: float, diameter_mm: float, 
-#                    kinematic_viscosity: float = 1.004e-6) -> float:
+def reynolds_number(velocity_ms: float, diameter_mm: float,
+                   kinematic_viscosity: float = 1.004e-6) -> float:
     """
     Calculate Reynolds number.
-    
+
     Args:
         velocity_ms: Velocity in m/s
         diameter_mm: Pipe diameter in mm
         kinematic_viscosity: Kinematic viscosity in m²/s (default: water at 20°C)
-    
+
     Returns:
         Reynolds number (dimensionless)
     """
