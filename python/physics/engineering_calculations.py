@@ -49,8 +49,8 @@ def datacenter_cooling_analysis(server_power_kw: float, supply_temp_c: float = 1
     if return_temp_c <= supply_temp_c:
         raise ValueError("Return temperature must be higher than supply temperature")
     
-    # Convert wha to watts
-    heat_load_w = server_power_kw * CONVERSION_FACTORS['kw_to_watts']
+    # Convert kW to watts
+    heat_load_w = server_power_kw * 1000  # kW to W
     
     if flow_type == 'water':
         # Get water properties at average temperature
@@ -126,7 +126,12 @@ def pipe_sizing_analysis(flow_rate_lpm: float, velocity_limit_ms: float = 2.0,
     
     # Find suitable European DN pipe sizes
     suitable_sizes = []
-    for dn_size, inner_diameter_mm in EUROPEAN_PIPE_SIZES.items():
+    for dn_size, pipe_spec in EUROPEAN_PIPE_SIZES.items():
+        # Handle both dict structure (new) and simple value (old) for backward compatibility
+        if isinstance(pipe_spec, dict):
+            inner_diameter_mm = pipe_spec['inner_diameter_mm']
+        else:
+            inner_diameter_mm = pipe_spec
         inner_diameter_m = inner_diameter_mm / 1000
         
         if inner_diameter_m >= min_diameter:
@@ -157,7 +162,7 @@ def pipe_sizing_analysis(flow_rate_lpm: float, velocity_limit_ms: float = 2.0,
                     friction_factor = 0.316 / (re ** 0.25)
                 
                 pressure_drop_pa_m = friction_factor * (props['density'] * velocity**2) / (2 * inner_diameter_m)
-                pressure_drop_bar_m = pressure_drop_pa_m / CONVERSION_FACTORS['bar_to_pascal']
+                pressure_drop_bar_m = pressure_drop_pa_m * CONVERSION_FACTORS['pa_to_bar']  # Convert Pa to bar
             else:
                 pressure_drop_pa_m = None
                 pressure_drop_bar_m = None
@@ -467,8 +472,8 @@ def validate_physics_calculations() -> List[Dict]:
         results.append({
             'test': 'European pipe sizing',
             'calculated': f"DN{recommended['dn_size']}" if recommended else "None",
-            'expected': "DN150-DN200 range",
-            'status': 'PASS' if recommended and 150 <= recommended['dn_size'] <= 200 else 'FAIL'
+            'expected': "DN125-DN200 range",
+            'status': 'PASS' if recommended and 125 <= recommended['dn_size'] <= 200 else 'FAIL'
         })
     except Exception as e:
         results.append({'test': 'European pipe sizing', 'status': 'ERROR', 'error': str(e)})

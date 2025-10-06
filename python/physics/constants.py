@@ -286,6 +286,7 @@ EUROPEAN_PIPE_SIZES = {
     65: {'inner_diameter_mm': 62.7, 'outer_diameter_mm': 73.0, 'wall_thickness_mm': 5.15},
     80: {'inner_diameter_mm': 77.9, 'outer_diameter_mm': 88.9, 'wall_thickness_mm': 5.5},
     100: {'inner_diameter_mm': 102.3, 'outer_diameter_mm': 114.3, 'wall_thickness_mm': 6.0},
+    125: {'inner_diameter_mm': 128.2, 'outer_diameter_mm': 139.7, 'wall_thickness_mm': 5.75},
     150: {'inner_diameter_mm': 154.1, 'outer_diameter_mm': 168.3, 'wall_thickness_mm': 7.1},
     200: {'inner_diameter_mm': 202.7, 'outer_diameter_mm': 219.1, 'wall_thickness_mm': 8.2},
     250: {'inner_diameter_mm': 254.5, 'outer_diameter_mm': 273.0, 'wall_thickness_mm': 9.25},
