@@ -1,0 +1,987 @@
+2025-10-07 15:00:51,972 - core.costs - INFO - compare_approaches: 1.0MW, 20°C, +10°C
+2025-10-07 15:00:51,972 - core.costs - INFO - calculate_order_of_magnitude_estimate: 1.0MW, 20°C, +10°C, approach 2°C
+2025-10-07 15:00:51,972 - core.costs - INFO - calculate_heat_exchanger_cost: wha=1.0, T1=20, itdt=10, approach=2
+2025-10-07 15:00:51,972 - core.lookup - INFO - lookup_allhx_data
+2025-10-07 15:00:51,972 - core.lookup - INFO - Input: wha: 1.0, T1: 20, itdt: 10, approach: 2
+2025-10-07 15:00:51,978 - core.lookup - INFO - lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1435.2), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(28.0), 'T4': np.float64(18.0), 'hx_cost': np.float64(17616.0), 'approach': 2, 'itdt': 10}
+2025-10-07 15:00:51,978 - core.costs - INFO - Heat exchanger cost: €17,616
+2025-10-07 15:00:51,978 - core.costs - INFO - calculate_pump_cost: approach=2
+2025-10-07 15:00:51,979 - core.costs - INFO - Pump cost: €35,000, Power: 1.09 kW
+2025-10-07 15:00:51,979 - core.costs - INFO - calculate_piping_cost
+2025-10-07 15:00:51,979 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:51,979 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:51,979 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:51,979 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:51,980 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:51,980 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:51,984 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:51,984 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:51,984 - core.original_calculations - INFO - dn_size = 150.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\original_calculations.py:263: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  pipcost_df.iloc[:, 0] = pipcost_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:51,986 - core.original_calculations - INFO - cost = 1150.0
+2025-10-07 15:00:51,986 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:51,987 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:51,987 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:51,987 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:51,987 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:51,987 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:51,991 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:51,991 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:51,991 - core.costs - INFO - calculate_fittings_cost: pipe_size=150.0, pipe_cost=6900.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\costs.py:223: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  joints_df.iloc[:, 0] = joints_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:51,993 - core.costs - INFO - Fittings from JOINTS.csv: €7,194
+2025-10-07 15:00:51,993 - core.costs - INFO - Piping cost: Pipe €6,900 + Fittings €7,194 = €14,094
+2025-10-07 15:00:51,993 - core.costs - INFO - calculate_instrumentation_cost: wha=1.0
+2025-10-07 15:00:51,993 - core.costs - INFO - Instrumentation cost: €30,000
+2025-10-07 15:00:51,993 - core.costs - INFO - calculate_valve_costs
+2025-10-07 15:00:51,993 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:51,993 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:51,993 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:51,993 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:51,994 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:51,994 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:51,997 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:51,997 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:51,998 - core.costs - INFO - Valve costs: Control €0, Isolation (4x) €0
+2025-10-07 15:00:51,998 - core.costs - INFO - calculate_operating_energy: approach=2, hours=8760
+2025-10-07 15:00:51,998 - core.costs - INFO - calculate_pump_cost: approach=2
+2025-10-07 15:00:51,998 - core.costs - INFO - Pump cost: €35,000, Power: 1.09 kW
+2025-10-07 15:00:51,998 - core.costs - INFO - Operating energy: 9,545 kWh/year (€152,713/year)
+2025-10-07 15:00:51,998 - core.costs - INFO - Order of Magnitude Estimate Complete: €134,500
+2025-10-07 15:00:51,998 - core.costs - INFO -   Base Equipment: €96,710
+2025-10-07 15:00:51,998 - core.costs - INFO -   Contingencies: €37,862
+2025-10-07 15:00:51,998 - core.costs - INFO - calculate_order_of_magnitude_estimate: 1.0MW, 20°C, +10°C, approach 3°C
+2025-10-07 15:00:51,998 - core.costs - INFO - calculate_heat_exchanger_cost: wha=1.0, T1=20, itdt=10, approach=3
+2025-10-07 15:00:51,998 - core.lookup - INFO - lookup_allhx_data
+2025-10-07 15:00:51,999 - core.lookup - INFO - Input: wha: 1.0, T1: 20, itdt: 10, approach: 3
+2025-10-07 15:00:52,003 - core.lookup - INFO - lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1434.6), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(27.0), 'T4': np.float64(17.0), 'hx_cost': np.float64(14176.0), 'approach': 3, 'itdt': 10}
+2025-10-07 15:00:52,003 - core.costs - INFO - Heat exchanger cost: €14,176
+2025-10-07 15:00:52,003 - core.costs - INFO - calculate_pump_cost: approach=3
+2025-10-07 15:00:52,003 - core.costs - INFO - Pump cost: €35,000, Power: 1.27 kW
+2025-10-07 15:00:52,003 - core.costs - INFO - calculate_piping_cost
+2025-10-07 15:00:52,003 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:52,003 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,003 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,003 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,004 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,004 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,007 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,008 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,008 - core.original_calculations - INFO - dn_size = 150.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\original_calculations.py:263: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  pipcost_df.iloc[:, 0] = pipcost_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:52,009 - core.original_calculations - INFO - cost = 1150.0
+2025-10-07 15:00:52,009 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:52,009 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,009 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,009 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,010 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,010 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,013 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,013 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,013 - core.costs - INFO - calculate_fittings_cost: pipe_size=150.0, pipe_cost=6900.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\costs.py:223: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  joints_df.iloc[:, 0] = joints_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:52,014 - core.costs - INFO - Fittings from JOINTS.csv: €7,194
+2025-10-07 15:00:52,014 - core.costs - INFO - Piping cost: Pipe €6,900 + Fittings €7,194 = €14,094
+2025-10-07 15:00:52,014 - core.costs - INFO - calculate_instrumentation_cost: wha=1.0
+2025-10-07 15:00:52,014 - core.costs - INFO - Instrumentation cost: €30,000
+2025-10-07 15:00:52,014 - core.costs - INFO - calculate_valve_costs
+2025-10-07 15:00:52,014 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:52,014 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,014 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,014 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,015 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,015 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,018 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,018 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,019 - core.costs - INFO - Valve costs: Control €0, Isolation (4x) €0
+2025-10-07 15:00:52,019 - core.costs - INFO - calculate_operating_energy: approach=3, hours=8760
+2025-10-07 15:00:52,019 - core.costs - INFO - calculate_pump_cost: approach=3
+2025-10-07 15:00:52,019 - core.costs - INFO - Pump cost: €35,000, Power: 1.27 kW
+2025-10-07 15:00:52,019 - core.costs - INFO - Operating energy: 11,135 kWh/year (€178,166/year)
+2025-10-07 15:00:52,020 - core.costs - INFO - Order of Magnitude Estimate Complete: €130,000
+2025-10-07 15:00:52,020 - core.costs - INFO -   Base Equipment: €93,270
+2025-10-07 15:00:52,020 - core.costs - INFO -   Contingencies: €36,515
+2025-10-07 15:00:52,020 - core.costs - INFO - calculate_order_of_magnitude_estimate: 1.0MW, 20°C, +10°C, approach 5°C
+2025-10-07 15:00:52,020 - core.costs - INFO - calculate_heat_exchanger_cost: wha=1.0, T1=20, itdt=10, approach=5
+2025-10-07 15:00:52,020 - core.lookup - INFO - lookup_allhx_data
+2025-10-07 15:00:52,020 - core.lookup - INFO - Input: wha: 1.0, T1: 20, itdt: 10, approach: 5
+2025-10-07 15:00:52,024 - core.lookup - INFO - lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1433.4), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(25.0), 'T4': np.float64(15.0), 'hx_cost': np.float64(10757.0), 'approach': 5, 'itdt': 10}
+2025-10-07 15:00:52,024 - core.costs - INFO - Heat exchanger cost: €10,757
+2025-10-07 15:00:52,024 - core.costs - INFO - calculate_pump_cost: approach=5
+2025-10-07 15:00:52,024 - core.costs - INFO - Pump cost: €45,000, Power: 1.82 kW
+2025-10-07 15:00:52,024 - core.costs - INFO - calculate_piping_cost
+2025-10-07 15:00:52,024 - core.original_calculations - INFO - get_PipeSize_Suggested
+Loading CSV data...
+
+================================================================================
+Testing compare_approaches function
+================================================================================
+lookup_allhx_data
+Input: wha: 1.0, T1: 20, itdt: 10, approach: 2
+lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1435.2), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(28.0), 'T4': np.float64(18.0), 'hx_cost': np.float64(17616.0), 'approach': 2, 'itdt': 10}
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+dn_size = 150.0
+cost = 1150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+lookup_allhx_data
+Input: wha: 1.0, T1: 20, itdt: 10, approach: 3
+lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1434.6), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(27.0), 'T4': np.float64(17.0), 'hx_cost': np.float64(14176.0), 'approach': 3, 'itdt': 10}
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+dn_size = 150.0
+cost = 1150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+lookup_allhx_data
+Input: wha: 1.0, T1: 20, itdt: 10, approach: 5
+lookup_allhx_data result = {'wha': 1.0, 'F1': np.float64(1503.6), 'F2': np.float64(1433.4), 'T1': np.float64(20.0), 'T2': np.float64(30.0), 'T3': np.float64(25.0), 'T4': np.float64(15.0), 'hx_cost': np.float64(10757.0), 'approach': 5, 'itdt': 10}
+get_PipeSize_Suggested
+2025-10-07 15:00:52,024 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,025 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,025 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,025 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,025 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,029 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,029 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,029 - core.original_calculations - INFO - dn_size = 150.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\original_calculations.py:263: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  pipcost_df.iloc[:, 0] = pipcost_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:52,030 - core.original_calculations - INFO - cost = 1150.0
+2025-10-07 15:00:52,030 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:52,030 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,030 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,030 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,031 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,031 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,034 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,034 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,034 - core.costs - INFO - calculate_fittings_cost: pipe_size=150.0, pipe_cost=6900.0
+c:\Files\Code\OCP-CE-HR-Economics-Tool\python\core\costs.py:223: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '0      50.0
+1      65.0
+2      75.0
+3     100.0
+4     125.0
+5     150.0
+6     200.0
+7     250.0
+8     300.0
+9     350.0
+10    400.0
+11    450.0
+12    500.0
+Name: Pipe Size, dtype: float64' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  joints_df.iloc[:, 0] = joints_df.iloc[:, 0].apply(universal_float_convert)  # Pipe size
+2025-10-07 15:00:52,035 - core.costs - INFO - Fittings from JOINTS.csv: €7,194
+2025-10-07 15:00:52,035 - core.costs - INFO - Piping cost: Pipe €6,900 + Fittings €7,194 = €14,094
+2025-10-07 15:00:52,035 - core.costs - INFO - calculate_instrumentation_cost: wha=1.0
+2025-10-07 15:00:52,035 - core.costs - INFO - Instrumentation cost: €30,000
+2025-10-07 15:00:52,035 - core.costs - INFO - calculate_valve_costs
+2025-10-07 15:00:52,035 - core.original_calculations - INFO - get_PipeSize_Suggested
+2025-10-07 15:00:52,035 - core.original_calculations - INFO - Parameter F1=1503.6
+2025-10-07 15:00:52,035 - core.original_calculations - INFO - F1_float=1503.6
+2025-10-07 15:00:52,035 - core.original_calculations - INFO - PIPSZ data shape: (37, 2)
+2025-10-07 15:00:52,036 - core.original_calculations - INFO - Available flow capacities: min=902.0, max=16877.0
+2025-10-07 15:00:52,036 - core.original_calculations - INFO -  First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+2025-10-07 15:00:52,041 - core.original_calculations - INFO - adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+2025-10-07 15:00:52,041 - core.original_calculations - INFO - selected_pipe_size: 150.0
+2025-10-07 15:00:52,042 - core.costs - INFO - Valve costs: Control €0, Isolation (4x) €0
+2025-10-07 15:00:52,042 - core.costs - INFO - calculate_operating_energy: approach=5, hours=8760
+2025-10-07 15:00:52,042 - core.costs - INFO - calculate_pump_cost: approach=5
+2025-10-07 15:00:52,042 - core.costs - INFO - Pump cost: €45,000, Power: 1.82 kW
+2025-10-07 15:00:52,042 - core.costs - INFO - Operating energy: 15,908 kWh/year (€254,522/year)
+2025-10-07 15:00:52,042 - core.costs - INFO - Order of Magnitude Estimate Complete: €139,000
+2025-10-07 15:00:52,042 - core.costs - INFO -   Base Equipment: €99,851
+2025-10-07 15:00:52,042 - core.costs - INFO -   Contingencies: €39,092
+2025-10-07 15:00:52,042 - core.costs - INFO - Comparison complete: 3 approaches analyzed
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+dn_size = 150.0
+cost = 1150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+get_PipeSize_Suggested
+Parameter F1=1503.6
+F1_float=1503.6
+PIPSZ data shape: (37, 2)
+Available flow capacities: min=902.0, max=16877.0
+ First few flow/size pairs: [(np.float64(902.0), np.float64(100.0)), (np.float64(1804.0), np.float64(150.0)), (np.float64(1805.0), np.float64(150.0)), (np.float64(2689.0), np.float64(200.0)), (np.float64(2690.0), np.float64(200.0))]
+adequate_rows:        Flow   Size
+1    1804.0  150.0
+2    1805.0  150.0
+3    2689.0  200.0
+4    2690.0  200.0
+5    2695.0  200.0
+6    2706.0  200.0
+7    2707.0  200.0
+8    3371.0  200.0
+9    3375.0  200.0
+10   4510.0  250.0
+11   4512.0  250.0
+12   5378.0  250.0
+13   5380.0  250.0
+14   5381.0  250.0
+15   5390.0  250.0
+16   5391.0  250.0
+17   6742.0  250.0
+18   6743.0  250.0
+19   6751.0  250.0
+20   8068.0  300.0
+21   8070.0  300.0
+22   8072.0  300.0
+23   8085.0  300.0
+24   8086.0  300.0
+25  10113.0  350.0
+26  10114.0  350.0
+27  10126.0  350.0
+28  13444.0  400.0
+29  13446.0  400.0
+30  13450.0  400.0
+31  13452.0  400.0
+32  13475.0  400.0
+33  13476.0  400.0
+34  16855.0  400.0
+35  16856.0  400.0
+36  16877.0  400.0
+selected_pipe_size: 150.0
+Traceback (most recent call last):
+  File "c:\Files\Code\OCP-CE-HR-Economics-Tool\test_economics_panel.py", line 28, in <module>
+    print(f"\n\u2713 Comparison successful for {wha}MW system, {T1}°C inlet, {temp_rise}°C rise")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 2: character maps to <undefined>

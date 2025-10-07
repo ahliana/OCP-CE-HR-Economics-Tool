@@ -90,18 +90,71 @@ adequate_rows = valid_rows[valid_rows.iloc[:, 0] >= F1_float]
 selected_pipe_size = adequate_rows.iloc[0, 1]
 ```
 
-### Cost Components
+### Cost Components (NEW STRUCTURE - Phase 2)
+
+**Main API Function**: `calculate_costs()` in [python/core/costs.py:412](python/core/costs.py#L412)
+
+**Structured Output**: The function returns costs separated into base equipment and contingencies:
+
+```python
+{
+    'base_costs': {
+        'heat_exchanger': float,
+        'pumps': float,
+        'piping_fittings': float,
+        'instrumentation': float,
+        'valves': float,
+        'equipment_subtotal': float
+    },
+    'contingencies': {
+        'installation': float,    # 15% of equipment_subtotal
+        'engineering': float,     # 10% of (equipment + installation)
+        'contingency': float,     # 10% of all previous
+        'total_contingencies': float
+    },
+    'capital_total': float,       # Rounded to nearest €500
+    'operating_costs': {...}
+}
+```
+
+#### Base Equipment Costs (Raw costs without factors)
 
 | UI Label | Example Value | Function | File:Line | Calculation | Data Source |
 |----------|--------------|----------|-----------|-------------|-------------|
-| Pipe Cost per Meter | €1,150/m | `get_PipeCost_perMeter()` | [python/core/original_calculations.py:210-230](python/core/original_calculations.py#L210) | Lookup by pipe size and material | PIPCOST.csv |
-| Total Pipe Cost | €6,020 | `get_PipeCost_Total()` | [python/core/original_calculations.py:232-250](python/core/original_calculations.py#L232) | Cost/meter × Room Size | Calculated |
-| Heat Exchanger Cost | €17,616 | `lookup_allhx_data()` | [python/core/lookup.py:124](python/core/lookup.py#L124) | Direct lookup | ALLHX.csv column 'costHX' |
-| Valve Costs | €4,500 | `calculate_system_costs()` | [python/core/original_calculations.py:310-340](python/core/original_calculations.py#L310) | CVALV + 4×IVALV | CVALV.csv, IVALV.csv |
-| Pump Cost | €5,000 | `calculate_system_costs()` | [python/core/original_calculations.py:350](python/core/original_calculations.py#L350) | wha × €5,000 | Fixed multiplier |
-| TOTAL SYSTEM COST | €44,116 | Sum of components | [python/core/original_calculations.py:400](python/core/original_calculations.py#L400) | Sum all above + installation | Calculated |
+| Heat Exchanger | €17,616 | `calculate_heat_exchanger_cost()` | [python/core/costs.py:35](python/core/costs.py#L35) | Direct lookup via `lookup_allhx_data()` | ALLHX.csv column 'hx_cost' |
+| Pumps | €35,000 | `calculate_pump_cost()` | [python/core/costs.py:78](python/core/costs.py#L78) | Based on approach and pressure drop | Calculated (approach-dependent) |
+| Piping & Fittings | €14,094 | `calculate_piping_cost()` | [python/core/costs.py:146](python/core/costs.py#L146) | Pipe cost + 25% fittings | PIPCOST.csv, JOINTS.csv |
+| Instrumentation | €30,000 | `calculate_instrumentation_cost()` | [python/core/costs.py:252](python/core/costs.py#L252) | Base €30k + scaling for >2MW | Fixed base + scaling |
+| Valves | €4,500 | `calculate_valve_costs()` | [python/core/costs.py:286](python/core/costs.py#L286) | 1 control + 4 isolation valves | CVALV.csv, IVALV.csv |
+| **Equipment Subtotal** | €96,710 | - | - | Sum of above | Calculated |
 
-**Valve Cost Calculation**:
+#### Contingencies (Applied cumulatively)
+
+| UI Label | Example Value | Calculation | Formula |
+|----------|--------------|-------------|---------|
+| Installation | €14,506 | 15% of equipment subtotal | `equipment_subtotal × 0.15` |
+| Engineering | €11,122 | 10% of (equipment + installation) | `(equipment_subtotal + installation) × 0.10` |
+| Contingency | €12,234 | 10% of all previous | `(equipment + installation + engineering) × 0.10` |
+| **Total Contingencies** | €37,862 | Sum of above | Calculated |
+
+#### Total Capital Cost
+
+| UI Label | Example Value | Calculation |
+|----------|--------------|-------------|
+| **Capital Total** | €134,500 | Equipment + Contingencies, rounded to nearest €500 |
+
+**Component Details**:
+
+- **Pump Cost**: Varies by approach temperature (2°C = €35k, 3°C = €35k, 5°C = €45k)
+  - Larger approach = smaller HX = higher pressure drop = more powerful pumps needed
+  - Location: [python/core/costs.py:108-119](python/core/costs.py#L108)
+
+- **Piping Cost**: Calculated from flow rate and pipe material
+  - Base pipe cost from PIPCOST.csv lookup
+  - Fittings add 25% or use JOINTS.csv if available
+  - Location: [python/core/costs.py:170-180](python/core/costs.py#L170)
+
+- **Valve Cost Calculation**:
 ```python
 # Lookup control valve cost from CVALV.csv by pipe size
 # Lookup isolation valve cost from IVALV.csv by pipe size

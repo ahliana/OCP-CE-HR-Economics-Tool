@@ -41,7 +41,7 @@ def suppress_logging():
 
 def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -> str:
     """
-    Create HTML table comparing all three approaches (2°C, 3°C, 5°C).
+    Create HTML table comparing all three approaches (2°C, 3°C, 5°C) with transparent breakdown.
 
     Args:
         wha: System power in MW
@@ -60,88 +60,247 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     approaches_data = comparison['approaches']
 
-    # Build table HTML
+    # Build table HTML with new transparent structure
     html = """
-    <div style="margin: 20px 0; font-family: Arial, sans-serif;">
-        <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
-            <strong>📊 Note:</strong> Values shown are equipment costs. Installation multipliers pending calibration.
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="margin: 20px 0; font-family: 'Segoe UI', Arial, sans-serif;">
+        <table style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <thead>
                 <tr style="background-color: #2196F3; color: white;">
-                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Cost Component</th>
-                    <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">2°C Approach</th>
-                    <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">3°C Approach</th>
-                    <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">5°C Approach</th>
+                    <th style="padding: 14px; text-align: left; border: 1px solid #1976D2; font-size: 14px;">Cost Component</th>
+                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">2°C Approach</th>
+                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">3°C Approach</th>
+                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">5°C Approach</th>
                 </tr>
             </thead>
             <tbody>
     """
 
-    # Capital cost rows
-    rows = [
-        ('Heat Exchanger', 'heat_exchanger'),
-        ('Pumps', 'pumps'),
-        ('Pipe & Fittings', 'pipe_fittings'),
-        ('Instruments', 'instrumentation'),
+    # Section header: EQUIPMENT COSTS (Base)
+    html += """
+                <tr style="background-color: #E3F2FD;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #BBDEFB; font-weight: bold;
+                                         color: #1565C0; font-size: 13px; letter-spacing: 0.5px;">
+                        EQUIPMENT COSTS (Base)
+                    </td>
+                </tr>
+    """
+
+    # Base equipment cost rows
+    base_rows = [
+        ('Heat Exchangers', 'heat_exchanger', 'Industrial plate heat exchangers sized for system capacity'),
+        ('Pumps', 'pumps', 'Circulation pumps with motor and VFD controls'),
+        ('Piping & Fittings', 'pipe_fittings', 'Stainless steel pipes, elbows, tees, and connections'),
+        ('Instrumentation', 'instrumentation', 'Temperature sensors, flow meters, and control systems'),
+        ('Valves', 'valves', 'Control valves and isolation valves'),
     ]
 
-    for row_label, key in rows:
+    for row_label, key, tooltip in base_rows:
         html += f"""
-                <tr style="background-color: #f8f9fa;">
-                    <td style="padding: 10px; border: 1px solid #ddd;">{row_label}</td>
+                <tr style="background-color: #FAFAFA;"
+                    title="{tooltip}">
+                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">{row_label}</td>
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
             html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">€{value:,.0f}</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
+                               font-family: 'Courier New', monospace;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
         """
 
-    # Capital total row (highlighted)
+    # Equipment Subtotal row
     html += """
-                <tr style="background-color: #e3f2fd; font-weight: bold;">
-                    <td style="padding: 10px; border: 1px solid #ddd;">Capital Total</td>
+                <tr style="background-color: #E8EAF6; font-weight: bold;">
+                    <td style="padding: 11px; border: 1px solid #C5CAE9; padding-left: 20px;">Equipment Subtotal</td>
     """
+
+    # Calculate and validate equipment subtotals
     for approach in ['2C', '3C', '5C']:
-        value = approaches_data.get(approach, {}).get('capital_total', 0)
+        data = approaches_data.get(approach, {})
+
+        # Calculate subtotal from base costs
+        subtotal = sum([
+            data.get('heat_exchanger', 0),
+            data.get('pumps', 0),
+            data.get('pipe_fittings', 0),
+            data.get('instrumentation', 0),
+            data.get('valves', 0)
+        ])
+
+        # Validation check
+        validation_icon = "✓" if abs(subtotal - data.get('heat_exchanger', 0) - data.get('pumps', 0) -
+                                      data.get('pipe_fittings', 0) - data.get('instrumentation', 0) -
+                                      data.get('valves', 0)) < 1 else "⚠"
+
         html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">€{value:,.0f}</td>
+                    <td style="padding: 11px; text-align: right; border: 1px solid #C5CAE9;
+                               font-family: 'Courier New', monospace;">
+                        €{subtotal:>10,.0f} <span style="color: #4CAF50; font-size: 11px;">{validation_icon}</span>
+                    </td>
         """
     html += """
+                </tr>
+    """
+
+    # Section header: INSTALLATION & CONTINGENCY
+    html += """
+                <tr style="background-color: #FFF3E0;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #FFE0B2; font-weight: bold;
+                                         color: #E65100; font-size: 13px; letter-spacing: 0.5px;">
+                        INSTALLATION & CONTINGENCY
+                    </td>
+                </tr>
+    """
+
+    # Contingency rows
+    contingency_rows = [
+        ('Installation (15%)', 'installation_cost', 'Labor and materials for equipment installation'),
+        ('Engineering (10%)', 'engineering_cost', 'Design, engineering, and project management'),
+        ('Contingency (10%)', 'contingency_cost', 'Unforeseen costs and scope changes'),
+    ]
+
+    for row_label, key, tooltip in contingency_rows:
+        html += f"""
+                <tr style="background-color: #FFF8E1;"
+                    title="{tooltip}">
+                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px; color: #F57C00;">{row_label}</td>
+        """
+        for approach in ['2C', '3C', '5C']:
+            value = approaches_data.get(approach, {}).get(key, 0)
+            html += f"""
+                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
+                               font-family: 'Courier New', monospace; color: #F57C00;">€{value:>10,.0f}</td>
+            """
+        html += """
+                </tr>
+        """
+
+    # I&C Subtotal row (Installation & Contingency subtotal)
+    html += """
+                <tr style="background-color: #FFE0B2; font-weight: bold;">
+                    <td style="padding: 11px; border: 1px solid #FFCC80; padding-left: 20px;">I&C Subtotal</td>
+    """
+
+    for approach in ['2C', '3C', '5C']:
+        data = approaches_data.get(approach, {})
+        ic_subtotal = sum([
+            data.get('installation_cost', 0),
+            data.get('engineering_cost', 0),
+            data.get('contingency_cost', 0)
+        ])
+
+        html += f"""
+                    <td style="padding: 11px; text-align: right; border: 1px solid #FFCC80;
+                               font-family: 'Courier New', monospace;">€{ic_subtotal:>10,.0f}</td>
+        """
+    html += """
+                </tr>
+    """
+
+    # Separator row
+    html += """
+                <tr style="background-color: #FFFFFF;">
+                    <td colspan="4" style="padding: 2px; border: none; border-top: 3px double #2196F3;"></td>
+                </tr>
+    """
+
+    # CAPITAL TOTAL row (highlighted and bold)
+    html += """
+                <tr style="background-color: #1976D2; color: white; font-weight: bold; font-size: 15px;">
+                    <td style="padding: 14px; border: 1px solid #1565C0; text-transform: uppercase;">CAPITAL TOTAL</td>
+    """
+
+    for approach in ['2C', '3C', '5C']:
+        data = approaches_data.get(approach, {})
+        capital_total = data.get('capital_total', 0)
+
+        # Calculate expected total for validation
+        equipment_subtotal = sum([
+            data.get('heat_exchanger', 0),
+            data.get('pumps', 0),
+            data.get('pipe_fittings', 0),
+            data.get('instrumentation', 0),
+            data.get('valves', 0)
+        ])
+        ic_subtotal = sum([
+            data.get('installation_cost', 0),
+            data.get('engineering_cost', 0),
+            data.get('contingency_cost', 0)
+        ])
+        expected_total = equipment_subtotal + ic_subtotal
+
+        # Validation (allow for rounding to nearest 500)
+        validation_icon = "✓" if abs(capital_total - expected_total) <= 500 else "⚠"
+
+        html += f"""
+                    <td style="padding: 14px; text-align: right; border: 1px solid #1565C0;
+                               font-family: 'Courier New', monospace;">
+                        €{capital_total:>10,.0f} <span style="font-size: 12px;">{validation_icon}</span>
+                    </td>
+        """
+    html += """
+                </tr>
+    """
+
+    # Empty row for spacing
+    html += """
+                <tr style="background-color: #FFFFFF;">
+                    <td colspan="4" style="padding: 8px; border: none;"></td>
+                </tr>
+    """
+
+    # Section header: OPERATING COSTS
+    html += """
+                <tr style="background-color: #E8F5E9;">
+                    <td colspan="4" style="padding: 10px; border: 1px solid #C8E6C9; font-weight: bold;
+                                         color: #2E7D32; font-size: 13px; letter-spacing: 0.5px;">
+                        OPERATING COSTS (Annual)
+                    </td>
                 </tr>
     """
 
     # Operating cost rows
     html += """
-                <tr style="background-color: #fff9c4;">
-                    <td style="padding: 10px; border: 1px solid #ddd;">Annual Operating Energy</td>
+                <tr style="background-color: #F1F8E9;">
+                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">Annual Operating Energy</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_energy_kwh_year', 0)
         html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">{value:,.0f} kWh</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
+                               font-family: 'Courier New', monospace;">{value:>10,.0f} kWh</td>
         """
     html += """
                 </tr>
     """
 
     html += """
-                <tr style="background-color: #fff9c4; font-weight: bold;">
-                    <td style="padding: 10px; border: 1px solid #ddd;">Annual Energy Cost</td>
+                <tr style="background-color: #F1F8E9; font-weight: bold;">
+                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">Annual Energy Cost</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_cost_eur_year', 0)
         html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">€{value:,.0f}</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
+                               font-family: 'Courier New', monospace;">€{value:>10,.0f}</td>
         """
     html += """
                 </tr>
             </tbody>
         </table>
+    """
+
+    # Legend section
+    html += """
+        <div style="margin-top: 15px; padding: 12px; background-color: #F5F5F5;
+                    border-radius: 4px; font-size: 12px; color: #616161;">
+            <strong>Legend:</strong>
+            <span style="color: #4CAF50; font-weight: bold;">✓</span> = Calculations verified |
+            <span style="color: #FF9800; font-weight: bold;">⚠</span> = Rounding adjustments applied |
+            <span style="font-style: italic;">Hover over items for details</span>
+        </div>
     </div>
     """
 

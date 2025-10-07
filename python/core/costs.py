@@ -314,11 +314,12 @@ def calculate_valve_costs(system_data: Dict) -> Dict:
         cvalv_df = get_csv_data('CVALV')
         if cvalv_df is not None:
             cvalv_df = cvalv_df.copy()
+            cvalv_df.iloc[:, 0] = cvalv_df.iloc[:, 0].apply(universal_float_convert)
             cvalv_df.iloc[:, 1] = cvalv_df.iloc[:, 1].apply(universal_float_convert)
 
-            pipe_size_str = str(int(primary_pipe_size))
+            pipe_size_int = int(primary_pipe_size)
             for idx, row in cvalv_df.iterrows():
-                if str(row.iloc[0]).strip() == pipe_size_str:
+                if int(row.iloc[0]) == pipe_size_int:
                     control_valve_cost = row.iloc[1]
                     break
 
@@ -327,11 +328,12 @@ def calculate_valve_costs(system_data: Dict) -> Dict:
         ivalv_df = get_csv_data('IVALV')
         if ivalv_df is not None:
             ivalv_df = ivalv_df.copy()
+            ivalv_df.iloc[:, 0] = ivalv_df.iloc[:, 0].apply(universal_float_convert)
             ivalv_df.iloc[:, 1] = ivalv_df.iloc[:, 1].apply(universal_float_convert)
 
-            pipe_size_str = str(int(primary_pipe_size))
+            pipe_size_int = int(primary_pipe_size)
             for idx, row in ivalv_df.iterrows():
-                if str(row.iloc[0]).strip() == pipe_size_str:
+                if int(row.iloc[0]) == pipe_size_int:
                     isolation_valve_cost = row.iloc[1]
                     break
 
@@ -406,6 +408,74 @@ def calculate_operating_energy(system_data: Dict, approach: float,
 
 
 # =============================================================================
+# MAIN COST CALCULATION API
+# =============================================================================
+
+def calculate_costs(wha: float, T1: float, temp_rise: float, approach: float,
+                   installation_factor: float = 1.15,
+                   engineering_factor: float = 1.10,
+                   contingency_factor: float = 1.10) -> Dict:
+    """
+    Main API function to calculate complete system costs with transparent breakdown.
+
+    Returns structured data separating base equipment costs from contingencies
+    for clear display in UI.
+
+    Args:
+        wha: System power in MW
+        T1: Inlet temperature in °C
+        temp_rise: Temperature rise in °C (itdt)
+        approach: Approach temperature (2, 3, or 5°C)
+        installation_factor: Installation cost multiplier (default 1.15 = +15%)
+        engineering_factor: Engineering cost multiplier (default 1.10 = +10%)
+        contingency_factor: Contingency multiplier (default 1.10 = +10%)
+
+    Returns:
+        dict: Structured cost breakdown with:
+            {
+                'base_costs': {
+                    'heat_exchanger': float,
+                    'pumps': float,
+                    'piping_fittings': float,
+                    'instrumentation': float,
+                    'valves': float,
+                    'equipment_subtotal': float
+                },
+                'contingencies': {
+                    'installation': float,
+                    'engineering': float,
+                    'contingency': float,
+                    'total_contingencies': float
+                },
+                'capital_total': float,
+                'operating_costs': {
+                    'annual_energy_kwh': float,
+                    'annual_cost_eur': float,
+                    'pump_power_kw': float,
+                    'energy_price_eur_per_kwh': float,
+                    'operating_hours': float
+                },
+                'status': 'success'
+            }
+
+    Example:
+        >>> costs = calculate_costs(1.0, 20, 10, 2)
+        >>> print(f"Base equipment: €{costs['base_costs']['equipment_subtotal']:,.0f}")
+        >>> print(f"Contingencies: €{costs['contingencies']['total_contingencies']:,.0f}")
+        >>> print(f"Total capital: €{costs['capital_total']:,.0f}")
+    """
+    return calculate_order_of_magnitude_estimate(
+        wha=wha,
+        T1=T1,
+        temp_rise=temp_rise,
+        approach=approach,
+        installation_factor=installation_factor,
+        engineering_factor=engineering_factor,
+        contingency_factor=contingency_factor
+    )
+
+
+# =============================================================================
 # ORDER OF MAGNITUDE ESTIMATE
 # =============================================================================
 
@@ -418,6 +488,7 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
     Calculate complete Order of Magnitude Estimate for heat exchanger system.
 
     This integrates all component costs and applies standard engineering factors.
+    Returns structured breakdown separating base costs from contingencies.
 
     Args:
         wha: System power in MW
@@ -429,10 +500,15 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
         contingency_factor: Contingency multiplier (default 1.10 = +10%)
 
     Returns:
-        dict: Complete cost breakdown with all component costs and totals
+        dict: Structured cost breakdown with:
+            - base_costs: Raw equipment costs without factors
+            - contingencies: Installation, engineering, and contingency costs
+            - capital_total: Final rounded total capital cost
+            - operating_costs: Annual operating costs and energy
 
     Example:
         >>> estimate = calculate_order_of_magnitude_estimate(1.0, 20, 10, 2)
+        >>> print(f"Base equipment: €{estimate['base_costs']['equipment_subtotal']:,.0f}")
         >>> print(f"Total capital: €{estimate['capital_total']:,.0f}")
     """
     logger.info(f"calculate_order_of_magnitude_estimate: {wha}MW, {T1}°C, +{temp_rise}°C, approach {approach}°C")
@@ -454,14 +530,14 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
     valve_data = calculate_valve_costs(system_data)
     operating_data = calculate_operating_energy(system_data, approach)
 
-    # Component costs (equipment only)
+    # Component costs (equipment only - raw base costs)
     heat_exchanger_cost = hx_data['cost']
     pump_cost = pump_data['cost']
     pipe_fittings_cost = piping_data['cost']
     instrumentation_cost = instrumentation_data['cost']
     valve_cost = valve_data['cost']
 
-    # Subtotal equipment
+    # Subtotal equipment (base costs before any factors)
     equipment_subtotal = (
         heat_exchanger_cost +
         pump_cost +
@@ -470,14 +546,9 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
         valve_cost
     )
 
-    # Apply factors (cumulative)
-    # Note: In practice, these might be applied selectively
-    # For simplicity, we're applying them cumulatively here
-    capital_total = equipment_subtotal
-
-    # Store intermediate calculations for transparency
-    installation_cost = capital_total * (installation_factor - 1.0)
-    capital_with_installation = capital_total + installation_cost
+    # Calculate contingencies (cumulative application)
+    installation_cost = equipment_subtotal * (installation_factor - 1.0)
+    capital_with_installation = equipment_subtotal + installation_cost
 
     engineering_cost = capital_with_installation * (engineering_factor - 1.0)
     capital_with_engineering = capital_with_installation + engineering_cost
@@ -485,35 +556,49 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
     contingency_cost = capital_with_engineering * (contingency_factor - 1.0)
     capital_total_final = capital_with_engineering + contingency_cost
 
+    # Total contingencies
+    total_contingencies = installation_cost + engineering_cost + contingency_cost
+
     # Round to nearest 500 for Order of Magnitude estimate
     capital_total_rounded = round(capital_total_final / 500) * 500
 
     logger.info(f"Order of Magnitude Estimate Complete: €{capital_total_rounded:,.0f}")
+    logger.info(f"  Base Equipment: €{equipment_subtotal:,.0f}")
+    logger.info(f"  Contingencies: €{total_contingencies:,.0f}")
 
     return {
-        # Component costs
-        'heat_exchanger': heat_exchanger_cost,
-        'pumps': pump_cost,
-        'pipe_fittings': pipe_fittings_cost,
-        'instrumentation': instrumentation_cost,
-        'valves': valve_cost,
+        # Base costs (raw equipment costs without factors)
+        'base_costs': {
+            'heat_exchanger': heat_exchanger_cost,
+            'pumps': pump_cost,
+            'piping_fittings': pipe_fittings_cost,
+            'instrumentation': instrumentation_cost,
+            'valves': valve_cost,
+            'equipment_subtotal': equipment_subtotal
+        },
 
-        # Subtotals
-        'equipment_subtotal': equipment_subtotal,
-        'installation_cost': installation_cost,
-        'engineering_cost': engineering_cost,
-        'contingency_cost': contingency_cost,
+        # Contingencies breakdown
+        'contingencies': {
+            'installation': installation_cost,
+            'engineering': engineering_cost,
+            'contingency': contingency_cost,
+            'total_contingencies': total_contingencies
+        },
 
-        # Total capital
+        # Total capital (rounded)
         'capital_total': capital_total_rounded,
 
         # Operating costs
-        'operating_energy_kwh_year': operating_data['annual_energy_kwh'],
-        'operating_cost_eur_year': operating_data['annual_cost_eur'],
+        'operating_costs': {
+            'annual_energy_kwh': operating_data['annual_energy_kwh'],
+            'annual_cost_eur': operating_data['annual_cost_eur'],
+            'pump_power_kw': pump_data['power_kw'],
+            'energy_price_eur_per_kwh': operating_data['energy_price_eur_per_kwh'],
+            'operating_hours': operating_data['operating_hours']
+        },
 
         # Technical details
         'system_data': system_data,
-        'pump_power_kw': pump_data['power_kw'],
         'pipe_size_dn': piping_data.get('pipe_size', 0),
 
         # Metadata
@@ -521,7 +606,21 @@ def calculate_order_of_magnitude_estimate(wha: float, T1: float, temp_rise: floa
         'T1': T1,
         'temp_rise': temp_rise,
         'approach': approach,
-        'status': 'success'
+        'status': 'success',
+
+        # Legacy fields for backward compatibility (deprecated)
+        'heat_exchanger': heat_exchanger_cost,
+        'pumps': pump_cost,
+        'pipe_fittings': pipe_fittings_cost,
+        'instrumentation': instrumentation_cost,
+        'valves': valve_cost,
+        'equipment_subtotal': equipment_subtotal,
+        'installation_cost': installation_cost,
+        'engineering_cost': engineering_cost,
+        'contingency_cost': contingency_cost,
+        'operating_energy_kwh_year': operating_data['annual_energy_kwh'],
+        'operating_cost_eur_year': operating_data['annual_cost_eur'],
+        'pump_power_kw': pump_data['power_kw']
     }
 
 
@@ -594,6 +693,9 @@ def compare_approaches(wha: float, T1: float, temp_rise: float,
                 'pipe_fittings': estimate['pipe_fittings'],
                 'instrumentation': estimate['instrumentation'],
                 'valves': estimate['valves'],
+                'installation_cost': estimate['installation_cost'],
+                'engineering_cost': estimate['engineering_cost'],
+                'contingency_cost': estimate['contingency_cost'],
                 'capital_total': estimate['capital_total'],
                 'operating_energy_kwh_year': estimate['operating_energy_kwh_year'],
                 'operating_cost_eur_year': estimate['operating_cost_eur_year'],
@@ -648,29 +750,51 @@ def format_cost_summary(estimate: Dict) -> str:
     if estimate.get('status') != 'success':
         return "❌ Estimate calculation failed"
 
+    # Extract nested structures (with fallbacks for backward compatibility)
+    base_costs = estimate.get('base_costs', {})
+    contingencies = estimate.get('contingencies', {})
+    operating_costs = estimate.get('operating_costs', {})
+
+    # Use new structure if available, otherwise fall back to legacy fields
+    hx_cost = base_costs.get('heat_exchanger', estimate.get('heat_exchanger', 0))
+    pump_cost = base_costs.get('pumps', estimate.get('pumps', 0))
+    pipe_cost = base_costs.get('piping_fittings', estimate.get('pipe_fittings', 0))
+    instr_cost = base_costs.get('instrumentation', estimate.get('instrumentation', 0))
+    valve_cost = base_costs.get('valves', estimate.get('valves', 0))
+    equip_subtotal = base_costs.get('equipment_subtotal', estimate.get('equipment_subtotal', 0))
+
+    install_cost = contingencies.get('installation', estimate.get('installation_cost', 0))
+    eng_cost = contingencies.get('engineering', estimate.get('engineering_cost', 0))
+    cont_cost = contingencies.get('contingency', estimate.get('contingency_cost', 0))
+
+    pump_power = operating_costs.get('pump_power_kw', estimate.get('pump_power_kw', 0))
+    annual_energy = operating_costs.get('annual_energy_kwh', estimate.get('operating_energy_kwh_year', 0))
+    annual_cost = operating_costs.get('annual_cost_eur', estimate.get('operating_cost_eur_year', 0))
+
     summary = f"""
 Order of Magnitude Estimate - {estimate['wha']} MW System
 {'=' * 60}
 
-CAPITAL COSTS:
-  Heat Exchanger:        €{estimate['heat_exchanger']:>12,.0f}
-  Pumps:                 €{estimate['pumps']:>12,.0f}
-  Pipe & Fittings:       €{estimate['pipe_fittings']:>12,.0f}
-  Instrumentation:       €{estimate['instrumentation']:>12,.0f}
-  Valves:                €{estimate['valves']:>12,.0f}
+BASE EQUIPMENT COSTS:
+  Heat Exchanger:        €{hx_cost:>12,.0f}
+  Pumps:                 €{pump_cost:>12,.0f}
+  Pipe & Fittings:       €{pipe_cost:>12,.0f}
+  Instrumentation:       €{instr_cost:>12,.0f}
+  Valves:                €{valve_cost:>12,.0f}
   {'─' * 60}
-  Equipment Subtotal:    €{estimate['equipment_subtotal']:>12,.0f}
+  Equipment Subtotal:    €{equip_subtotal:>12,.0f}
 
-  Installation (+15%):   €{estimate['installation_cost']:>12,.0f}
-  Engineering (+10%):    €{estimate['engineering_cost']:>12,.0f}
-  Contingency (+10%):    €{estimate['contingency_cost']:>12,.0f}
+CONTINGENCIES:
+  Installation (+15%):   €{install_cost:>12,.0f}
+  Engineering (+10%):    €{eng_cost:>12,.0f}
+  Contingency (+10%):    €{cont_cost:>12,.0f}
   {'─' * 60}
   CAPITAL TOTAL:         €{estimate['capital_total']:>12,.0f}
 
 OPERATING COSTS:
-  Pump Power:            {estimate['pump_power_kw']:>12,.2f} kW
-  Annual Energy:         {estimate['operating_energy_kwh_year']:>12,.0f} kWh/year
-  Annual Cost:           €{estimate['operating_cost_eur_year']:>12,.0f}/year
+  Pump Power:            {pump_power:>12,.2f} kW
+  Annual Energy:         {annual_energy:>12,.0f} kWh/year
+  Annual Cost:           €{annual_cost:>12,.0f}/year
 
 TECHNICAL PARAMETERS:
   Approach Temperature:  {estimate['approach']:>12}°C
