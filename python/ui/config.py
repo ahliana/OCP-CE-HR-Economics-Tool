@@ -217,7 +217,7 @@ OUTPUT_CONFIG = {
         'title_color': '#4CAF50'
     },
     'cost_analysis': {
-        'title': '💰 Cost Analysis',
+        'title': '💰 Capital Cost Analysis',
         'border_color': '#2196F3',
         'title_color': '#2196F3'
     },

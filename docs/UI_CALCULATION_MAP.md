@@ -9,7 +9,7 @@
 
 ## Table of Contents
 1. [Screen 1: System Parameters Panel](#screen-1-system-parameters-panel)
-2. [Screen 2: Cost Analysis Panel](#screen-2-cost-analysis-panel)
+2. [Screen 2: Capital Cost Analysis Panel](#screen-2-cost-analysis-panel)
 3. [Screen 3: Economics Analysis Table](#screen-3-economics-analysis-table)
 4. [Screen 4: Charts and Visualizations](#screen-4-charts-and-visualizations)
 5. [Quick Reference - Function Index](#quick-reference---function-index)
