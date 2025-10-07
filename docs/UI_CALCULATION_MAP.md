@@ -117,6 +117,35 @@ selected_pipe_size = adequate_rows.iloc[0, 1]
 }
 ```
 
+## Order of Magnitude Panel Mapping
+
+### Base Cost Display
+
+| UI Element | Source | Calculation |
+|------------|--------|-------------|
+| Heat Exchangers | costs.base_costs.heat_exchanger | Direct from cost curves |
+| Pumps | costs.base_costs.pumps | Base pump cost |
+| Piping & Fittings | costs.base_costs.piping_fittings | Material costs |
+| Instrumentation | costs.base_costs.instrumentation | Base instrument cost |
+| Valves | costs.base_costs.valves | Base valve cost |
+| Equipment Subtotal | Sum of above | Σ(base costs) |
+
+### Contingency Display
+
+| UI Element | Source | Calculation |
+|------------|--------|-------------|
+| Installation | costs.contingencies.installation | equipment_subtotal × 0.15 |
+| Engineering | costs.contingencies.engineering | (equipment + installation) × 0.10 |
+| Contingency | costs.contingencies.contingency | (equip + install + eng) × 0.10 |
+| I&C Subtotal | costs.contingencies.total | Σ(contingencies) |
+| Capital Total | costs.capital_total | Round((equipment + I&C), €500) |
+
+### Validation Requirements
+
+- Equipment Subtotal + I&C Subtotal must equal Capital Total (±€500 for rounding)
+- All displayed numbers must be traceable to source calculations
+- Contingency percentages must be clearly shown in UI
+
 #### Base Equipment Costs (Raw costs without factors)
 
 | UI Label | Example Value | Function | File:Line | Calculation | Data Source |

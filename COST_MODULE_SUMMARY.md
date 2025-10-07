@@ -177,6 +177,28 @@ The module uses existing calculations from:
 
 No new external dependencies required - fully integrated with existing codebase.
 
+## Cost Calculation Transparency
+
+### Base Equipment Costs
+The system now separates base equipment costs from contingencies:
+- Heat Exchangers: Raw cost from cost curves/correlations
+- Pumps: Base pump cost without factors
+- Piping & Fittings: Material costs only
+- Instrumentation: Base instrument costs
+- Valves: Base valve costs
+
+### Contingency Calculations
+Industry-standard contingency factors are applied:
+1. Installation (15% of equipment): Covers labor and installation materials
+2. Engineering (10% of cumulative): Design and project management
+3. Contingency (10% of cumulative): Unforeseen costs and scope changes
+
+### Display Philosophy
+All costs are shown transparently so that:
+- Base costs + Contingencies = Capital Total (visually verifiable)
+- Users can see exactly how estimates are built up
+- Contingency factors are explicit and adjustable
+
 ## Conclusion
 
 The comprehensive cost calculation module is complete and functional. It provides:

@@ -104,7 +104,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
             value = approaches_data.get(approach, {}).get(key, 0)
             html += f"""
                     <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Courier New', monospace;">€{value:>10,.0f}</td>
+                               font-family: 'Segoe UI', Arial, sans-serif;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
@@ -136,7 +136,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
         html += f"""
                     <td style="padding: 11px; text-align: right; border: 1px solid #C5CAE9;
-                               font-family: 'Courier New', monospace;">
+                               font-family: 'Segoe UI', Arial, sans-serif;">
                         €{subtotal:>10,.0f} <span style="color: #4CAF50; font-size: 11px;">{validation_icon}</span>
                     </td>
         """
@@ -171,7 +171,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
             value = approaches_data.get(approach, {}).get(key, 0)
             html += f"""
                     <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Courier New', monospace; color: #F57C00;">€{value:>10,.0f}</td>
+                               font-family: 'Segoe UI', Arial, sans-serif; color: #F57C00;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
@@ -193,7 +193,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
         html += f"""
                     <td style="padding: 11px; text-align: right; border: 1px solid #FFCC80;
-                               font-family: 'Courier New', monospace;">€{ic_subtotal:>10,.0f}</td>
+                               font-family: 'Segoe UI', Arial, sans-serif;">€{ic_subtotal:>10,.0f}</td>
         """
     html += """
                 </tr>
@@ -236,7 +236,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
         html += f"""
                     <td style="padding: 14px; text-align: right; border: 1px solid #1565C0;
-                               font-family: 'Courier New', monospace;">
+                               font-family: 'Segoe UI', Arial, sans-serif;">
                         €{capital_total:>10,.0f} <span style="font-size: 12px;">{validation_icon}</span>
                     </td>
         """
@@ -270,7 +270,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         value = approaches_data.get(approach, {}).get('operating_energy_kwh_year', 0)
         html += f"""
                     <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Courier New', monospace;">{value:>10,.0f} kWh</td>
+                               font-family: 'Segoe UI', Arial, sans-serif;">{value:>10,.0f} kWh</td>
         """
     html += """
                 </tr>
@@ -284,7 +284,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         value = approaches_data.get(approach, {}).get('operating_cost_eur_year', 0)
         html += f"""
                     <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Courier New', monospace;">€{value:>10,.0f}</td>
+                               font-family: 'Segoe UI', Arial, sans-serif;">€{value:>10,.0f}</td>
         """
     html += """
                 </tr>
