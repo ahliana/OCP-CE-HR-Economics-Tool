@@ -7,7 +7,8 @@
       "Bash(python -m pytest physics/test_stage4_integration.py -v)",
       "Bash(python physics/test_stage4_integration.py)",
       "Bash(python physics/test_stage3_integration.py)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
