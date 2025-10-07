@@ -85,7 +85,7 @@ def create_calculate_button():
 def create_output_areas():
     """
     Create all output display areas including new sections.
-    
+
     Returns:
         Dictionary of output widgets
     """
@@ -94,7 +94,8 @@ def create_output_areas():
         'cost_analysis': widgets.Output(),      # Just cost analysis now
         'smart_recommendations': widgets.Output(), # NEW - separate section
         'visual_summary': widgets.Output(),     # Section for summary cards
-        'charts': widgets.Output()              # This will include gauges
+        'charts': widgets.Output(),              # This will include gauges
+        'economics_analysis': widgets.Output()  # Economics Analysis panel
     }
 
 
@@ -120,9 +121,10 @@ def create_interface_layout(widgets_dict, outputs_dict):
         widgets_dict['calculate_button'],                        # Calculate button
         outputs_dict['system_params'],                           # 1. System Parameters
         outputs_dict['cost_analysis'],                           # 2. Cost Analysis (now separate)
-        outputs_dict['charts'],                                  # 3. Charts
-        # outputs_dict.get('smart_recommendations', widgets.Output()), # 4. Smart Recommendations
-        outputs_dict.get('visual_summary', widgets.Output())    # 5. System Overview Cards
+        outputs_dict['economics_analysis'],                      # 3. Economics Analysis
+        outputs_dict['charts'],                                  # 4. Charts
+        # outputs_dict.get('smart_recommendations', widgets.Output()), # 5. Smart Recommendations
+        outputs_dict.get('visual_summary', widgets.Output())    # 6. System Overview Cards
     ], layout=widgets.Layout(margin='10px'))
 
 # =============================================================================

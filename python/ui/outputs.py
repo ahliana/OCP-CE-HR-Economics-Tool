@@ -92,24 +92,47 @@ def display_cost_analysis(output_area, analysis):
 def display_charts(output_area, analysis):
     """
     Display charts with guaranteed fresh creation.
-    
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
     """
     # Double-clear to ensure fresh start
     output_area.clear_output()
-    
+
     with output_area:
         try:
             # Force matplotlib to close any existing figures
             plt.close('all')
-            
+
             # Create fresh charts
             create_system_charts(analysis)
-            
+
         except Exception as e:
             display_error(output_area, f"Error creating charts: {str(e)}")
+
+def display_economics_panel(output_area, analysis):
+    """
+    Display economics analysis panel with comparison table and charts.
+
+    Args:
+        output_area: Output widget to display in
+        analysis: Complete system analysis dictionary
+    """
+    from .economics_panel import display_economics_analysis
+
+    try:
+        # Extract parameters from analysis
+        system = analysis.get('system', {})
+        wha = system.get('wha', 1.0)
+        T1 = system.get('T1', 20)
+        temp_rise = system.get('itdt', 10)
+
+        # Display economics analysis
+        display_economics_analysis(output_area, wha, T1, temp_rise)
+
+    except Exception as e:
+        display_error(output_area, f"Error displaying economics analysis: {str(e)}")
 
 # =============================================================================
 # ERROR AND MESSAGE DISPLAY FUNCTIONS
@@ -181,7 +204,7 @@ def display_info_message(output_area, message):
 def display_complete_analysis(outputs_dict, analysis):
     """
     Display complete analysis in all output areas including new sections.
-    
+
     Args:
         outputs_dict: Dictionary of output widgets
         analysis: Complete system analysis dictionary
@@ -189,12 +212,17 @@ def display_complete_analysis(outputs_dict, analysis):
     try:
         display_system_parameters(outputs_dict['system_params'], analysis)
         display_cost_analysis(outputs_dict['cost_analysis'], analysis)
+
+        # Economics Analysis panel
+        if 'economics_analysis' in outputs_dict:
+            display_economics_panel(outputs_dict['economics_analysis'], analysis)
+
         display_charts(outputs_dict['charts'], analysis)
-        
+
         # Smart recommendations in their own section
         if 'smart_recommendations' in outputs_dict:
             display_smart_recommendations(outputs_dict['smart_recommendations'], analysis)
-        
+
         # Visual summary at the bottom
         if 'visual_summary' in outputs_dict:
             display_visual_summary_cards(outputs_dict['visual_summary'], analysis)
