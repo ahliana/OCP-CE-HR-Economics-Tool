@@ -7,9 +7,6 @@
 Heat Exchanger Analysis Methods and Correlations
 Reference: VDI Heat Atlas, Heat Exchanger Design Handbook (Thulukkanam)
 European standards and practices prioritized
-
-This module provides comprehensive heat exchanger analysis capabilities
-compatible with the Heat Reuse Tool system, using European engineering standards.
 """
 
 import math
@@ -656,71 +653,6 @@ def pinch_temperature(hot_outlet: float, cold_inlet: float) -> float:
         Pinch temperature difference [°C]
     """
     return hot_outlet - cold_inlet
-
-
-# def get_water_properties_interpolated(temperature_c: float) -> Dict:
-#     """
-#     Get water properties at specified temperature with linear interpolation.
-    
-#     Args:
-#         temperature_c: Temperature [°C]
-    
-#     Returns:
-#         Dictionary of water properties at specified temperature
-#     """
-#     if temperature_c <= 20:
-#         return WATER_PROPERTIES['20C']
-#     elif temperature_c <= 30:
-#         if temperature_c == 30:
-#             return WATER_PROPERTIES['30C']
-#         # Linear interpolation between 20°C and 30°C
-#         factor = (temperature_c - 20) / (30 - 20)
-#         props_20 = WATER_PROPERTIES['20C']
-#         props_30 = WATER_PROPERTIES['30C']
-        
-#         return {
-#             'density': props_20['density'] + factor * (props_30['density'] - props_20['density']),
-#             'specific_heat': props_20['specific_heat'] + factor * (props_30['specific_heat'] - props_20['specific_heat']),
-#             'thermal_conductivity': props_20['thermal_conductivity'] + factor * (props_30['thermal_conductivity'] - props_20['thermal_conductivity']),
-#             'dynamic_viscosity': props_20['dynamic_viscosity'] + factor * (props_30['dynamic_viscosity'] - props_20['dynamic_viscosity']),
-#             'kinematic_viscosity': props_20['kinematic_viscosity'] + factor * (props_30['kinematic_viscosity'] - props_20['kinematic_viscosity']),
-#             'prandtl_number': props_20['prandtl_number'] + factor * (props_30['prandtl_number'] - props_20['prandtl_number']),
-#         }
-#     elif temperature_c <= 45:
-#         if temperature_c == 45:
-#             return WATER_PROPERTIES['45C']
-#         # Linear interpolation between 30°C and 45°C
-#         factor = (temperature_c - 30) / (45 - 30)
-#         props_30 = WATER_PROPERTIES['30C']
-#         props_45 = WATER_PROPERTIES['45C']
-        
-#         return {
-#             'density': props_30['density'] + factor * (props_45['density'] - props_30['density']),
-#             'specific_heat': props_30['specific_heat'] + factor * (props_45['specific_heat'] - props_30['specific_heat']),
-#             'thermal_conductivity': props_30['thermal_conductivity'] + factor * (props_45['thermal_conductivity'] - props_30['thermal_conductivity']),
-#             'dynamic_viscosity': props_30['dynamic_viscosity'] + factor * (props_45['dynamic_viscosity'] - props_30['dynamic_viscosity']),
-#             'kinematic_viscosity': props_30['kinematic_viscosity'] + factor * (props_45['kinematic_viscosity'] - props_30['kinematic_viscosity']),
-#             'prandtl_number': props_30['prandtl_number'] + factor * (props_45['prandtl_number'] - props_30['prandtl_number']),
-#         }
-#     elif temperature_c <= 60:
-#         if temperature_c == 60:
-#             return WATER_PROPERTIES['60C']
-#         # Linear interpolation between 45°C and 60°C
-#         factor = (temperature_c - 45) / (60 - 45)
-#         props_45 = WATER_PROPERTIES['45C']
-#         props_60 = WATER_PROPERTIES['60C']
-        
-#         return {
-#             'density': props_45['density'] + factor * (props_60['density'] - props_45['density']),
-#             'specific_heat': props_45['specific_heat'] + factor * (props_60['specific_heat'] - props_45['specific_heat']),
-#             'thermal_conductivity': props_45['thermal_conductivity'] + factor * (props_60['thermal_conductivity'] - props_45['thermal_conductivity']),
-#             'dynamic_viscosity': props_45['dynamic_viscosity'] + factor * (props_60['dynamic_viscosity'] - props_45['dynamic_viscosity']),
-#             'kinematic_viscosity': props_45['kinematic_viscosity'] + factor * (props_60['kinematic_viscosity'] - props_45['kinematic_viscosity']),
-#             'prandtl_number': props_45['prandtl_number'] + factor * (props_60['prandtl_number'] - props_45['prandtl_number']),
-#         }
-#     else:
-#         # For temperatures above 60°C, use 60°C properties
-#         return WATER_PROPERTIES['60C']
 
 
 def validate_heat_exchanger_config(hot_inlet: float, hot_outlet: float, 

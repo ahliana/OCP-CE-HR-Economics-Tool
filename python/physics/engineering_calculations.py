@@ -4,7 +4,7 @@
 
 # python/physics/engineering_calculations.py
 """
-High-Level Engineering Calculations for Common Datacenter Applications
+Engineering Calculations for Common Datacenter Applications
 Combines multiple physics principles for practical engineering solutions
 
 European Standards Compliant:
@@ -327,10 +327,6 @@ def get_water_properties_interpolated(temperature_c: float) -> Dict:
     """
     Get water properties using CoolProp for accurate thermodynamic data.
 
-    This function now uses CoolProp internally via get_water_properties(),
-    providing continuous property values at any temperature instead of
-    linear interpolation between tabulated values.
-
     Args:
         temperature_c (float): Temperature [°C]
 
@@ -339,7 +335,6 @@ def get_water_properties_interpolated(temperature_c: float) -> Dict:
 
     Notes:
         - Backward compatible with previous function signature
-        - Now provides more accurate properties via CoolProp
         - Falls back to interpolated tabulated values if CoolProp fails
     """
     # Use CoolProp wrapper which handles interpolation/fallback internally

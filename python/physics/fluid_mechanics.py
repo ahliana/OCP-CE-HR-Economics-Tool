@@ -28,7 +28,6 @@ def reynolds_number(velocity, diameter, kinematic_viscosity=None,
 
     # Using fluids library for industry-standard correlations
     Formula: Re = ρVD/μ = VD/ν
-    Reference: Any fluid mechanics textbook, VDI Heat Atlas
 
     Args:
         velocity (float): Average velocity [m/s]
@@ -117,7 +116,7 @@ def pressure_drop_pipe(friction_factor, length, diameter, velocity, density):
     """
     Calculate pressure drop in pipe using Darcy-Weisbach equation.
 
-    # Darcy-Weisbach formula (standard equation - no library wrapper needed)
+    # Darcy-Weisbach formula
     Formula: ΔP = f × (L/D) × (ρV²/2)
     Reference: Darcy-Weisbach equation, fluid mechanics fundamentals
 
@@ -131,17 +130,16 @@ def pressure_drop_pipe(friction_factor, length, diameter, velocity, density):
     Returns:
         float: Pressure drop [Pa]
     """
-    # Direct Darcy-Weisbach equation (no fluids wrapper exists for pre-calculated f)
-    # This is the fundamental equation - no need for library wrapper
+    # Direct Darcy-Weisbach equation
     return friction_factor * (length / diameter) * (density * velocity**2 / 2)
 
 
 def pump_power_required(volume_flow_rate, pressure_head, efficiency=0.75,
                        include_motor_efficiency=True, motor_efficiency=0.92):
     """
-    Calculate pump power requirement (European standard calculation).
+    Calculate pump power requirement.
 
-    # Fundamental hydraulic power equation (no library wrapper needed)
+    # Fundamental hydraulic power equation
     Formula: P_shaft = (Q × ΔP) / η_pump
              P_electrical = P_shaft / η_motor (if motor efficiency included)
 
@@ -181,7 +179,7 @@ def pipe_velocity(volume_flow_rate, diameter):
     """
     Calculate average flow velocity in pipe.
 
-    # Fundamental continuity equation (no library wrapper needed)
+    # Fundamental continuity equation
     Formula: V = Q / A = Q / (πD²/4)
 
     Args:

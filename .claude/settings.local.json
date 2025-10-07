@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(dir:*)",
-      "Bash(python test:*)"
+      "Bash(python test:*)",
+      "Bash(find:*)",
+      "Bash(python -m pytest physics/test_stage4_integration.py -v)",
+      "Bash(python physics/test_stage4_integration.py)",
+      "Bash(python physics/test_stage3_integration.py)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []
