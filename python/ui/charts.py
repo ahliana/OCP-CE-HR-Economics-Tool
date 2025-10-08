@@ -15,42 +15,37 @@ from .formatting import format_display_value, safe_float_convert, calculate_effe
 def create_system_charts(analysis):
     """
     Create visualization charts for the system analysis.
-    Shows: cost breakdown, flow rates, temperature, approach profiles,
-    plus new performance gauges and cost efficiency chart.
-    
+    Shows: approach profiles and effectiveness gauge.
+
+    # Cost breakdown moved to Economics Analysis panel (shows all 3 approaches)
+
     Args:
         analysis: Complete system analysis dictionary
-    
+
     Returns:
         None (displays charts)
     """
     try:
-        # Create 2x3 grid for all 6 charts
-        fig, axs = plt.subplots(2, 3, figsize=(18, 10))
-        
+        # Create 1x2 grid for 2 charts
+        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
         # Extract data
         system = analysis['system']
         costs = analysis['costs']
         sizing = analysis['sizing']
-        
-        # Top row: Cost Breakdown, System Approach, Effectiveness
-        create_cost_breakdown_chart(axs[0, 0], costs)      # Cost Breakdown
-        create_approach_profiles_chart(axs[0, 1], system)  # System Approach  
-        create_effectiveness_gauge(axs[0, 2], calculate_effectiveness(analysis)) # Effectiveness
 
-        # # Bottom row: Flow Rates, Temperatures, Efficiency
-        # create_flow_rates_chart(axs[1, 0], system)         # Flow Rates
-        # create_temperature_chart(axs[1, 1], system)        # Temperatures
-        # create_cost_efficiency_chart(axs[1, 2], analysis)  # Efficiency
-       
+        # Charts: System Approach, Effectiveness
+        create_approach_profiles_chart(axs[0], system)  # System Approach
+        create_effectiveness_gauge(axs[1], calculate_effectiveness(analysis)) # Effectiveness
+
         # Set overall title
         power_display = format_display_value(float(system['wha']), 'temperature', False)
-        plt.suptitle(f'Heat Reuse System Analysis - {power_display}MW System', 
+        plt.suptitle(f'Heat Reuse System Analysis - {power_display}MW System',
                     fontsize=16, fontweight='bold')
-        
+
         plt.tight_layout()
         plt.show()
-        
+
     except Exception as e:
         print(f"Chart creation error: {str(e)}")
         create_error_chart(str(e))

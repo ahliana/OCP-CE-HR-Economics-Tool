@@ -285,21 +285,39 @@ annual_energy_kwh = power_kw × 8760
 **Display Function**: `display_charts()` in [python/ui/outputs.py:92](python/ui/outputs.py#L92)
 **Chart Generator**: `create_system_charts()` in [python/ui/charts.py:15](python/ui/charts.py#L15)
 
-### Chart 1: Cost Breakdown (Pie Chart)
+### Chart Layout Update
 
-**Function**: `create_cost_breakdown_chart()` in [python/ui/charts.py:108](python/ui/charts.py#L108)
+**Chart Grid**: Creates 1x2 grid with 2 chart positions (previously 2x3 with 6 positions)
+**Function**: `create_system_charts()` in [python/ui/charts.py:15](python/ui/charts.py#L15)
 
-| Segment | Value Source | File:Line | Calculation |
-|---------|--------------|-----------|-------------|
-| Pipe & Fittings | `costs['total_pipe_cost']` | [python/ui/charts.py:114](python/ui/charts.py#L114) | From cost analysis |
-| Heat Exchanger | `costs['hx_cost']` | [python/ui/charts.py:115](python/ui/charts.py#L115) | From ALLHX lookup |
-| Valves | `costs['total_valve_cost']` | [python/ui/charts.py:116](python/ui/charts.py#L116) | CVALV + IVALV |
-| Pumps | `costs['pump_cost']` | [python/ui/charts.py:117](python/ui/charts.py#L117) | wha × €5,000 |
-| Installation | `costs['installation_cost']` | [python/ui/charts.py:118](python/ui/charts.py#L118) | 15% of equipment |
+**Visual Elements**:
+- System Approach Profiles (position [0])
+- Heat Exchanger Effectiveness Gauge (position [1])
+- **Cost Breakdown (MOVED to economics_panel.py - 3 pie charts)**
+
+### Chart 1: Cost Breakdown by Approach (MOVED TO ECONOMICS PANEL)
+
+**Status**: MOVED TO ECONOMICS PANEL
+**Previous Location**: `create_cost_breakdown_chart()` in charts.py
+**Current Location**: `create_approach_cost_breakdown_charts()` in [python/ui/economics_panel.py:397](python/ui/economics_panel.py#L397)
+
+**Note**: Now displays as 3 pie charts (2°C, 3°C, 5°C) in Economics Analysis panel using Order of Magnitude data
+
+**Data Flow**:
+- `compare_approaches()` → 3 pie charts showing equipment distribution for each approach
+- Each chart shows: Heat Exchangers, Pumps, Piping & Fittings, Instrumentation, Valves, I&C Subtotal
+- Percentage distributions vary by approach temperature
+
+**Implementation**:
+| Chart | Approach | Components | Percentages |
+|-------|----------|------------|-------------|
+| Left | 2°C | 6 cost components | Higher HX % (larger heat exchanger) |
+| Center | 3°C | 6 cost components | Balanced distribution |
+| Right | 5°C | 6 cost components | Higher pump % (more flow required) |
 
 **Percentage Calculation**: Automatic via matplotlib `autopct='%1.1f%%'`
 
-### Chart 2: System Approach Profiles
+### Chart 2: System Approach Profiles (Main Charts - Position [0])
 
 **Function**: `create_approach_profiles_chart()` in [python/ui/charts.py:402](python/ui/charts.py#L402)
 **Data Source**: `calculate_combined_approach_profiles()` in [python/core/original_calculations.py](python/core/original_calculations.py)
@@ -321,7 +339,7 @@ ax.plot(time_percent, fws['temperatures'],
        label=f'FWS ({T4}°C → {T3}°C)')
 ```
 
-### Chart 3: Heat Exchanger Effectiveness Gauge
+### Chart 3: Heat Exchanger Effectiveness Gauge (Main Charts - Position [1])
 
 **Function**: `create_effectiveness_gauge()` in [python/ui/charts.py:512](python/ui/charts.py#L512)
 **Calculation**: `calculate_effectiveness()` in [python/ui/formatting.py:448](python/ui/formatting.py#L448)

@@ -155,6 +155,17 @@ Both "Base Equipment Costs" and "Contingencies" can be collapsible sections, wit
 4. **Backward Compatible**: Existing code continues to work
 5. **Testable**: Structure enables better validation
 
+## Visualization
+
+### Pie Chart Cost Breakdown
+
+- **Purpose**: Show proportional cost distribution for equipment
+- **Approaches**: Separate chart for 2°C, 3°C, 5°C
+- **Placement**: Below Cost Contrast Analysis in Economics panel
+- **Data Accuracy**: Uses exact values from `compare_approaches()`
+- **Dynamic**: Updates based on Power, Temperature, and Rise inputs
+- **Proportions**: Always match Cost Component Breakdown table percentages
+
 ## Future Enhancements
 
 Potential future improvements:

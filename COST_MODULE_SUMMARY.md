@@ -199,6 +199,34 @@ All costs are shown transparently so that:
 - Users can see exactly how estimates are built up
 - Contingency factors are explicit and adjustable
 
+## Cost Visualization Updates
+
+### Cost Breakdown Pie Charts
+- **Location**: economics_panel.py (previously in charts.py)
+- **Function**: `create_approach_cost_breakdown_charts()`
+- **Data Source**: `compare_approaches()` Order of Magnitude Estimates
+- **Display**: Three pie charts side-by-side (2°C, 3°C, 5°C)
+
+#### Components Displayed:
+1. Heat Exchangers (equipment cost)
+2. Pumps (equipment cost)
+3. Piping & Fittings (equipment cost)
+4. Instrumentation (equipment cost)
+5. Valves (equipment cost)
+6. I&C Subtotal (Installation + Engineering + Contingency combined)
+
+#### Percentage Calculations:
+- Each approach has different percentage distributions
+- 2°C: Higher heat exchanger percentage (larger HX needed)
+- 5°C: Higher pump percentage (more flow required)
+- Percentages directly match Cost Component Breakdown table ratios
+
+#### Implementation:
+```python
+# Called from display_economics_analysis()
+create_approach_cost_breakdown_charts(wha, T1, temp_rise, output_area)
+```
+
 ## Conclusion
 
 The comprehensive cost calculation module is complete and functional. It provides:

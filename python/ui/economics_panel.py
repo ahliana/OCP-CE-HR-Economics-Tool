@@ -394,6 +394,106 @@ def create_cost_contrast_chart(wha: float, T1: float, temp_rise: float, output_a
     plt.close()
 
 
+def create_approach_cost_breakdown_charts(wha: float, T1: float, temp_rise: float, output_area):
+    """
+    Create pie charts showing cost breakdown for each approach temperature.
+
+    Args:
+        wha: System power in MW
+        T1: Inlet temperature in °C
+        temp_rise: Temperature rise in °C
+        output_area: Output widget to display the chart
+    """
+    try:
+        # Get comparison data (suppress logging)
+        with suppress_logging():
+            comparison = compare_approaches(wha, T1, temp_rise, approaches=[2, 3, 5])
+
+        if comparison.get('status') != 'success':
+            with output_area:
+                display(HTML("<p style='color: red;'>Unable to generate cost breakdown charts</p>"))
+            return
+
+        approaches_data = comparison['approaches']
+
+        # Create figure with 1 row, 3 columns (increased height for legends)
+        fig, axs = plt.subplots(1, 3, figsize=(18, 7))
+
+        # Approach temperatures and titles
+        approaches = [2, 3, 5]
+        titles = ["2°C Approach", "3°C Approach", "5°C Approach"]
+        # Rainbow spectrum color scheme
+        colors = [
+            '#E74C3C',  # Red - Heat Exchangers
+            '#FF9F43',  # Orange - Pumps
+            '#F1C40F',  # Yellow - Piping & Fittings
+            '#2ECC71',  # Green - Instrumentation
+            '#3498DB',  # Blue - Valves
+            '#9B59B6'   # Purple - I&C Subtotal
+        ]
+        labels = ['Heat Exchangers', 'Pumps', 'Piping & Fittings', 'Instrumentation', 'Valves', 'I&C Subtotal']
+
+        # Create pie chart for each approach
+        for idx, (approach, title) in enumerate(zip(approaches, titles)):
+            key = f"{approach}C"
+            data = approaches_data.get(key, {})
+
+            # Extract cost components
+            heat_exchanger = data.get('heat_exchanger', 0)
+            pumps = data.get('pumps', 0)
+            pipe_fittings = data.get('pipe_fittings', 0)
+            instrumentation = data.get('instrumentation', 0)
+            valves = data.get('valves', 0)
+
+            # Calculate I&C Subtotal (installation + engineering + contingency)
+            ic_subtotal = sum([
+                data.get('installation_cost', 0),
+                data.get('engineering_cost', 0),
+                data.get('contingency_cost', 0)
+            ])
+
+            # Combine into values array
+            values = [heat_exchanger, pumps, pipe_fittings, instrumentation, valves, ic_subtotal]
+
+            # Create pie chart with percentages only (labels in legend for clarity)
+            wedges, texts, autotexts = axs[idx].pie(
+                values,
+                colors=colors,
+                autopct='%1.1f%%',
+                startangle=90,
+                pctdistance=0.85
+            )
+
+            # Make percentage text white and bold
+            for autotext in autotexts:
+                autotext.set_color('white')
+                autotext.set_fontweight('bold')
+                autotext.set_fontsize(10)
+
+            # Add legend below the chart
+            axs[idx].legend(wedges, labels, loc="upper center", bbox_to_anchor=(0.5, -0.05),
+                           fontsize=9, ncol=2, frameon=False)
+
+            axs[idx].set_title(title, fontsize=14, fontweight='bold', pad=10)
+
+        # Add figure suptitle
+        fig.suptitle("Equipment & Installation Cost Breakdown by Approach Temperature",
+                    fontsize=16, fontweight='bold', y=1.02)
+
+        plt.tight_layout()
+
+        # Display in output area
+        with output_area:
+            plt.show()
+
+        # Close to free memory
+        plt.close()
+
+    except Exception as e:
+        with output_area:
+            display(HTML(f"<p style='color: red;'>Error creating cost breakdown charts: {str(e)}</p>"))
+
+
 # =============================================================================
 # MAIN DISPLAY FUNCTION
 # =============================================================================
@@ -437,6 +537,19 @@ def display_economics_analysis(output_area, wha: float, T1: float, temp_rise: fl
             display(HTML(chart_title_html))
 
             create_cost_contrast_chart(wha, T1, temp_rise, output_area)
+
+            # Display equipment cost breakdown charts
+            breakdown_title_html = """
+            <div style="margin: 30px 0 15px 0;">
+                <h3 style="color: #1976D2;">🔧 Equipment Cost Breakdown by Approach</h3>
+                <p style="color: #616161; font-size: 14px; margin-top: 5px;">
+                    Comparison of cost distribution across equipment categories for different approach temperatures
+                </p>
+            </div>
+            """
+            display(HTML(breakdown_title_html))
+
+            create_approach_cost_breakdown_charts(wha, T1, temp_rise, output_area)
 
         except Exception as e:
             error_html = f"""
