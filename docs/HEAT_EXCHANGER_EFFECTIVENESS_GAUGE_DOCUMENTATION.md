@@ -27,35 +27,401 @@ The Heat Exchanger Effectiveness Gauge displays the **thermal performance effici
 
 ---
 
-## Visual Description
+## Nomenclature
 
-### Chart Elements
+### System Nomenclature (Heat Reuse Tool)
+- **TCS**: Thermal Cooling System (datacenter cooling water, hot side)
+- **FWS**: Fresh Water System (district heating water, cold side)
+- **wha**: Waste Heat Available (system capacity in MW)
+- **F1**: TCS flow rate [L/min]
+- **F2**: FWS flow rate [L/min]
+- **T1**: TCS inlet temperature [°C] (hot outlet from HX)
+- **T2**: TCS outlet temperature [°C] (hot inlet to HX)
+- **T3**: FWS outlet temperature [°C] (cold outlet from HX)
+- **T4**: FWS inlet temperature [°C] (cold inlet to HX)
 
-#### 1. Gauge Arc
-- **Shape**: Semi-circular arc from 0° (left) to 180° (right)
-- **Orientation**: Horizontal base with arc curving upward
-- **Total Range**: 0% to 100% effectiveness
+### Heat Exchanger Nomenclature (Standard)
+- **Hot side**: Fluid giving up heat (TCS in our case)
+- **Cold side**: Fluid receiving heat (FWS in our case)
+- **Counterflow**: Fluids flow in opposite directions (best performance)
+- **Effectiveness (ε)**: Actual heat transfer / Maximum possible heat transfer
+- **NTU**: Number of Transfer Units (dimensionless size parameter)
+- **Cr**: Capacity ratio = C_min / C_max
+- **LMTD**: Log Mean Temperature Difference [°C]
 
-#### 2. Color Zones (Left to Right)
-| Zone | Color | Range | Meaning | Arc Position |
-|------|-------|-------|---------|--------------|
-| Poor | Red (#FF5252) | 0% - 60% | Below acceptable performance | Left 60% of arc |
-| Good | Yellow (#FFC107) | 60% - 80% | Acceptable performance | Middle 20% of arc |
-| Excellent | Green (#4CAF50) | 80% - 100% | Outstanding performance | Right 20% of arc |
+### Thermodynamic Variables
+- **ṁ**: Mass flow rate [kg/s]
+- **Q̇**: Heat transfer rate [W]
+- **cp**: Specific heat at constant pressure [J/(kg·K)]
+- **Ċ**: Heat capacity rate [W/K]
+- **ρ**: Density [kg/m³]
+- **ΔT**: Temperature difference [K or °C]
 
-#### 3. Needle Indicator
-- **Color**: Black
-- **Style**: Solid line with circular pivot point
-- **Length**: 80% of gauge radius
-- **Position**: Rotates based on effectiveness value
-  - 0% effectiveness → Points left (0°)
-  - 50% effectiveness → Points upward (90°)
-  - 100% effectiveness → Points right (180°)
+---
 
-#### 4. Text Elements
-- **Center Value**: Large bold percentage (e.g., "85.3%")
-- **Label**: "Effectiveness" below the percentage
-- **Zone Labels**: Text markers for each performance zone
+## Technical Reference
+
+### Units Dictionary
+
+| Quantity | Unit | Symbol | Conversion |
+|----------|------|--------|------------|
+| Flow Rate | Liters per minute | L/min | 1 L/min = 1.667×10⁻⁵ m³/s |
+| Mass Flow | Kilograms per second | kg/s | ṁ = Q × ρ |
+| Temperature | Degrees Celsius | °C | ΔT [°C] = ΔT [K] |
+| Heat Duty | Watts | W | 1 MW = 1,000,000 W |
+| Specific Heat | Joules per kilogram-Kelvin | J/(kg·K) | Water: 4180 J/(kg·K) |
+| Density | Kilograms per cubic meter | kg/m³ | Water: ~997 kg/m³ |
+| Heat Capacity Rate | Watts per Kelvin | W/K | Ċ = ṁ × cp |
+| Effectiveness | Dimensionless | - | 0.0 to 1.0 (0% to 100%) |
+| NTU | Dimensionless | - | Typically 1 to 10 |
+
+### Formula Reference
+
+**1. Mass Flow Rate**
+```
+ṁ = Q_vol × ρ
+Where:
+  ṁ     = mass flow rate [kg/s]
+  Q_vol = volumetric flow rate [m³/s]
+  ρ     = fluid density [kg/m³]
+```
+
+**2. Heat Transfer Rate**
+```
+Q̇ = ṁ × cp × ΔT
+Where:
+  Q̇  = heat transfer rate [W]
+  ṁ  = mass flow rate [kg/s]
+  cp = specific heat [J/(kg·K)]
+  ΔT = temperature change [K or °C]
+```
+
+**3. Heat Capacity Rate**
+```
+Ċ = ṁ × cp
+Where:
+  Ċ  = heat capacity rate [W/K]
+  ṁ  = mass flow rate [kg/s]
+  cp = specific heat [J/(kg·K)]
+```
+
+**4. Maximum Heat Transfer**
+```
+Q̇_max = C_min × (T_hot_in - T_cold_in)
+Where:
+  Q̇_max      = maximum possible heat transfer [W]
+  C_min       = minimum heat capacity rate [W/K]
+  T_hot_in    = hot fluid inlet temperature [°C]
+  T_cold_in   = cold fluid inlet temperature [°C]
+```
+
+**5. Effectiveness**
+```
+ε = Q̇_actual / Q̇_max
+Where:
+  ε         = effectiveness [dimensionless, 0-1]
+  Q̇_actual  = actual heat transfer [W]
+  Q̇_max     = maximum possible heat transfer [W]
+```
+
+**6. NTU (Number of Transfer Units)**
+```
+For counterflow with Cr ≠ 1:
+NTU = ln((ε - 1)/(ε × Cr - 1)) / (Cr - 1)
+
+For balanced flow (Cr = 1):
+NTU = ε / (1 - ε)
+
+Where:
+  NTU = number of transfer units [dimensionless]
+  ε   = effectiveness [dimensionless]
+  Cr  = capacity ratio = C_min/C_max [dimensionless]
+```
+
+**7. Capacity Ratio**
+```
+Cr = C_min / C_max
+Where:
+  Cr    = capacity ratio [dimensionless, 0-1]
+  C_min = minimum heat capacity rate [W/K]
+  C_max = maximum heat capacity rate [W/K]
+```
+
+### Performance Ranges
+
+**Typical Effectiveness Values by Application**:
+| Application | Effectiveness | Performance |
+|-------------|---------------|-------------|
+| Poorly designed HX | < 50% | Unacceptable |
+| Minimum acceptable | 60% - 70% | Below optimal |
+| Good design | 70% - 80% | Acceptable |
+| Very good design | 80% - 90% | Excellent |
+| Exceptional design | > 90% | Outstanding |
+| Theoretical maximum | 100% | Impossible in practice |
+
+**Datacenter Heat Reuse**:
+- Target: ≥ 80% effectiveness
+- Typical: 80% - 85% effectiveness
+- Excellent: ≥ 85% effectiveness
+- This tool: 85% effectiveness ✓
+
+### Thermodynamic Constraints
+
+**1. Second Law Compliance**:
+```
+Heat flows from hot to cold:
+T_hot_in > T_hot_out
+T_cold_out > T_cold_in
+T_hot_out > T_cold_in (pinch constraint)
+T_hot_in > T_cold_out (approach constraint)
+```
+
+**2. Heat Balance**:
+```
+Q̇_hot ≈ Q̇_cold (within 5% tolerance)
+Balance Error = |Q̇_hot - Q̇_cold| / Q̇_avg × 100%
+Acceptable: < 5%
+```
+
+**3. Effectiveness Limits**:
+```
+0 ≤ ε < 1.0
+ε = 1.0 only for infinite heat transfer area (theoretical)
+Practical maximum ≈ 0.95 (95%)
+```
+
+---
+
+## Validation Example with Real Numbers
+
+### Test Case: 1.0 MW Datacenter Heat Reuse System
+
+#### Input Parameters
+```
+System Configuration:
+- Power Capacity (wha):       1.0 MW
+- TCS Inlet Temp (T1):        20°C
+- Temperature Rise (itdt):    10°C
+- Approach Temperature:       2°C
+```
+
+#### Lookup Results from ALLHX.csv
+```
+Matched Record:
+- F1 (TCS flow):       1493 L/min
+- F2 (FWS flow):       1440 L/min
+- T1 (TCS inlet):      20°C
+- T2 (TCS outlet):     30°C
+- T3 (FWS outlet):     28°C
+- T4 (FWS inlet):      18°C
+- HX Cost:             €17,616
+```
+
+#### Step-by-Step Calculation
+
+**1. Convert Flow Rates**
+```
+Hot side (TCS):
+ṁ_hot = 1493 L/min × (1 m³/1000 L) / 60 s/min × 997 kg/m³
+      = 24.81 kg/s
+
+Cold side (FWS):
+ṁ_cold = 1440 L/min × (1 m³/1000 L) / 60 s/min × 997 kg/m³
+       = 23.93 kg/s
+```
+
+**2. Get Water Properties** (at 25°C average)
+```
+cp = 4180 J/(kg·K)
+ρ  = 997 kg/m³
+```
+
+**3. Calculate Capacity Rates**
+```
+Ċ_hot  = 24.81 × 4180 = 103,665 W/K
+Ċ_cold = 23.93 × 4180 = 100,027 W/K
+C_min  = 100,027 W/K
+C_max  = 103,665 W/K
+Cr     = 0.965
+```
+
+**4. Calculate Heat Duties**
+```
+Q̇_hot  = 24.81 × 4180 × (30 - 20) = 1,037,058 W = 1.037 MW
+Q̇_cold = 23.93 × 4180 × (28 - 18) = 1,000,274 W = 1.000 MW
+Q̇_avg  = 1,018,666 W = 1.019 MW
+Balance error = 3.61% ✓
+```
+
+**5. Calculate Maximum Heat Transfer**
+```
+Q̇_max = 100,027 × (30 - 18) = 1,200,324 W = 1.200 MW
+```
+
+**6. Calculate Effectiveness**
+```
+ε = Q̇_avg / Q̇_max
+  = 1,018,666 / 1,200,324
+  = 0.8486
+  = 84.86%
+```
+
+**7. Performance Rating**
+```
+Rating: EXCELLENT (≥ 80%)
+Gauge Display: Needle in GREEN zone
+Compliance: Meets EN standards
+```
+
+#### Visual Representation
+```
+Gauge Display:
+  Poor     Good    Excellent
+   |        |         |
+[====|========|=========*==]
+0%   60%     80%      85%  100%
+                       ↑
+                  Needle position
+```
+
+#### Verification
+```
+Manual Check:
+- Input: 1.0 MW system, 20°C, +10°C, 2°C approach
+- Flows: 1493/1440 L/min (from ALLHX.csv)
+- Temps: Hot 30→20°C, Cold 18→28°C
+- ΔT: Both streams = 10°C (balanced) ✓
+- Heat transfer: ≈1.0 MW ✓
+- Effectiveness: 85% ✓
+- Rating: EXCELLENT ✓
+```
+
+---
+
+## Data Sources and Dependencies
+
+### Primary Data Source: ALLHX.csv
+
+**Location**: `data/ALLHX.csv`
+**Purpose**: Pre-calculated heat exchanger performance database
+**Generation Method**: Heat exchanger sizing software (e.g., HTRI, Aspen EDR)
+
+**Key Columns**:
+| Column | Description | Units | Example Value |
+|--------|-------------|-------|---------------|
+| wha | Heat capacity | MW | 1.0 |
+| T1 | TCS inlet temperature | °C | 20 |
+| itdt | Temperature rise | °C | 10 |
+| TCSapp | Approach temperature | °C | 2 |
+| F1 | TCS flow rate | L/min | 1493 |
+| F2 | FWS flow rate | L/min | 1440 |
+| T2 | TCS outlet temperature | °C | 30 |
+| T3 | FWS outlet temperature | °C | 28 |
+| T4 | FWS inlet temperature | °C | 18 |
+| costHX | Heat exchanger cost | € | 17616 |
+| areaHX | Heat exchanger area | m² | 85.2 |
+
+**Data Validation**:
+- All records satisfy thermodynamic constraints
+- Heat balance validated within 5% tolerance
+- Flow rates optimized for given thermal duty
+- Costs based on European manufacturer quotes
+
+### Secondary Data Sources
+
+**1. Water Properties Database**
+- **File**: [python/physics/constants.py](../python/physics/constants.py)
+- **Source**: NIST Webbook, CoolProp
+- **Temperature Range**: 0°C to 100°C
+- **Properties**: Density, specific heat, viscosity, thermal conductivity
+
+**2. Heat Transfer Coefficients**
+- **File**: [python/physics/constants.py](../python/physics/constants.py)
+- **Source**: VDI Heat Atlas
+- **Values**: Typical U-values for water-to-water heat exchangers
+  - Plate HX: 2000-5000 W/(m²·K)
+  - Shell & Tube: 800-1500 W/(m²·K)
+
+**3. European Standards**
+- **Reference**: VDI Heat Atlas, EN Standards
+- **Minimum effectiveness**: 60%
+- **Excellent effectiveness**: 85%
+- **Minimum approach**: 2°C
+- **Minimum pinch**: 1°C
+
+---
+
+## Frequently Asked Questions
+
+### Q1: Why isn't effectiveness always 100%?
+**A**: 100% effectiveness would require infinite heat transfer area, which is physically impossible. Real heat exchangers are limited by:
+- Finite heat transfer area
+- Temperature differences driving heat transfer
+- Thermal resistances in the system
+- Economic constraints on size
+
+### Q2: What's the difference between effectiveness and efficiency?
+**A**:
+- **Effectiveness** (ε): Ratio of actual to maximum possible heat transfer
+- **Efficiency**: Often refers to energy conversion or system-level performance
+- Effectiveness is specific to heat exchanger thermal performance
+
+### Q3: How does approach temperature affect effectiveness?
+**A**: Smaller approach temperature generally requires:
+- Larger heat exchanger area
+- Higher capital cost
+- Lower operating cost (less pumping)
+- Higher effectiveness (better heat recovery)
+
+Trade-off example for 1 MW system:
+| Approach | HX Cost | Effectiveness | Capital Total |
+|----------|---------|---------------|---------------|
+| 2°C | €17,616 | ~85% | €134,500 |
+| 3°C | €13,500 | ~80% | €130,000 |
+| 5°C | €10,000 | ~75% | €139,000 |
+
+### Q4: Can I manually verify the effectiveness calculation?
+**A**: Yes! Follow these steps:
+1. Get flow rates (F1, F2) and temperatures (T1-T4) from system data
+2. Calculate heat duties: Q = ṁ × cp × ΔT for both streams
+3. Calculate C_min from the smaller capacity rate
+4. Calculate Q_max = C_min × (T_hot_in - T_cold_in)
+5. Effectiveness = Q_actual / Q_max
+
+See the validation example section for a complete worked example.
+
+### Q5: What does NTU mean?
+**A**: NTU (Number of Transfer Units) is a dimensionless parameter that characterizes heat exchanger size:
+- NTU = UA / C_min
+- Where U = overall heat transfer coefficient, A = area
+- Higher NTU = larger heat exchanger = better performance
+- Typical range: 2-6 for industrial applications
+
+### Q6: Is this calculation method standard?
+**A**: Yes, this uses the **Effectiveness-NTU method**, which is:
+- The preferred European method (VDI Heat Atlas)
+- Standard in ASHRAE handbooks
+- Taught in heat transfer textbooks worldwide
+- Used in professional heat exchanger design software
+
+### Q7: Why use C_min instead of C_max?
+**A**: The stream with the smaller heat capacity rate (C_min) limits heat transfer:
+- It experiences the maximum possible temperature change
+- Controls the maximum heat that can be transferred
+- Defines the thermodynamic limit of the system
+
+### Q8: What if hot and cold duties don't match exactly?
+**A**: Small differences (< 5%) are acceptable due to:
+- Rounding in calculations
+- Property variations with temperature
+- Heat losses to environment
+- Measurement uncertainties
+
+Large differences (> 5%) indicate:
+- Calculation error
+- Data inconsistency
+- Significant heat losses
+- Need for system review
 
 ---
 
@@ -411,77 +777,35 @@ For ε = 84.86%:
 
 ---
 
-## Frequently Asked Questions
+## Visual Description
 
-### Q1: Why isn't effectiveness always 100%?
-**A**: 100% effectiveness would require infinite heat transfer area, which is physically impossible. Real heat exchangers are limited by:
-- Finite heat transfer area
-- Temperature differences driving heat transfer
-- Thermal resistances in the system
-- Economic constraints on size
+### Chart Elements
 
-### Q2: What's the difference between effectiveness and efficiency?
-**A**:
-- **Effectiveness** (ε): Ratio of actual to maximum possible heat transfer
-- **Efficiency**: Often refers to energy conversion or system-level performance
-- Effectiveness is specific to heat exchanger thermal performance
+#### 1. Gauge Arc
+- **Shape**: Semi-circular arc from 0° (left) to 180° (right)
+- **Orientation**: Horizontal base with arc curving upward
+- **Total Range**: 0% to 100% effectiveness
 
-### Q3: How does approach temperature affect effectiveness?
-**A**: Smaller approach temperature generally requires:
-- Larger heat exchanger area
-- Higher capital cost
-- Lower operating cost (less pumping)
-- Higher effectiveness (better heat recovery)
+#### 2. Color Zones (Left to Right)
+| Zone | Color | Range | Meaning | Arc Position |
+|------|-------|-------|---------|--------------|
+| Poor | Red (#FF5252) | 0% - 60% | Below acceptable performance | Left 60% of arc |
+| Good | Yellow (#FFC107) | 60% - 80% | Acceptable performance | Middle 20% of arc |
+| Excellent | Green (#4CAF50) | 80% - 100% | Outstanding performance | Right 20% of arc |
 
-Trade-off example for 1 MW system:
-| Approach | HX Cost | Effectiveness | Capital Total |
-|----------|---------|---------------|---------------|
-| 2°C | €17,616 | ~85% | €134,500 |
-| 3°C | €13,500 | ~80% | €130,000 |
-| 5°C | €10,000 | ~75% | €139,000 |
+#### 3. Needle Indicator
+- **Color**: Black
+- **Style**: Solid line with circular pivot point
+- **Length**: 80% of gauge radius
+- **Position**: Rotates based on effectiveness value
+  - 0% effectiveness → Points left (0°)
+  - 50% effectiveness → Points upward (90°)
+  - 100% effectiveness → Points right (180°)
 
-### Q4: Can I manually verify the effectiveness calculation?
-**A**: Yes! Follow these steps:
-1. Get flow rates (F1, F2) and temperatures (T1-T4) from system data
-2. Calculate heat duties: Q = ṁ × cp × ΔT for both streams
-3. Calculate C_min from the smaller capacity rate
-4. Calculate Q_max = C_min × (T_hot_in - T_cold_in)
-5. Effectiveness = Q_actual / Q_max
-
-See the validation example section for a complete worked example.
-
-### Q5: What does NTU mean?
-**A**: NTU (Number of Transfer Units) is a dimensionless parameter that characterizes heat exchanger size:
-- NTU = UA / C_min
-- Where U = overall heat transfer coefficient, A = area
-- Higher NTU = larger heat exchanger = better performance
-- Typical range: 2-6 for industrial applications
-
-### Q6: Is this calculation method standard?
-**A**: Yes, this uses the **Effectiveness-NTU method**, which is:
-- The preferred European method (VDI Heat Atlas)
-- Standard in ASHRAE handbooks
-- Taught in heat transfer textbooks worldwide
-- Used in professional heat exchanger design software
-
-### Q7: Why use C_min instead of C_max?
-**A**: The stream with the smaller heat capacity rate (C_min) limits heat transfer:
-- It experiences the maximum possible temperature change
-- Controls the maximum heat that can be transferred
-- Defines the thermodynamic limit of the system
-
-### Q8: What if hot and cold duties don't match exactly?
-**A**: Small differences (< 5%) are acceptable due to:
-- Rounding in calculations
-- Property variations with temperature
-- Heat losses to environment
-- Measurement uncertainties
-
-Large differences (> 5%) indicate:
-- Calculation error
-- Data inconsistency
-- Significant heat losses
-- Need for system review
+#### 4. Text Elements
+- **Center Value**: Large bold percentage (e.g., "85.3%")
+- **Label**: "Effectiveness" below the percentage
+- **Zone Labels**: Text markers for each performance zone
 
 ---
 
@@ -776,298 +1100,6 @@ Examples:
 
 ---
 
-## Validation Example with Real Numbers
-
-### Test Case: 1.0 MW Datacenter Heat Reuse System
-
-#### Input Parameters
-```
-System Configuration:
-- Power Capacity (wha):       1.0 MW
-- TCS Inlet Temp (T1):        20°C
-- Temperature Rise (itdt):    10°C
-- Approach Temperature:       2°C
-```
-
-#### Lookup Results from ALLHX.csv
-```
-Matched Record:
-- F1 (TCS flow):       1493 L/min
-- F2 (FWS flow):       1440 L/min
-- T1 (TCS inlet):      20°C
-- T2 (TCS outlet):     30°C
-- T3 (FWS outlet):     28°C
-- T4 (FWS inlet):      18°C
-- HX Cost:             €17,616
-```
-
-#### Step-by-Step Calculation
-
-**1. Convert Flow Rates**
-```
-Hot side (TCS):
-ṁ_hot = 1493 L/min × (1 m³/1000 L) / 60 s/min × 997 kg/m³
-      = 24.81 kg/s
-
-Cold side (FWS):
-ṁ_cold = 1440 L/min × (1 m³/1000 L) / 60 s/min × 997 kg/m³
-       = 23.93 kg/s
-```
-
-**2. Get Water Properties** (at 25°C average)
-```
-cp = 4180 J/(kg·K)
-ρ  = 997 kg/m³
-```
-
-**3. Calculate Capacity Rates**
-```
-Ċ_hot  = 24.81 × 4180 = 103,665 W/K
-Ċ_cold = 23.93 × 4180 = 100,027 W/K
-C_min  = 100,027 W/K
-C_max  = 103,665 W/K
-Cr     = 0.965
-```
-
-**4. Calculate Heat Duties**
-```
-Q̇_hot  = 24.81 × 4180 × (30 - 20) = 1,037,058 W = 1.037 MW
-Q̇_cold = 23.93 × 4180 × (28 - 18) = 1,000,274 W = 1.000 MW
-Q̇_avg  = 1,018,666 W = 1.019 MW
-Balance error = 3.61% ✓
-```
-
-**5. Calculate Maximum Heat Transfer**
-```
-Q̇_max = 100,027 × (30 - 18) = 1,200,324 W = 1.200 MW
-```
-
-**6. Calculate Effectiveness**
-```
-ε = Q̇_avg / Q̇_max
-  = 1,018,666 / 1,200,324
-  = 0.8486
-  = 84.86%
-```
-
-**7. Performance Rating**
-```
-Rating: EXCELLENT (≥ 80%)
-Gauge Display: Needle in GREEN zone
-Compliance: Meets EN standards
-```
-
-#### Visual Representation
-```
-Gauge Display:
-  Poor     Good    Excellent
-   |        |         |
-[====|========|=========*==]
-0%   60%     80%      85%  100%
-                       ↑
-                  Needle position
-```
-
-#### Verification
-```
-Manual Check:
-- Input: 1.0 MW system, 20°C, +10°C, 2°C approach
-- Flows: 1493/1440 L/min (from ALLHX.csv)
-- Temps: Hot 30→20°C, Cold 18→28°C
-- ΔT: Both streams = 10°C (balanced) ✓
-- Heat transfer: ≈1.0 MW ✓
-- Effectiveness: 85% ✓
-- Rating: EXCELLENT ✓
-```
-
----
-
-## Data Sources and Dependencies
-
-### Primary Data Source: ALLHX.csv
-
-**Location**: `data/ALLHX.csv`
-**Purpose**: Pre-calculated heat exchanger performance database
-**Generation Method**: Heat exchanger sizing software (e.g., HTRI, Aspen EDR)
-
-**Key Columns**:
-| Column | Description | Units | Example Value |
-|--------|-------------|-------|---------------|
-| wha | Heat capacity | MW | 1.0 |
-| T1 | TCS inlet temperature | °C | 20 |
-| itdt | Temperature rise | °C | 10 |
-| TCSapp | Approach temperature | °C | 2 |
-| F1 | TCS flow rate | L/min | 1493 |
-| F2 | FWS flow rate | L/min | 1440 |
-| T2 | TCS outlet temperature | °C | 30 |
-| T3 | FWS outlet temperature | °C | 28 |
-| T4 | FWS inlet temperature | °C | 18 |
-| costHX | Heat exchanger cost | € | 17616 |
-| areaHX | Heat exchanger area | m² | 85.2 |
-
-**Data Validation**:
-- All records satisfy thermodynamic constraints
-- Heat balance validated within 5% tolerance
-- Flow rates optimized for given thermal duty
-- Costs based on European manufacturer quotes
-
-### Secondary Data Sources
-
-**1. Water Properties Database**
-- **File**: [python/physics/constants.py](../python/physics/constants.py)
-- **Source**: NIST Webbook, CoolProp
-- **Temperature Range**: 0°C to 100°C
-- **Properties**: Density, specific heat, viscosity, thermal conductivity
-
-**2. Heat Transfer Coefficients**
-- **File**: [python/physics/constants.py](../python/physics/constants.py)
-- **Source**: VDI Heat Atlas
-- **Values**: Typical U-values for water-to-water heat exchangers
-  - Plate HX: 2000-5000 W/(m²·K)
-  - Shell & Tube: 800-1500 W/(m²·K)
-
-**3. European Standards**
-- **Reference**: VDI Heat Atlas, EN Standards
-- **Minimum effectiveness**: 60%
-- **Excellent effectiveness**: 85%
-- **Minimum approach**: 2°C
-- **Minimum pinch**: 1°C
-
----
-
-## Technical Reference
-
-### Units Dictionary
-
-| Quantity | Unit | Symbol | Conversion |
-|----------|------|--------|------------|
-| Flow Rate | Liters per minute | L/min | 1 L/min = 1.667×10⁻⁵ m³/s |
-| Mass Flow | Kilograms per second | kg/s | ṁ = Q × ρ |
-| Temperature | Degrees Celsius | °C | ΔT [°C] = ΔT [K] |
-| Heat Duty | Watts | W | 1 MW = 1,000,000 W |
-| Specific Heat | Joules per kilogram-Kelvin | J/(kg·K) | Water: 4180 J/(kg·K) |
-| Density | Kilograms per cubic meter | kg/m³ | Water: ~997 kg/m³ |
-| Heat Capacity Rate | Watts per Kelvin | W/K | Ċ = ṁ × cp |
-| Effectiveness | Dimensionless | - | 0.0 to 1.0 (0% to 100%) |
-| NTU | Dimensionless | - | Typically 1 to 10 |
-
-### Formula Reference
-
-**1. Mass Flow Rate**
-```
-ṁ = Q_vol × ρ
-Where:
-  ṁ     = mass flow rate [kg/s]
-  Q_vol = volumetric flow rate [m³/s]
-  ρ     = fluid density [kg/m³]
-```
-
-**2. Heat Transfer Rate**
-```
-Q̇ = ṁ × cp × ΔT
-Where:
-  Q̇  = heat transfer rate [W]
-  ṁ  = mass flow rate [kg/s]
-  cp = specific heat [J/(kg·K)]
-  ΔT = temperature change [K or °C]
-```
-
-**3. Heat Capacity Rate**
-```
-Ċ = ṁ × cp
-Where:
-  Ċ  = heat capacity rate [W/K]
-  ṁ  = mass flow rate [kg/s]
-  cp = specific heat [J/(kg·K)]
-```
-
-**4. Maximum Heat Transfer**
-```
-Q̇_max = C_min × (T_hot_in - T_cold_in)
-Where:
-  Q̇_max      = maximum possible heat transfer [W]
-  C_min       = minimum heat capacity rate [W/K]
-  T_hot_in    = hot fluid inlet temperature [°C]
-  T_cold_in   = cold fluid inlet temperature [°C]
-```
-
-**5. Effectiveness**
-```
-ε = Q̇_actual / Q̇_max
-Where:
-  ε         = effectiveness [dimensionless, 0-1]
-  Q̇_actual  = actual heat transfer [W]
-  Q̇_max     = maximum possible heat transfer [W]
-```
-
-**6. NTU (Number of Transfer Units)**
-```
-For counterflow with Cr ≠ 1:
-NTU = ln((ε - 1)/(ε × Cr - 1)) / (Cr - 1)
-
-For balanced flow (Cr = 1):
-NTU = ε / (1 - ε)
-
-Where:
-  NTU = number of transfer units [dimensionless]
-  ε   = effectiveness [dimensionless]
-  Cr  = capacity ratio = C_min/C_max [dimensionless]
-```
-
-**7. Capacity Ratio**
-```
-Cr = C_min / C_max
-Where:
-  Cr    = capacity ratio [dimensionless, 0-1]
-  C_min = minimum heat capacity rate [W/K]
-  C_max = maximum heat capacity rate [W/K]
-```
-
-### Performance Ranges
-
-**Typical Effectiveness Values by Application**:
-| Application | Effectiveness | Performance |
-|-------------|---------------|-------------|
-| Poorly designed HX | < 50% | Unacceptable |
-| Minimum acceptable | 60% - 70% | Below optimal |
-| Good design | 70% - 80% | Acceptable |
-| Very good design | 80% - 90% | Excellent |
-| Exceptional design | > 90% | Outstanding |
-| Theoretical maximum | 100% | Impossible in practice |
-
-**Datacenter Heat Reuse**:
-- Target: ≥ 80% effectiveness
-- Typical: 80% - 85% effectiveness
-- Excellent: ≥ 85% effectiveness
-- This tool: 85% effectiveness ✓
-
-### Thermodynamic Constraints
-
-**1. Second Law Compliance**:
-```
-Heat flows from hot to cold:
-T_hot_in > T_hot_out
-T_cold_out > T_cold_in
-T_hot_out > T_cold_in (pinch constraint)
-T_hot_in > T_cold_out (approach constraint)
-```
-
-**2. Heat Balance**:
-```
-Q̇_hot ≈ Q̇_cold (within 5% tolerance)
-Balance Error = |Q̇_hot - Q̇_cold| / Q̇_avg × 100%
-Acceptable: < 5%
-```
-
-**3. Effectiveness Limits**:
-```
-0 ≤ ε < 1.0
-ε = 1.0 only for infinite heat transfer area (theoretical)
-Practical maximum ≈ 0.95 (95%)
-```
-
----
-
 ## Troubleshooting Guide
 
 ### Issue: Effectiveness shows 0% or "N/A"
@@ -1133,14 +1165,6 @@ effectiveness = max(0.0, min(1.0, effectiveness))
 plt.close('all')
 create_system_charts(analysis)
 ```
-
----
-
-## Version History
-
-| Date | Version | Changes | Author |
-|------|---------|---------|--------|
-| 2025-10-08 | 1.0 | Initial comprehensive documentation | Claude Code |
 
 ---
 
@@ -1222,38 +1246,6 @@ python/
 data/
   └─ ALLHX.csv                                     [Heat exchanger database]
 ```
-
----
-
-## Appendix C: Nomenclature
-
-### System Nomenclature (Heat Reuse Tool)
-- **TCS**: Thermal Cooling System (datacenter cooling water, hot side)
-- **FWS**: Fresh Water System (district heating water, cold side)
-- **wha**: Waste Heat Available (system capacity in MW)
-- **F1**: TCS flow rate [L/min]
-- **F2**: FWS flow rate [L/min]
-- **T1**: TCS inlet temperature [°C] (hot outlet from HX)
-- **T2**: TCS outlet temperature [°C] (hot inlet to HX)
-- **T3**: FWS outlet temperature [°C] (cold outlet from HX)
-- **T4**: FWS inlet temperature [°C] (cold inlet to HX)
-
-### Heat Exchanger Nomenclature (Standard)
-- **Hot side**: Fluid giving up heat (TCS in our case)
-- **Cold side**: Fluid receiving heat (FWS in our case)
-- **Counterflow**: Fluids flow in opposite directions (best performance)
-- **Effectiveness (ε)**: Actual heat transfer / Maximum possible heat transfer
-- **NTU**: Number of Transfer Units (dimensionless size parameter)
-- **Cr**: Capacity ratio = C_min / C_max
-- **LMTD**: Log Mean Temperature Difference [°C]
-
-### Thermodynamic Variables
-- **ṁ**: Mass flow rate [kg/s]
-- **Q̇**: Heat transfer rate [W]
-- **cp**: Specific heat at constant pressure [J/(kg·K)]
-- **Ċ**: Heat capacity rate [W/K]
-- **ρ**: Density [kg/m³]
-- **ΔT**: Temperature difference [K or °C]
 
 ---
 
