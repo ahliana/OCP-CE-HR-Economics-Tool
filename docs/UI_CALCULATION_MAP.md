@@ -203,12 +203,17 @@ total_cost = (
 
 ---
 
-## Screen 3: Economics Analysis Table
+## Screen 3: Economics Analysis Panel
 
 **UI Location**: Economics Analysis output panel
-**Display Function**: `display_economics_analysis()` in [python/ui/economics_panel.py:242](python/ui/economics_panel.py#L242)
+**Display Function**: `display_economics_analysis()` in [python/ui/economics_panel.py:501](python/ui/economics_panel.py#L501)
 **Table Generator**: `create_economics_comparison_table()` in [python/ui/economics_panel.py:42](python/ui/economics_panel.py#L42)
-**Core Calculation**: `compare_approaches()` in [python/core/costs.py:561](python/core/costs.py#L561)
+**Core Calculation**: `compare_approaches()` in [python/core/costs.py:660](python/core/costs.py#L660)
+
+**Panel Components** (displayed in order):
+1. Economics Comparison Table (all 3 approaches)
+2. Cost Contrast Chart (line graph)
+3. **Equipment Cost Breakdown Charts** (3 pie charts) - NEW as of 2025-10-08
 
 ### Order of Magnitude Estimate - 2°C Approach Column
 
@@ -277,6 +282,63 @@ power_kw = (flow_m3s × pressure_drop_pa) / (pump_eff × motor_eff × 1000)
 annual_energy_kwh = power_kw × 8760
 ```
 
+### Equipment Cost Breakdown by Approach (3 Pie Charts)
+
+**Added**: 2025-10-08
+**Function**: `create_approach_cost_breakdown_charts()` in [python/ui/economics_panel.py:397](python/ui/economics_panel.py#L397)
+**Location**: Below Cost Contrast Chart in Economics Analysis panel
+**Data Source**: Same `compare_approaches()` data used for table above
+
+**Visual Layout**:
+- 3 pie charts side-by-side (1 row × 3 columns)
+- Figure size: 18" × 7"
+- Each chart shows cost distribution for one approach temperature
+
+**Cost Components Displayed** (6 per chart):
+| Component | Data Source | Notes |
+|-----------|-------------|-------|
+| Heat Exchangers | `data['heat_exchanger']` | Equipment cost only |
+| Pumps | `data['pumps']` | Equipment cost only |
+| Piping & Fittings | `data['pipe_fittings']` | Equipment cost only |
+| Instrumentation | `data['instrumentation']` | Equipment cost only |
+| Valves | `data['valves']` | Equipment cost only |
+| I&C Subtotal | `installation_cost + engineering_cost + contingency_cost` | Combined overhead |
+
+**Color Scheme** (Rainbow Spectrum - ROYGBP):
+```python
+# python/ui/economics_panel.py:426-433
+colors = [
+    '#E74C3C',  # Red - Heat Exchangers
+    '#FF9F43',  # Orange - Pumps
+    '#F1C40F',  # Yellow - Piping & Fittings
+    '#2ECC71',  # Green - Instrumentation
+    '#3498DB',  # Blue - Valves
+    '#9B59B6'   # Purple - I&C Subtotal
+]
+```
+
+**Example Percentages** (1.0 MW, 20°C, +10°C):
+
+| Component | 2°C | 3°C | 5°C | Trend |
+|-----------|-----|-----|-----|-------|
+| Heat Exchangers | 12.5% | 10.4% | 7.4% | ⬇ Decreases with approach |
+| Pumps | 24.9% | 25.7% | 31.0% | ⬆ Increases with approach |
+| Piping & Fittings | 10.0% | 10.4% | 9.7% | ≈ Relatively constant |
+| Instrumentation | 21.3% | 22.1% | 20.7% | ≈ Relatively constant |
+| Valves | 3.2% | 3.3% | 3.1% | ≈ Relatively constant |
+| I&C Subtotal | 28.1% | 28.1% | 28.1% | = Constant (% of total) |
+
+**Key Observations**:
+- **2°C Approach**: Higher HX percentage (needs larger heat exchanger)
+- **5°C Approach**: Higher pump percentage (smaller HX = higher pressure drop)
+- **I&C Subtotal**: Consistent ~28% across all approaches (overhead scales with total)
+
+**Display Details**:
+- Percentages shown on each wedge in white bold text (10pt)
+- Legend below each chart (9pt, 2 columns, no frame)
+- Each pie starts at 90° (top) and goes clockwise
+- Percentages positioned at 85% of radius for clarity
+
 ---
 
 ## Screen 4: Charts and Visualizations
@@ -297,9 +359,10 @@ annual_energy_kwh = power_kw × 8760
 
 ### Chart 1: Cost Breakdown by Approach (MOVED TO ECONOMICS PANEL)
 
-**Status**: MOVED TO ECONOMICS PANEL
+**Status**: MOVED TO ECONOMICS PANEL (2025-10-08)
 **Previous Location**: `create_cost_breakdown_chart()` in charts.py
 **Current Location**: `create_approach_cost_breakdown_charts()` in [python/ui/economics_panel.py:397](python/ui/economics_panel.py#L397)
+**Called From**: `display_economics_analysis()` in [python/ui/economics_panel.py:501](python/ui/economics_panel.py#L501)
 
 **Note**: Now displays as 3 pie charts (2°C, 3°C, 5°C) in Economics Analysis panel using Order of Magnitude data
 
@@ -315,7 +378,40 @@ annual_energy_kwh = power_kw × 8760
 | Center | 3°C | 6 cost components | Balanced distribution |
 | Right | 5°C | 6 cost components | Higher pump % (more flow required) |
 
+**Visual Details**:
+- **Layout**: 1 row × 3 columns, figure size 18" × 7"
+- **Percentages**: Displayed on each wedge in white bold text (10pt)
+- **Labels**: Legend below each chart (9pt, 2 columns, no frame)
+- **Color Scheme**: Rainbow spectrum (ROYGBP)
+
+**Color Palette**:
+| Component | Color | Hex Code |
+|-----------|-------|----------|
+| Heat Exchangers | Red | `#E74C3C` |
+| Pumps | Orange | `#FF9F43` |
+| Piping & Fittings | Yellow | `#F1C40F` |
+| Instrumentation | Green | `#2ECC71` |
+| Valves | Blue | `#3498DB` |
+| I&C Subtotal | Purple | `#9B59B6` |
+
 **Percentage Calculation**: Automatic via matplotlib `autopct='%1.1f%%'`
+
+**Data Extraction**:
+```python
+# python/ui/economics_panel.py:450-457
+wedges, texts, autotexts = axs[idx].pie(
+    values,
+    colors=colors,
+    autopct='%1.1f%%',
+    startangle=90,
+    pctdistance=0.85
+)
+
+# Legend below chart
+axs[idx].legend(wedges, labels, loc="upper center",
+               bbox_to_anchor=(0.5, -0.05),
+               fontsize=9, ncol=2, frameon=False)
+```
 
 ### Chart 2: System Approach Profiles (Main Charts - Position [0])
 
@@ -361,7 +457,7 @@ effectiveness = hx_analysis['effectiveness']
 
 ### Chart 4: Cost Contrast Graph (Economics Panel)
 
-**Function**: `create_cost_contrast_chart()` in [python/ui/economics_panel.py:165](python/ui/economics_panel.py#L165)
+**Function**: `create_cost_contrast_chart()` in [python/ui/economics_panel.py:324](python/ui/economics_panel.py#L324)
 
 | Data Series | Values | Source | Calculation |
 |-------------|--------|--------|-------------|
@@ -501,13 +597,13 @@ Returns: {T1, T2, T3, T4, F1, F2, hx_cost}
     │   ├─→ calculate_order_of_magnitude_estimate(wha, T1, itdt, 3°C)
     │   ├─→ calculate_order_of_magnitude_estimate(wha, T1, itdt, 5°C)
     │   ├─→ compare_approaches() → comparison table
-    │   └─→ display_economics_panel()
+    │   ├─→ create_cost_contrast_chart() → line graph
+    │   ├─→ create_approach_cost_breakdown_charts() → 3 pie charts (NEW 2025-10-08)
+    │   └─→ display_economics_analysis()
     │
-    └─→ Charts
-        ├─→ create_cost_breakdown_chart()
-        ├─→ create_approach_profiles_chart()
-        ├─→ create_effectiveness_gauge()
-        └─→ create_cost_contrast_chart()
+    └─→ Charts (Main Display)
+        ├─→ create_approach_profiles_chart() (position [0])
+        └─→ create_effectiveness_gauge() (position [1])
 ```
 
 ### Order of Magnitude Estimate Flow
@@ -615,6 +711,7 @@ calculate_order_of_magnitude_estimate(wha, T1, temp_rise, approach)
 | Date | Version | Changes | Author |
 |------|---------|---------|--------|
 | 2025-10-06 | 1.0 | Initial comprehensive mapping | Claude Code |
+| 2025-10-08 | 1.1 | Added Equipment Cost Breakdown pie charts (3 charts in Economics panel), updated chart layout from 2x3 to 1x2, documented rainbow color scheme | Claude Code |
 
 ---
 
@@ -636,6 +733,12 @@ calculate_order_of_magnitude_estimate(wha, T1, temp_rise, approach)
 
 **"Where is the Economics table data calculated?"**
 → [python/core/costs.py:561-631](python/core/costs.py#L561) - `compare_approaches()` calls `calculate_order_of_magnitude_estimate()` 3 times
+
+**"How are the pie chart percentages calculated?"**
+→ [python/ui/economics_panel.py:397](python/ui/economics_panel.py#L397) - `create_approach_cost_breakdown_charts()` extracts 6 cost components from `compare_approaches()` data, matplotlib calculates percentages automatically
+
+**"Why do the pie chart percentages differ between approaches?"**
+→ Physical trade-off: 2°C needs larger HX (higher %), 5°C needs more powerful pumps (higher %). Each approach has different equipment costs, so percentages vary even though I&C overhead is consistent ~28%.
 
 ### Verification Path
 
