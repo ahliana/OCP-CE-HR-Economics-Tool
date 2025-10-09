@@ -4,6 +4,11 @@
 
 # python/physics/heat_transfer.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Standard Heat Transfer Correlations and Formulas
 Reference: Fundamentals of Heat and Mass Transfer (Incropera, DeWitt, Bergman, Lavine)
 European Standards: EN 12975, EN 14511, VDI Heat Atlas

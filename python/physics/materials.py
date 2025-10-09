@@ -4,6 +4,11 @@
 
 # python/physics/materials.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Material Properties for Piping, Heat Exchangers, and Thermal Systems
 Reference: VDI Heat Atlas, EN Standards, Engineering Material Handbooks
 European standards and specifications prioritized

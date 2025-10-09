@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Chart Generation Module - Configurable chart creation
 Extracted from Interactive Analysis Tool.ipynb
 """

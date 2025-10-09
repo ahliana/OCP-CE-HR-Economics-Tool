@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Original calculation functions for heat reuse system analysis.
 
 This module contains the core calculation functions that were originally

@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 UI Configuration - All UI settings in one place for easy maintenance
 Extracted from Interactive Analysis Tool.ipynb
 """

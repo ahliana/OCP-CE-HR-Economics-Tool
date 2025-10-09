@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Data Type Conversion Utilities
 
 This module provides robust data type conversion functions that handle

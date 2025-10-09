@@ -4,6 +4,11 @@
 
 # python/physics/heat_exchangers.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Heat Exchanger Analysis Methods and Correlations
 Reference: VDI Heat Atlas, Heat Exchanger Design Handbook (Thulukkanam)
 European standards and practices prioritized

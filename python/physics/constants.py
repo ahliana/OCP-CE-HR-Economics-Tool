@@ -4,6 +4,11 @@
 
 # python/physics/constants.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Standard Physics Constants and Properties
 All values from NIST, ASHRAE, and engineering handbooks
 European/Metric standards prioritized throughout

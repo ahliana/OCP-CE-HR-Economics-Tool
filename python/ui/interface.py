@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 UI Interface Module - Main Interface Logic
 Contains the logo display and interface creation functions
 """

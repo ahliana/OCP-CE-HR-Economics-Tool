@@ -4,6 +4,11 @@
 
 # python/physics/fluid_mechanics.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Standard Fluid Mechanics Formulas and Correlations
 Reference: VDI Heat Atlas, Introduction to Fluid Mechanics (Fox & McDonald, 8th Ed.)
 European standards and correlations prioritized

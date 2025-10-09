@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Main UI Interface for Heat Reuse Tool
 Simple init file that imports main display function
 """

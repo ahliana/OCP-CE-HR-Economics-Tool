@@ -4,6 +4,11 @@
 
 # python/physics/units.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Unit Conversion Functions for Heat Reuse Engineering Calculations
 European-first design with comprehensive conversions for temperature, flow, 
 pressure, power, etc. Optimized for datacenter heat reuse applications.

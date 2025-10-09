@@ -4,6 +4,11 @@
 
 # python/physics/engineering_calculations.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Engineering Calculations for Common Datacenter Applications
 Combines multiple physics principles for practical engineering solutions
 

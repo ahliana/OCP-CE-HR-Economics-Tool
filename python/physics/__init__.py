@@ -1,5 +1,10 @@
 # python/physics/__init__.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Comprehensive Physics Module for Datacenter Heat Reuse Systems
 
 This module provides standard physics constants, formulas, and correlations

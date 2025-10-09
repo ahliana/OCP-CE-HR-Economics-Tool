@@ -4,6 +4,11 @@
 
 # python/physics/thermodynamics.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Standard Thermodynamic Formulas and Relationships
 Reference: Fundamentals of Heat and Mass Transfer (Incropera & DeWitt, 8th Ed.)
 VDI Heat Atlas (European Engineering Standard)

@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Display Formatting and Input Validation
 Extracted from Interactive Analysis Tool.ipynb
 """

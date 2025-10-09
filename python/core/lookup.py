@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Lookup functions for heat exchanger and system data.
 
 This module contains all data lookup functions including the main

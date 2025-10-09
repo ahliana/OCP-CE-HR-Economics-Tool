@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Heat Reuse Tool - Main Package
 Auto-loads all components in the correct order
 """

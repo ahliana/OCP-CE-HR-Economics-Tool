@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 CSV Data Loading and Management
 
 This module handles loading and accessing CSV data files.

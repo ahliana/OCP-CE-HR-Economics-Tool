@@ -1,5 +1,10 @@
 # python/autostart.py - Clean User Interface
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Heat Reuse Tool - Automatic Startup
 
 This module automatically loads all data and displays the interface.

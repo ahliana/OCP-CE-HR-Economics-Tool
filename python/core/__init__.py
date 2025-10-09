@@ -1,5 +1,10 @@
 # python/core/__init__.py
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Core business logic and calculations for Heat Reuse Tool
 
 This module contains the main calculation functions and business logic

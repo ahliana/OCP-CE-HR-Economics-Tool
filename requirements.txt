@@ -1,3 +1,8 @@
+"""
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
 # Heat Reuse Tool Dependencies
 # Core Jupyter and Widget Dependencies
 jupyter>=1.0.0

@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Cost Calculation Module for Heat Reuse Economics Tool
 
 This module provides comprehensive cost calculations for heat exchanger systems,

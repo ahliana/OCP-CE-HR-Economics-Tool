@@ -1,4 +1,9 @@
 """
+Author: Ahliana Byrd <ahliana.byrd@gmail.com>
+Created: 2025-10-08
+"""
+
+"""
 Economics Analysis Panel
 Order of Magnitude Estimate comparison and visualization
 """
