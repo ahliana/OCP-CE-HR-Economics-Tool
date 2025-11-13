@@ -60,6 +60,54 @@ def display_logo(width: int = 600):
         </div>
         """
         display(HTML(error_html))
+        
+
+# =============================================================================
+# SHOW HEAT EXCHANGER DRAWING
+# =============================================================================
+
+def display_hxsimpledrawing(width: int = 600):
+    """
+    Display the Heat Exchanger Drawing from Assets directory.
+    
+    Args:
+        width: Image width in pixels
+    """
+    try:
+        # Look for logo in common locations
+        possible_paths = [
+            os.path.join("Assets", "HeatExchangerSimpleDrawing.png"),
+            os.path.join("..", "Assets", "HeatExchangerSimpleDrawing.png"),
+            os.path.join(".", "Assets", "HeatExchangerSimpleDrawing.png"),
+            "HeatExchangerSimpleDrawing.png"
+        ]
+        
+        drawing_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                drawing_path = path
+                break
+        
+        if drawing_path:
+            # Display the logo image
+            display(Image(filename=drawing_path, width=width))
+        else:
+            # Fallback if logo not found - simple text header
+            fallback_html = """
+            <div style="text-align: center; margin: 20px 0;">
+                <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+            </div>
+            """
+            display(HTML(fallback_html))
+            
+    except Exception as e:
+        # Error fallback - simple text header
+        error_html = """
+        <div style="text-align: center; margin: 20px 0;">
+            <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+        </div>
+        """
+        display(HTML(error_html))
 
 # =============================================================================
 # INTERFACE CREATION
@@ -119,6 +167,9 @@ def display_interface(options=None):
     try:
         # Display logo first
         display_logo()
+        
+        # Display the simple heat exchanger drawing
+        display_hxsimpledrawing()
         
         # Create and display interface
         interface_components = create_heat_reuse_interface(options)
