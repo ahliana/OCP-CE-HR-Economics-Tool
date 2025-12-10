@@ -1,31 +1,18 @@
-"""
-Author: Ahliana Byrd <ahliana.byrd@gmail.com>
-Created: 2025-10-08
-"""
+# Heat Reuse Tool - Core Dependencies
+# For full feature set, see requirements-full.txt
 
-# Heat Reuse Tool Dependencies
-# Core Jupyter and Widget Dependencies
+# Jupyter Environment
 jupyter>=1.0.0
 ipywidgets>=8.0.0
 notebook>=6.4.0
 ipykernel>=6.15.0
 
-# Data Analysis and Computation
+# Data Analysis
 pandas>=1.5.0
 numpy>=1.20.0
 
 # Visualization
 matplotlib>=3.5.0
 
-# Physics and Engineering Calculations
-scipy>=1.9.0
-CoolProp>=6.4.0
-pint>=0.20.0
-fluids>=1.0.0
-ht>=1.0.0
-
-# Development and Testing (optional but recommended)
-pytest>=7.0.0
-
-# IPython for better notebook experience
+# IPython
 ipython>=8.0.0

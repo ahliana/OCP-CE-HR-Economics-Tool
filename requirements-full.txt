@@ -1,0 +1,53 @@
+# Heat Reuse Tool - Full Dependencies
+# Includes optional packages for advanced physics calculations
+#
+# Install with: pip install -r requirements-full.txt
+#
+# Note: Some packages (CoolProp, fluids) require C++ compilation.
+# If installation fails, use requirements.txt instead for core functionality.
+
+# ============================================================================
+# CORE DEPENDENCIES (required)
+# ============================================================================
+
+# Jupyter Environment
+jupyter>=1.0.0
+ipywidgets>=8.0.0
+notebook>=6.4.0
+ipykernel>=6.15.0
+
+# Data Analysis
+pandas>=1.5.0
+numpy>=1.20.0
+
+# Visualization
+matplotlib>=3.5.0
+
+# IPython
+ipython>=8.0.0
+
+# ============================================================================
+# PHYSICS AND ENGINEERING (optional - for advanced calculations)
+# ============================================================================
+
+# Scientific Computing
+scipy>=1.9.0
+
+# Thermodynamic Properties
+# Note: CoolProp requires C++ compiler. Skip if installation fails.
+CoolProp>=6.4.0
+
+# Unit Handling
+pint>=0.20.0
+
+# Fluid Mechanics
+fluids>=1.0.0
+
+# Heat Transfer
+ht>=1.0.0
+
+# ============================================================================
+# DEVELOPMENT AND TESTING (optional)
+# ============================================================================
+
+pytest>=7.0.0
