@@ -42,7 +42,8 @@ def setup_environment():
 
 def launch_interface():
     """Launch the Heat Reuse Tool interface."""
-    from IPython.display import display, clear_output
+    from IPython.display import display
+    import ipywidgets as widgets
 
     # Add python path
     if '/content/OCP-CE-HR-Economics-Tool/python' not in sys.path:
@@ -58,9 +59,12 @@ def launch_interface():
     # Create interface
     interface_components = create_heat_reuse_interface()
 
-    # Explicitly display the widget
+    # Use Output widget to force proper rendering
     if interface_components and 'interface' in interface_components:
-        display(interface_components['interface'])
+        out = widgets.Output()
+        with out:
+            display(interface_components['interface'])
+        display(out)
 
     return interface_components
 
