@@ -25,27 +25,37 @@ def setup_environment():
     # CRITICAL: Downgrade ipywidgets to 7.x for Colab compatibility
     # Colab's widget manager has issues with ipywidgets 8.x
     # See: https://github.com/googlecolab/colabtools/issues/3020
-    subprocess.run(
-        [sys.executable, '-m', 'pip', 'install', '--quiet', 'ipywidgets>=7,<8'],
-        capture_output=True
+    print("[DEBUG] Installing ipywidgets 7.x...")
+    result = subprocess.run(
+        [sys.executable, '-m', 'pip', 'install', 'ipywidgets>=7,<8'],
+        capture_output=True,
+        text=True
     )
+    print(f"[DEBUG] ipywidgets install result: {result.returncode}")
+    if result.stdout:
+        print(f"[DEBUG] stdout: {result.stdout[-200:]}")
 
     # Install other dependencies quietly
+    print("[DEBUG] Installing requirements.txt...")
     subprocess.run(
         [sys.executable, '-m', 'pip', 'install', '--quiet', '-r', 'requirements.txt'],
         capture_output=True
     )
 
+    # Check ipywidgets version
+    import ipywidgets
+    print(f"[DEBUG] ipywidgets version: {ipywidgets.__version__}")
+
     # Enable widget manager after downgrade
+    print("[DEBUG] Enabling custom widget manager...")
     from google.colab import output
     output.enable_custom_widget_manager()
 
-    # Import ipywidgets to force initialization
-    import ipywidgets
-
     # Give widget manager time to initialize
-    time.sleep(1)
+    print("[DEBUG] Waiting for widget manager...")
+    time.sleep(2)
 
+    print("[DEBUG] Setup complete")
     return True
 
 def launch_interface():
@@ -81,8 +91,9 @@ def run():
     print("Setting up Heat Reuse Economics Tool...")
     setup_environment()
 
-    # Clear output and display fresh
-    from IPython.display import clear_output
-    clear_output(wait=True)
+    # Temporarily disabled clear_output for debugging
+    # from IPython.display import clear_output
+    # clear_output(wait=True)
 
+    print("[DEBUG] Launching interface...")
     return launch_interface()
