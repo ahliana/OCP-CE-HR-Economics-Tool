@@ -79,7 +79,9 @@ def launch_interface():
 
 def run():
     """Main entry point - setup and launch."""
-    print("Setting up Heat Reuse Economics Tool...")
+    print("=" * 50)
+    print("COLAB_SETUP.RUN() CALLED")
+    print("=" * 50)
     setup_environment()
 
     # Temporarily disabled clear_output for debugging
