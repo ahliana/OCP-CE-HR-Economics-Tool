@@ -14,7 +14,6 @@ Handles all Colab-specific setup including:
 
 import sys
 import os
-import subprocess
 import time
 
 def setup_environment():
@@ -22,31 +21,23 @@ def setup_environment():
     # Ensure we're in the right directory
     os.chdir('/content/OCP-CE-HR-Economics-Tool')
 
-    # CRITICAL: Downgrade ipywidgets to 7.x for Colab compatibility
-    # Colab's widget manager has issues with ipywidgets 8.x
-    # See: https://github.com/googlecolab/colabtools/issues/3020
-    print("[DEBUG] Installing ipywidgets 7.x...")
-    result = subprocess.run(
-        [sys.executable, '-m', 'pip', 'install', 'ipywidgets>=7,<8'],
-        capture_output=True,
-        text=True
-    )
-    print(f"[DEBUG] ipywidgets install result: {result.returncode}")
-    if result.stdout:
-        print(f"[DEBUG] stdout: {result.stdout[-200:]}")
+    print("[DEBUG] Installing dependencies from requirements.txt...")
 
-    # Install other dependencies quietly
-    print("[DEBUG] Installing requirements.txt...")
-    subprocess.run(
-        [sys.executable, '-m', 'pip', 'install', '--quiet', '-r', 'requirements.txt'],
-        capture_output=True
-    )
+    # Use os.system for visible output in Colab
+    os.system(f'{sys.executable} -m pip install ipywidgets>=7,<8')
+    os.system(f'{sys.executable} -m pip install -r requirements.txt')
 
-    # Check ipywidgets version
+    # Check what got installed
     import ipywidgets
     print(f"[DEBUG] ipywidgets version: {ipywidgets.__version__}")
 
-    # Enable widget manager after downgrade
+    try:
+        import CoolProp
+        print(f"[DEBUG] CoolProp version: {CoolProp.__version__}")
+    except ImportError as e:
+        print(f"[DEBUG] CoolProp import failed: {e}")
+
+    # Enable widget manager after installs
     print("[DEBUG] Enabling custom widget manager...")
     from google.colab import output
     output.enable_custom_widget_manager()
