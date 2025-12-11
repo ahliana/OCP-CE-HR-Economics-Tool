@@ -68,6 +68,9 @@ def run():
     """Main entry point - setup and launch."""
     print("Setting up Heat Reuse Economics Tool...")
     setup_environment()
-    print("Launching interface...")
-    print("-" * 40)
+
+    # Clear output and display fresh
+    from IPython.display import clear_output
+    clear_output(wait=True)
+
     return launch_interface()
