@@ -10,27 +10,19 @@ Handles all Colab-specific setup including:
 - Dependency installation
 - Widget manager configuration
 - Interface display
-
-Usage in notebook cell:
-    !pip install --quiet gitpython
-    import sys
-    sys.path.insert(0, '/content')
-    !git clone --quiet https://github.com/opencomputeproject/OCP-CE-HR-Economics-Tool.git /content/OCP-CE-HR-Economics-Tool 2>/dev/null || true
-    sys.path.insert(0, '/content/OCP-CE-HR-Economics-Tool/python')
-    from colab_setup import run
-    run()
 """
 
 import sys
 import os
 import subprocess
+import time
 
 def setup_environment():
     """Configure Colab environment and install dependencies."""
     # Ensure we're in the right directory
     os.chdir('/content/OCP-CE-HR-Economics-Tool')
 
-    # Enable widget manager
+    # Enable widget manager FIRST
     from google.colab import output
     output.enable_custom_widget_manager()
 
@@ -40,19 +32,37 @@ def setup_environment():
         capture_output=True
     )
 
-    # Import ipywidgets to ensure it's loaded
+    # Import ipywidgets to force initialization
     import ipywidgets
+
+    # Give widget manager time to initialize
+    time.sleep(1)
 
     return True
 
 def launch_interface():
     """Launch the Heat Reuse Tool interface."""
-    # Add python path
-    sys.path.insert(0, '/content/OCP-CE-HR-Economics-Tool/python')
+    from IPython.display import display, clear_output
 
-    # Import and run
-    import autostart
-    return autostart
+    # Add python path
+    if '/content/OCP-CE-HR-Economics-Tool/python' not in sys.path:
+        sys.path.insert(0, '/content/OCP-CE-HR-Economics-Tool/python')
+
+    # Import UI components directly instead of autostart
+    from ui.interface import display_logo, display_hxsimpledrawing, create_heat_reuse_interface
+
+    # Display logo and drawing
+    display_logo()
+    display_hxsimpledrawing()
+
+    # Create interface
+    interface_components = create_heat_reuse_interface()
+
+    # Explicitly display the widget
+    if interface_components and 'interface' in interface_components:
+        display(interface_components['interface'])
+
+    return interface_components
 
 def run():
     """Main entry point - setup and launch."""
