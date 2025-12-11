@@ -22,15 +22,23 @@ def setup_environment():
     # Ensure we're in the right directory
     os.chdir('/content/OCP-CE-HR-Economics-Tool')
 
-    # Enable widget manager FIRST
-    from google.colab import output
-    output.enable_custom_widget_manager()
+    # CRITICAL: Downgrade ipywidgets to 7.x for Colab compatibility
+    # Colab's widget manager has issues with ipywidgets 8.x
+    # See: https://github.com/googlecolab/colabtools/issues/3020
+    subprocess.run(
+        [sys.executable, '-m', 'pip', 'install', '--quiet', 'ipywidgets>=7,<8'],
+        capture_output=True
+    )
 
-    # Install dependencies quietly
+    # Install other dependencies quietly
     subprocess.run(
         [sys.executable, '-m', 'pip', 'install', '--quiet', '-r', 'requirements.txt'],
         capture_output=True
     )
+
+    # Enable widget manager after downgrade
+    from google.colab import output
+    output.enable_custom_widget_manager()
 
     # Import ipywidgets to force initialization
     import ipywidgets
