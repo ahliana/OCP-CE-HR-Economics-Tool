@@ -28,11 +28,12 @@ from .charts import create_system_charts
 def display_system_parameters(output_area, analysis):
     """
     Display system parameters with proper formatting.
-    
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
     """
+    output_area.clear_output(wait=True)
     with output_area:
         try:
             system = analysis['system']
@@ -65,11 +66,12 @@ def display_system_parameters(output_area, analysis):
 def display_cost_analysis(output_area, analysis):
     """
     Display cost analysis with proper formatting.
-    
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
     """
+    output_area.clear_output(wait=True)
     with output_area:
         try:
             costs = analysis['costs']
@@ -402,11 +404,12 @@ def display_responsive_results(outputs_dict, analysis):
 def display_smart_recommendations(output_area, analysis):
     """
     Display smart recommendations in a rounded box below cost analysis.
-    
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
     """
+    output_area.clear_output(wait=True)
     with output_area:
         try:
             # Extract key metrics for analysis
@@ -440,11 +443,12 @@ def display_smart_recommendations(output_area, analysis):
 def display_visual_summary_cards(output_area, analysis):
     """
     Display visual summary cards above charts section.
-    
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
     """
+    output_area.clear_output(wait=True)
     with output_area:
         try:
             # Extract key metrics
