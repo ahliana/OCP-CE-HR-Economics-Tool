@@ -212,6 +212,7 @@ Developed by the Open Compute Project (OCP) Community.
 - OCP Heat Reuse Subproject Members
 
 **References:**
+- [White Paper: Developing a Tool to Evaluate the Economics of Data Center Heat Reuse](https://docs.google.com/document/d/1wn5XZeCfSrP6aqQMRjv3IQPkS1A-xVzj/edit?usp=share_link&ouid=112799013903432962737&rtpof=true&sd=true)
 - VDI Heat Atlas (Heat exchanger calculations)
 - European district heating standards
 
