@@ -225,14 +225,14 @@ def extract_formatted_cost_analysis(costs_data, sizing_data):
         List of (label, formatted_value) tuples
     """
     return [
-        ("Room Size:", format_display_value(sizing_data['room_size'], 'room_size', True, ' m')),
+        ("Room Size:", format_display_value(sizing_data['room_size'], 'room_size', True, ' m²')),
         ("Suggested Pipe Size:", format_display_value(sizing_data['primary_pipe_size'], 'pipe_size', False)),
         ("Pipe Cost per Meter:", f"€{format_display_value(costs_data['pipe_cost_per_meter'], 'pipe_cost_per_meter', False)}/m"),
         ("Total Pipe Cost:", f"€{format_display_value(costs_data['total_pipe_cost'], 'total_pipe_cost', False)}"),
         ("Heat Exchanger Cost:", f"€{format_display_value(costs_data['hx_cost'], 'hx_cost', False)}"),
         ("Valve Costs:", f"€{format_display_value(costs_data['total_valve_cost'], 'valve_costs', False)}"),
         ("Pump Cost:", f"€{format_display_value(costs_data['pump_cost'], 'pump_cost', False)}"),
-        ("TOTAL SYSTEM COST:", f"€{format_display_value(costs_data['total_cost'], 'total_cost', False)}")
+        ("TOTAL EQUIPMENT COST:", f"€{format_display_value(costs_data['total_cost'], 'total_cost', False)}")
     ]
 
 def extract_delta_t_values(system_data):
@@ -520,6 +520,9 @@ def create_summary_cards_html(wha, total_cost, cost_per_mw, effectiveness, ratin
                 </div>
                 <div style="margin-bottom: 10px;">
                     Cost/MW: <strong>€{cost_per_mw:,.0f}</strong>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    Cost/kW: <strong>€{cost_per_mw/1000:,.0f}</strong>
                 </div>
                 <div style="margin-bottom: 15px;">
                     <div style="background: #e0e0e0; height: 20px; border-radius: 10px; position: relative; overflow: hidden;">
