@@ -17,8 +17,11 @@ import pandas as pd
 from data.loader import get_csv_data, is_csv_loaded
 from data.converter import universal_float_convert
 
+import warnings
+warnings.filterwarnings('ignore', category=FutureWarning)
+
 import logging
-logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)  
 
 def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Optional[Dict[str, Any]]:
@@ -46,16 +49,14 @@ def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Op
 
     msg = f"lookup_allhx_data"
     logger.info(msg)
-    print(msg)    
     msg = f"Input: wha: {wha}, T1: {T1}, itdt: {itdt}, approach: {approach}"
     logger.info(msg)
-    print(msg)
        
     T2 = T1 + itdt
     
     # Check if ALLHX data is loaded
     if not is_csv_loaded('ALLHX'):
-        print("❌ Error: ALLHX.csv not loaded")
+        logger.error("ALLHX.csv not loaded")
         return None
     
     # Get the dataframe using the data module
@@ -86,7 +87,7 @@ def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Op
     # print(f"Valid data rows: {len(valid_df)}")
     
     if len(valid_df) == 0:
-        print("❌ No valid data after conversion")
+        logger.error("No valid data after conversion")
         return None
     
     # Debug: Show available combinations
@@ -112,7 +113,7 @@ def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Op
     # print(f"Exact matches found: {len(matches)}")
     
     if len(matches) == 0:
-        print("❌ No exact match found")
+        logger.warning("No exact match found")
         return None
     
     # Use the first match
@@ -133,7 +134,6 @@ def lookup_allhx_data(wha: float, T1: float, itdt: float, approach: float) -> Op
     
     msg = f"lookup_allhx_data result = {result}"
     logger.info(msg)
-    print(msg)
     
     # print(f"✅ Match found: F1={result['F1']}, F2={result['F2']}, HX_Cost=€{result['HX_cost']}")
     

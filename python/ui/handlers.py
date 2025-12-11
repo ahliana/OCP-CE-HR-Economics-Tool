@@ -218,11 +218,10 @@ def create_export_handler(analysis_data):
         """
         try:
             # This could be enhanced to actually export data
-            # For now, just show a message
-            print("Export functionality would be implemented here")
-            print(f"Analysis data available for export: {list(analysis_data.keys()) if analysis_data else 'No data'}")
+            # For now, functionality is placeholder
+            pass
         except Exception as e:
-            print(f"Export error: {str(e)}")
+            pass  # Export error silently handled
     
     return export_handler
 
@@ -291,7 +290,7 @@ def detach_handlers_from_widgets(widgets_dict, handlers_dict):
                 widgets_dict[widget_key].unobserve(handlers_dict[handler_key], names='value')
                 
     except Exception as e:
-        print(f"Error detaching handlers: {str(e)}")
+        pass  # Error detaching handlers silently handled
 
 # =============================================================================
 # UTILITY FUNCTIONS
@@ -330,11 +329,11 @@ def create_debug_handler(widgets_dict, outputs_dict):
             - Widgets loaded: {len(widgets_dict)}
             - Outputs available: {len(outputs_dict)}
             """
-            
-            print(debug_info)
-            
+            # Debug info only shown when explicitly requested via debug output widget
+            pass
+
         except Exception as e:
-            print(f"Debug error: {str(e)}")
+            pass  # Debug error silently handled
     
     return debug_handler
 
@@ -368,9 +367,9 @@ def create_reset_handler(widgets_dict, outputs_dict):
             
             # Clear all outputs
             clear_all_outputs(outputs_dict)
-            
+
         except Exception as e:
-            print(f"Reset error: {str(e)}")
+            pass  # Reset error silently handled
     
     return reset_handler
 
@@ -399,8 +398,6 @@ def with_error_handling(handler_func, error_output=None):
             if error_output:
                 from .outputs import display_error
                 display_error(error_output, error_message)
-            else:
-                print(error_message)
     
     return wrapped_handler
 
@@ -451,8 +448,6 @@ def create_performance_monitoring_handler(base_handler, performance_callback=Non
                     'status': 'success',
                     'timestamp': end_time
                 })
-            else:
-                print(f"Calculation completed in {execution_time:.2f} seconds")
             
             return result
             

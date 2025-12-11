@@ -29,7 +29,7 @@ try:
     from core.lookup import lookup_allhx_data, get_lookup_value
     
     import warnings
-    warnings.filterwarnings('ignore', category=FutureWarning, module='pandas')
+    warnings.filterwarnings('ignore', category=FutureWarning)
     
     import logging
     logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
