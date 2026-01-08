@@ -418,7 +418,7 @@ Effectiveness = Actual Heat Transfer / Maximum Possible Heat Transfer
 
 This section provides deeper economic insights including annualized costs, unit heat recovery cost (€/kWh), and economy of scale comparisons.
 
-### 7.1 New Calculations
+### 7.1 Calculations
 
 #### Annualized Capital Cost
 
