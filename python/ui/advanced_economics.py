@@ -467,89 +467,6 @@ def create_economy_of_scale_chart(data: list, output_area, title_suffix: str = "
 # MAIN DISPLAY FUNCTION
 # =============================================================================
 
-def _render_analysis_content(content_output, wha: float, T1: float, temp_rise: float,
-                              payback_years: float, on_stream_hours: int):
-    """
-    Internal function to render analysis content (tables and charts).
-
-    Called by display_advanced_economics when parameters change.
-    """
-    content_output.clear_output(wait=True)
-
-    with content_output:
-        try:
-            # Calculate capacity factor percentage for display
-            capacity_factor = (on_stream_hours / 8760) * 100
-
-            # Table A: Fixed Capacity, Variable Approach
-            approach_data = generate_approach_comparison_data(
-                wha, T1, temp_rise, payback_years, on_stream_hours
-            )
-            if approach_data:
-                table_a = create_comparison_table(
-                    approach_data,
-                    f"Table A: {wha} MW System - Variable Approach Temperature"
-                )
-                display(HTML(table_a))
-
-            # Chart 1: Annual Costs vs Approach
-            chart_header_1 = """
-            <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
-                📊 Chart 1: Annual Costs vs. Approach Temperature
-            </div>
-            """
-            display(HTML(chart_header_1))
-            create_annual_costs_chart(approach_data, content_output)
-
-            # Chart 2: Unit Cost vs Approach
-            chart_header_2 = """
-            <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                        color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
-                ⚡ Chart 2: Unit Heat Recovery Cost vs. Approach Temperature
-            </div>
-            """
-            display(HTML(chart_header_2))
-            create_unit_cost_chart(approach_data, content_output)
-
-            # Table B: Fixed Approach (current), Variable Capacity
-            current_approach = 3  # Default to 3°C for comparison
-            capacity_data = generate_capacity_comparison_data(
-                T1, temp_rise, current_approach, payback_years, on_stream_hours
-            )
-            if capacity_data:
-                table_b = create_comparison_table(
-                    capacity_data,
-                    f"Table B: {current_approach}°C Approach - Variable Capacity (Economy of Scale)"
-                )
-                display(HTML(table_b))
-
-            # Chart 3: Economy of Scale
-            chart_header_3 = """
-            <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-                        color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
-                🏭 Chart 3: Economy of Scale - Unit Cost vs. Capacity
-            </div>
-            """
-            display(HTML(chart_header_3))
-            create_economy_of_scale_chart(capacity_data, content_output)
-
-            # Key insights (updated to show user-selected parameters)
-            insights_html = create_insights_summary(
-                approach_data, capacity_data, wha, payback_years, on_stream_hours
-            )
-            display(HTML(insights_html))
-
-        except Exception as e:
-            error_html = f"""
-            <div style="margin: 20px 0; padding: 15px 20px; background-color: #f8d7da;
-                        border: 2px solid #dc3545; border-radius: 8px; color: #721c24;">
-                <strong>⚠️ Error in Advanced Economic Analysis:</strong> {str(e)}
-            </div>
-            """
-            display(HTML(error_html))
-
-
 def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: float,
                                payback_years: float = 5.0, on_stream_hours: int = 8760):
     """
@@ -569,17 +486,7 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
     output_area.clear_output(wait=True)
 
     with output_area:
-        # Create parameter selection dropdowns
-        payback_dropdown = create_payback_dropdown()
-        payback_dropdown.value = payback_years
-
-        on_stream_dropdown = create_on_stream_dropdown()
-        on_stream_dropdown.value = on_stream_hours
-
-        # Create output area for the analysis content (tables/charts)
-        content_output = widgets.Output()
-
-        # Section header with dropdowns
+        # Section header
         header_html = f"""
         <div style="margin: 20px 0 0 0; background-color: #f8f9fa; padding: 0; border-radius: 12px 12px 0 0;
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;
@@ -597,44 +504,114 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
         """
         display(HTML(header_html))
 
-        # Display dropdowns in a horizontal box
-        param_label = widgets.HTML(
-            value='<span style="font-size: 13px; color: #666; margin-right: 10px;">Adjust parameters:</span>'
-        )
-        dropdown_box = widgets.HBox(
-            [param_label, payback_dropdown, on_stream_dropdown],
-            layout=widgets.Layout(
-                padding='10px 24px',
-                background='white',
-                border='1px solid #e0e0e0',
-                margin='0 0 10px 0'
+        # Use ipywidgets.interactive for Colab compatibility
+        # This creates a self-contained interactive widget that works in Colab
+        def render_with_params(payback_yrs, on_stream_hrs):
+            """Render analysis with given parameters - called by interactive."""
+            try:
+                # Calculate capacity factor percentage for display
+                capacity_factor = (on_stream_hrs / 8760) * 100
+
+                # Table A: Fixed Capacity, Variable Approach
+                approach_data = generate_approach_comparison_data(
+                    wha, T1, temp_rise, payback_yrs, on_stream_hrs
+                )
+                if approach_data:
+                    table_a = create_comparison_table(
+                        approach_data,
+                        f"Table A: {wha} MW System - Variable Approach Temperature"
+                    )
+                    display(HTML(table_a))
+
+                # Chart 1: Annual Costs vs Approach
+                chart_header_1 = """
+                <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
+                    📊 Chart 1: Annual Costs vs. Approach Temperature
+                </div>
+                """
+                display(HTML(chart_header_1))
+                create_annual_costs_chart(approach_data, None)
+
+                # Chart 2: Unit Cost vs Approach
+                chart_header_2 = """
+                <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                            color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
+                    ⚡ Chart 2: Unit Heat Recovery Cost vs. Approach Temperature
+                </div>
+                """
+                display(HTML(chart_header_2))
+                create_unit_cost_chart(approach_data, None)
+
+                # Table B: Fixed Approach (current), Variable Capacity
+                current_approach = 3  # Default to 3°C for comparison
+                capacity_data = generate_capacity_comparison_data(
+                    T1, temp_rise, current_approach, payback_yrs, on_stream_hrs
+                )
+                if capacity_data:
+                    table_b = create_comparison_table(
+                        capacity_data,
+                        f"Table B: {current_approach}°C Approach - Variable Capacity (Economy of Scale)"
+                    )
+                    display(HTML(table_b))
+
+                # Chart 3: Economy of Scale
+                chart_header_3 = """
+                <div style="margin: 25px 0 10px 0; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                            color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
+                    🏭 Chart 3: Economy of Scale - Unit Cost vs. Capacity
+                </div>
+                """
+                display(HTML(chart_header_3))
+                create_economy_of_scale_chart(capacity_data, None)
+
+                # Key insights
+                insights_html = create_insights_summary(
+                    approach_data, capacity_data, wha, payback_yrs, on_stream_hrs
+                )
+                display(HTML(insights_html))
+
+            except Exception as e:
+                error_html = f"""
+                <div style="margin: 20px 0; padding: 15px 20px; background-color: #f8d7da;
+                            border: 2px solid #dc3545; border-radius: 8px; color: #721c24;">
+                    <strong>⚠️ Error in Advanced Economic Analysis:</strong> {str(e)}
+                </div>
+                """
+                display(HTML(error_html))
+
+        # Create interactive widget with dropdowns
+        # Using interact_manual=False so it updates automatically on dropdown change
+        interactive_widget = widgets.interactive(
+            render_with_params,
+            payback_yrs=widgets.Dropdown(
+                options=[('5 years', 5.0), ('10 years', 10.0), ('15 years', 15.0), ('20 years', 20.0)],
+                value=payback_years,
+                description='Payback:',
+                style={'description_width': '70px'},
+                layout=widgets.Layout(width='180px')
+            ),
+            on_stream_hrs=widgets.Dropdown(
+                options=[
+                    ('8760 hrs (100%)', 8760),
+                    ('8000 hrs (91%)', 8000),
+                    ('6000 hrs (68%)', 6000),
+                    ('4000 hrs (46%)', 4000)
+                ],
+                value=on_stream_hours,
+                description='On-stream:',
+                style={'description_width': '70px'},
+                layout=widgets.Layout(width='200px')
             )
         )
-        display(dropdown_box)
 
-        # Display content area
-        display(content_output)
-
-        # Define update function for dropdown changes
-        def update_analysis(change):
-            _render_analysis_content(
-                content_output,
-                wha, T1, temp_rise,
-                payback_dropdown.value,
-                on_stream_dropdown.value
-            )
-
-        # Attach observers to dropdowns
-        payback_dropdown.observe(update_analysis, names='value')
-        on_stream_dropdown.observe(update_analysis, names='value')
-
-        # Initial render with default/provided values
-        _render_analysis_content(
-            content_output,
-            wha, T1, temp_rise,
-            payback_years,
-            on_stream_hours
+        # Style the controls box
+        interactive_widget.children[0].layout = widgets.Layout(
+            padding='10px',
+            margin='0 0 10px 0'
         )
+
+        display(interactive_widget)
 
 
 def create_insights_summary(approach_data: list, capacity_data: list, current_mw: float,
