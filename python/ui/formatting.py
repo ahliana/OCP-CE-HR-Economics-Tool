@@ -209,8 +209,8 @@ def extract_formatted_system_params(system_data):
         ("T2 (Inlet from TCS):", format_display_value(system_data['T2'], 'temperature', True, '°C')),
         ("T3 (Outlet to Consumer):", format_display_value(system_data['T3'], 'temperature', True, '°C')),
         ("T4 (Inlet from Consumer):", format_display_value(system_data['T4'], 'temperature', True, '°C')),
-        ("F1 (TCS Flow Rate):", format_display_value(system_data['F1'], 'flow_rate', True, ' l/m')),
-        ("F2 (FWS Flow Rate):", format_display_value(system_data['F2'], 'flow_rate', True, ' l/m'))
+        ("F1 (TCS Flow Rate):", format_display_value(system_data['F1'], 'flow_rate', True, ' L/min')),
+        ("F2 (FWS Flow Rate):", format_display_value(system_data['F2'], 'flow_rate', True, ' L/min'))
     ]
 
 def extract_formatted_cost_analysis(costs_data, sizing_data):
@@ -226,7 +226,7 @@ def extract_formatted_cost_analysis(costs_data, sizing_data):
     """
     return [
         ("Room Size:", format_display_value(sizing_data['room_size'], 'room_size', True, ' m²')),
-        ("Suggested Pipe Size:", format_display_value(sizing_data['primary_pipe_size'], 'pipe_size', False)),
+        ("Suggested Pipe Size:", f"DN{format_display_value(sizing_data['primary_pipe_size'], 'pipe_size', False)}"),
         ("Pipe Cost per Meter:", f"€{format_display_value(costs_data['pipe_cost_per_meter'], 'pipe_cost_per_meter', False)}/m"),
         ("Total Pipe Cost:", f"€{format_display_value(costs_data['total_pipe_cost'], 'total_pipe_cost', False)}"),
         ("Fittings:", f"€{format_display_value(costs_data['fittings_cost'], 'fittings_cost', False)}"),
