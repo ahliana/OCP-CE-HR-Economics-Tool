@@ -88,13 +88,13 @@ def create_result_html(title, data_rows, border_color, title_color):
                 <td style="padding: 14px 15px; font-weight: bold; font-size: 18px; color: white; text-align: right;">{value}</td>
             </tr>"""
         else:
-            # Regular row - alternating backgrounds for visibility
+            # Regular row - DARK text on light background for high contrast
             row_bg = "#ECEFF1" if i % 2 == 1 else "white"
             border_style = "border-bottom: 1px solid #e0e0e0;" if not is_last else ""
             rows_html += f"""
             <tr style="background-color: {row_bg};">
-                <td style="padding: 10px 15px; font-weight: 600; color: #37474F; {border_style}">{label}</td>
-                <td style="padding: 10px 15px; color: #00C853; font-weight: 600; text-align: right; {border_style}">{value}</td>
+                <td style="padding: 10px 15px; font-weight: 600; color: #333333; {border_style}">{label}</td>
+                <td style="padding: 10px 15px; color: #00C853; font-weight: 700; text-align: right; {border_style}">{value}</td>
             </tr>"""
 
     # Title gradient based on color
@@ -452,7 +452,7 @@ def create_recommendations_html(recommendations, border_color="#4CAF50", title_c
         row_bg = "#ECEFF1" if i % 2 == 1 else "white"
         rec_rows += f"""
         <tr style="background-color: {row_bg};">
-            <td style="padding: 12px 15px; color: #37474F; font-size: 14px;
+            <td style="padding: 12px 15px; color: #333333; font-size: 14px; font-weight: 500;
                        border-bottom: 1px solid #e0e0e0;">
                 {rec}
             </td>
@@ -581,18 +581,18 @@ def create_summary_cards_html(wha, total_cost, cost_per_mw, effectiveness, ratin
                             margin: -20px -20px 15px -20px; font-size: 14px; font-weight: 600;">
                     🏢 System Performance
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333;">
                     <span style="color: #00C853; font-weight: bold; font-size: 18px;">{wha} MW</span>
-                    <span style="color: #78909C;"> Heat Recovery System</span>
+                    <span style="color: #424242; font-weight: 500;"> Heat Recovery System</span>
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333; font-weight: 500;">
                     Effectiveness: <span style="color: #00C853; font-weight: bold;">{effectiveness:.1%}</span>
                     <div style="background: #e0e0e0; height: 10px; border-radius: 5px; margin-top: 6px;">
                         <div style="background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
                                     height: 10px; border-radius: 5px; width: {min(effectiveness*100, 100)}%;"></div>
                     </div>
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333; font-weight: 500;">
                     EU Compliant: <span style="color: {'#00C853' if eu_compliant else '#f44336'}; font-weight: bold;">
                         {"✅ Yes" if eu_compliant else "❌ No"}</span>
                 </div>
@@ -611,13 +611,13 @@ def create_summary_cards_html(wha, total_cost, cost_per_mw, effectiveness, ratin
                             margin: -20px -20px 15px -20px; font-size: 14px; font-weight: 600;">
                     💰 Investment Summary
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333; font-weight: 500;">
                     Total Cost: <span style="color: #00C853; font-weight: bold; font-size: 18px;">€{total_cost:,.0f}</span>
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333; font-weight: 500;">
                     Cost/MW: <span style="color: #00C853; font-weight: bold;">€{cost_per_mw:,.0f}</span>
                 </div>
-                <div style="margin-bottom: 12px; color: #37474F;">
+                <div style="margin-bottom: 12px; color: #333333; font-weight: 500;">
                     Cost/kW: <span style="color: #00C853; font-weight: bold;">€{cost_per_mw/1000:,.0f}</span>
                 </div>
                 <div style="margin-bottom: 15px;">

@@ -26,20 +26,25 @@ COLORS = {
     'warning_orange_dark': '#E65100',
     'error_red': '#f44336',
 
-    # High-contrast text colors for values (visible on any background)
-    'currency_green': '#00C853',       # Bright green for costs
-    'highlight_cyan': '#00BCD4',       # Cyan for emphasis
-    'total_purple': '#7C4DFF',         # Purple for totals
+    # High-contrast text colors for values
+    'currency_green': '#00C853',       # Bright green for costs (works on light bg)
+    'highlight_cyan': '#00838F',       # Darker cyan for emphasis on light bg
+    'total_purple': '#5E35B1',         # Darker purple for totals (better contrast)
 
-    # Labels and secondary text
-    'label_gray': '#78909C',           # Medium gray - visible both ways
-    'text_dark': '#212529',            # Dark text for light backgrounds
-    'text_light': '#ECEFF1',           # Light text for dark backgrounds
+    # DARK TEXT COLORS for light backgrounds (forced containers)
+    'label_dark': '#333333',           # Dark gray for labels - HIGH CONTRAST
+    'text_dark': '#1a1a1a',            # Near-black for body text
+    'text_secondary': '#424242',       # Medium-dark for secondary text
+    'text_muted': '#616161',           # For less important text (still readable)
+
+    # Keep for reference but prefer dark colors
+    'text_light': '#ECEFF1',           # Light text for dark/colored backgrounds only
 
     # Background colors for containers
     'container_bg': '#f8f9fa',         # Light gray container background
     'container_border': '#dee2e6',     # Light border
     'row_alt': '#ECEFF1',              # Alternating row color
+    'row_white': '#ffffff',            # White rows
 
     # Section header gradients
     'header_gradient_blue': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -283,17 +288,18 @@ def create_styled_table(data_rows, header_row=None, show_total=False):
         is_total = show_total and is_last
 
         if is_total:
-            # Total row styling
+            # Total row styling - white text on gradient
             row_style = "background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;"
             label_style = "padding: 14px 15px; font-weight: bold; font-size: 16px; color: white;"
             value_style = "padding: 14px 15px; font-weight: bold; font-size: 16px; color: white; text-align: right;"
         else:
-            # Regular row styling
+            # Regular row styling - DARK text on light background
             row_bg = COLORS['row_alt'] if i % 2 == 1 else "white"
             row_style = f"background-color: {row_bg};"
             border_style = "border-bottom: 1px solid #e0e0e0;" if not is_last else ""
-            label_style = f"padding: 10px 15px; font-weight: 500; color: #37474F; {border_style}"
-            value_style = f"padding: 10px 15px; color: #00C853; font-weight: 600; text-align: right; {border_style}"
+            # Use dark text colors for high contrast
+            label_style = f"padding: 10px 15px; font-weight: 600; color: {COLORS['label_dark']}; {border_style}"
+            value_style = f"padding: 10px 15px; color: {COLORS['currency_green']}; font-weight: 700; text-align: right; {border_style}"
 
         rows_html += f"""
         <tr style="{row_style}">
