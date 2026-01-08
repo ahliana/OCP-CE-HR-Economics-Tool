@@ -238,8 +238,8 @@ def calculate_fittings_cost(pipe_size: float, pipe_cost: float) -> float:
                 col_index = 2 if len(joints_df.columns) >= 3 else 1
                 joints_cost_per_unit = universal_float_convert(matching_rows.iloc[0, col_index])
 
-                # Estimate number of joints (typically 6-10 per system)
-                num_joints = 8
+                # Estimate number of joints (typically 20 per system)
+                num_joints = 20
                 total_fittings_cost = joints_cost_per_unit * num_joints
 
                 logger.info(f"Fittings from JOINTS.csv: €{total_fittings_cost:,.0f}")

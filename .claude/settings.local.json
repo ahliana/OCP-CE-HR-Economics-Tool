@@ -9,7 +9,8 @@
       "Bash(python physics/test_stage3_integration.py)",
       "Bash(python:*)",
       "Bash(mkdir:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git remote:*)"
     ],
     "deny": [],
     "ask": []

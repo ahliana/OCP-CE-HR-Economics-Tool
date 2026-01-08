@@ -216,11 +216,11 @@ def extract_formatted_system_params(system_data):
 def extract_formatted_cost_analysis(costs_data, sizing_data):
     """
     Extract and format cost analysis data for display.
-    
+
     Args:
         costs_data: Cost analysis data dictionary
         sizing_data: Sizing data dictionary
-    
+
     Returns:
         List of (label, formatted_value) tuples
     """
@@ -229,10 +229,8 @@ def extract_formatted_cost_analysis(costs_data, sizing_data):
         ("Suggested Pipe Size:", format_display_value(sizing_data['primary_pipe_size'], 'pipe_size', False)),
         ("Pipe Cost per Meter:", f"€{format_display_value(costs_data['pipe_cost_per_meter'], 'pipe_cost_per_meter', False)}/m"),
         ("Total Pipe Cost:", f"€{format_display_value(costs_data['total_pipe_cost'], 'total_pipe_cost', False)}"),
-        ("Heat Exchanger Cost:", f"€{format_display_value(costs_data['hx_cost'], 'hx_cost', False)}"),
-        ("Valve Costs:", f"€{format_display_value(costs_data['total_valve_cost'], 'valve_costs', False)}"),
-        ("Pump Cost:", f"€{format_display_value(costs_data['pump_cost'], 'pump_cost', False)}"),
-        ("TOTAL EQUIPMENT COST:", f"€{format_display_value(costs_data['total_cost'], 'total_cost', False)}")
+        ("Fittings:", f"€{format_display_value(costs_data['fittings_cost'], 'fittings_cost', False)}"),
+        ("Valve Costs:", f"€{format_display_value(costs_data['total_valve_cost'], 'valve_costs', False)}")
     ]
 
 def extract_delta_t_values(system_data):

@@ -107,6 +107,9 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
+            # Round valves to nearest 100 to match Valve Costs display in Piping Cost Analysis
+            if key == 'valves':
+                value = round(value / 100) * 100
             html += f"""
                     <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
                                font-family: 'Segoe UI', Arial, sans-serif;">€{value:>10,.0f}</td>

@@ -78,7 +78,10 @@ DISPLAY_ROUNDING = {
     
     # Total pipe cost (nearest 1K = nearest 1000)
     'total_pipe_cost': -3,  # -3 means round to nearest 1000
-    
+
+    # Fittings cost (nearest 100)
+    'fittings_cost': -2,  # -2 means round to nearest 100
+
     # Heat exchanger cost (nearest 1)
     'hx_cost': 0,
     
@@ -222,7 +225,7 @@ OUTPUT_CONFIG = {
         'title_color': '#4CAF50'
     },
     'cost_analysis': {
-        'title': '💰 Capital Cost Analysis',
+        'title': '💰 Piping Cost Analysis',
         'border_color': '#2196F3',
         'title_color': '#2196F3'
     },

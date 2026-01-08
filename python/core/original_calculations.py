@@ -472,58 +472,20 @@ def calculate_system_costs(system_data, sizing_data):
     logger.info(msg)
     # print(msg)
 
-    # Calculate valve costs using formula-determined pipe size
-    primary_pipe_size = get_PipeSize_Suggested(max(F1, F2))  # Use formula function
-    msg = f"primary_pipe_size: {primary_pipe_size}"
+    # Calculate fittings cost using shared function from costs.py
+    from core.costs import calculate_fittings_cost
+    primary_pipe_size = get_PipeSize_Suggested(max(F1, F2))
+    fittings_cost = calculate_fittings_cost(primary_pipe_size, total_pipe_cost)
+    msg = f"fittings_cost: {fittings_cost}"
     logger.info(msg)
     # print(msg)
-    
-    control_valve_cost = 0
-    isolation_valve_cost = 0
-    
-    # Use data module for CVALV access
-    if is_csv_loaded('CVALV'):
-        cvalv_df = get_csv_data('CVALV')
-        if cvalv_df is not None:
-            cvalv_df = cvalv_df.copy()
-            # Convert cost column to numeric
-            cvalv_df.iloc[:, 1] = cvalv_df.iloc[:, 1].apply(universal_float_convert)
-            msg = f"cvalv_df: {cvalv_df}"
-            logger.info(msg)
-            # print(msg)
 
-            # Look for exact match on pipe size
-            pipe_size_str = str(universal_float_convert(int(primary_pipe_size)))
-            msg = f"pipe_size_str: {pipe_size_str}"
-            logger.info(msg)
-            # print(msg)
-
-            for idx, row in cvalv_df.iterrows():
-                if str(row.iloc[0]).strip() == pipe_size_str:
-                    control_valve_cost = row.iloc[1]
-                    msg = f"control_valve_cost: {control_valve_cost}"
-                    logger.info(msg)
-                    # print(msg)
-                    break
-    
-    # Use data module for IVALV access
-    if is_csv_loaded('IVALV'):
-        ivalv_df = get_csv_data('IVALV')
-        if ivalv_df is not None:
-            ivalv_df = ivalv_df.copy()
-            # Convert cost column to numeric
-            ivalv_df.iloc[:, 1] = ivalv_df.iloc[:, 1].apply(universal_float_convert)
-            
-
-            for idx, row in ivalv_df.iterrows():
-                if str(row.iloc[0]).strip() == pipe_size_str:
-                    isolation_valve_cost = row.iloc[1]
-                    msg = f"isolation_valve_cost: {isolation_valve_cost}"
-                    logger.info(msg)
-                    # print(msg)
-                    break
-
-    total_valve_cost = (4 * isolation_valve_cost) + control_valve_cost
+    # Calculate valve costs using shared function from costs.py
+    from core.costs import calculate_valve_costs
+    valve_data = calculate_valve_costs(system_data)
+    total_valve_cost = valve_data.get('cost', 0)
+    control_valve_cost = valve_data.get('control_valve', 0)
+    isolation_valve_cost = valve_data.get('isolation_valves', 0) / 4 if valve_data.get('isolation_valves', 0) else 0
     msg = f"total_valve_cost: {total_valve_cost}"
     logger.info(msg)
     # print(msg)
@@ -538,6 +500,7 @@ def calculate_system_costs(system_data, sizing_data):
         'pipe_cost_per_meter': pipe_cost_per_meter,
         'total_pipe_length': total_pipe_length,
         'total_pipe_cost': total_pipe_cost,
+        'fittings_cost': fittings_cost,
         'control_valve_cost': control_valve_cost,
         'isolation_valve_cost': isolation_valve_cost,
         'total_valve_cost': total_valve_cost,
