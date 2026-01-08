@@ -10,7 +10,17 @@
       "Bash(python:*)",
       "Bash(mkdir:*)",
       "Bash(findstr:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd progress messages to Colab initialization cell\n\nHelps diagnose hanging issues by showing which step is running.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git commit:*)",
+      "Bash(del \"c:\\\\Files\\\\Code\\\\OCP-CE-HR-Economics-Tool\\\\docs\\\\visual_styling_research.md\")",
+      "Bash(del \"c:\\\\Files\\\\Code\\\\OCP-CE-HR-Economics-Tool\\\\docs\\\\HeatReuseTool_Visual_Styling_Options.md\")",
+      "Bash(ls:*)",
+      "Bash(git push:*)",
+      "Bash(git mv:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

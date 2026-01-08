@@ -5,7 +5,7 @@ Developed by the Open Compute Project (OCP) Community.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/opencomputeproject/OCP-CE-HR-Economics-Tool/blob/master/Interactive%20Analysis%20Tool.ipynb)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 
 ## Overview
@@ -71,7 +71,7 @@ results before closing.
 
 Run the tool on your own computer. Works offline after initial setup.
 
-**Prerequisites:** Python 3.8 or newer
+**Prerequisites:** Python 3.10 or newer
 
 **Quick Install:**
 
@@ -151,7 +151,7 @@ OCP-CE-HR-Economics-Tool/
 ## System Requirements
 
 **Minimum:**
-- Python 3.8+
+- Python 3.10+
 - 4 GB RAM
 - Modern web browser (for Jupyter interface)
 - Internet connection (for initial setup only)
