@@ -101,7 +101,8 @@ def create_output_areas():
         'visual_summary': widgets.Output(),     # Section for summary cards
         'charts': widgets.Output(),              # This will include gauges
         'economics_analysis': widgets.Output(),  # Economics Analysis panel
-        'advanced_economics': widgets.Output()     # Advanced Economic Analysis
+        'advanced_economics': widgets.Output(),   # Advanced Economic Analysis
+        'export': widgets.Output()                # Export buttons (CSV, PNG)
     }
 
 
@@ -135,6 +136,10 @@ def create_interface_layout(widgets_dict, outputs_dict):
     # Add advanced economics if it exists (controlled by SHOW_ADVANCED_ECONOMICS flag)
     if 'advanced_economics' in outputs_dict:
         layout_items.append(outputs_dict['advanced_economics'])    # 6. Advanced Economic Analysis
+
+    # Add export section at the end
+    if 'export' in outputs_dict:
+        layout_items.append(outputs_dict['export'])                # 7. Export buttons
 
     return widgets.VBox(layout_items, layout=widgets.Layout(margin='10px'))
 

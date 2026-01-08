@@ -50,6 +50,54 @@ Implemented comprehensive economic analysis per October 24, 2025 specification r
 
 ---
 
+### 7. Export Functionality (NEW)
+
+Added CSV and PNG export buttons to save results before Colab disconnects.
+
+#### New File: `python/ui/export.py`
+
+**Features:**
+- CSV export of system parameters and cost breakdown
+- PNG export of ALL UI sections (150 DPI)
+- Cross-platform: works in both Google Colab and local Jupyter
+- Timestamped filenames (e.g., `heat_reuse_data_20260108_143022.csv`)
+- `SHOW_EXPORT = True` toggle for visibility control
+
+**Export Mechanism:**
+| Environment | Method |
+|-------------|--------|
+| Google Colab | `google.colab.files.download()` |
+| Local Jupyter | Base64-encoded download links |
+
+**PNG Export Layout (11 rows, comprehensive):**
+| Row | Content |
+|-----|---------|
+| 0 | System Parameters \| Piping Cost Analysis |
+| 1 | Economics Analysis (Order of Magnitude Estimate) |
+| 2 | Equipment Cost Breakdown (3 pie charts: 2°C, 3°C, 5°C) |
+| 3 | Cost Contrast Analysis (Capital vs Operating) |
+| 4 | System Approach Profiles \| Effectiveness Gauge |
+| 5 | Table A: Approach Temperature Comparison |
+| 6 | Chart 1: Annual Costs \| Chart 2: Unit Cost |
+| 7 | Table B: Economy of Scale |
+| 8 | Chart 3: Economy of Scale |
+| 9 | Key Insights Summary |
+| 10 | Benchmarks Footer |
+
+**CSV Export Sections:**
+1. Current System Configuration (T1-T4, F1-F2, pipe sizing)
+2. Cost Breakdown (equipment, installation, contingency)
+3. Approach Temperature Comparison (2°C, 3°C, 5°C with advanced metrics)
+4. Economy of Scale Analysis (1-5 MW at 3°C)
+5. Energy Cost Benchmarks
+
+#### Files Modified:
+- `python/ui/export.py` (NEW - ~900 lines)
+- `python/ui/inputs.py` - Added `export` output area
+- `python/ui/outputs.py` - Added `display_export_panel()` function
+
+---
+
 ## Changes Made (2026-01-07)
 
 ### 1. Piping Cost Analysis Section Refactor

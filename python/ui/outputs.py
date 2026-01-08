@@ -180,6 +180,31 @@ def display_advanced_economics_panel(output_area, analysis):
     except Exception as e:
         display_error(output_area, f"Error displaying advanced economics: {str(e)}")
 
+
+def display_export_panel(output_area, analysis):
+    """
+    Display Export panel with CSV and PNG download buttons.
+
+    Args:
+        output_area: Output widget to display in
+        analysis: Complete system analysis dictionary
+    """
+    try:
+        from .export import display_export_section, SHOW_EXPORT
+
+        # Check if export should be shown (master toggle)
+        if not SHOW_EXPORT:
+            return
+
+        display_export_section(output_area, analysis)
+
+    except ImportError as e:
+        # If export module not found, silently skip
+        pass
+    except Exception as e:
+        display_error(output_area, f"Error displaying export panel: {str(e)}")
+
+
 # =============================================================================
 # ERROR AND MESSAGE DISPLAY FUNCTIONS
 # =============================================================================
@@ -276,6 +301,10 @@ def display_complete_analysis(outputs_dict, analysis):
         # Advanced Economic Analysis
         if 'advanced_economics' in outputs_dict:
             display_advanced_economics_panel(outputs_dict['advanced_economics'], analysis)
+
+        # Export section (CSV, PNG downloads)
+        if 'export' in outputs_dict:
+            display_export_panel(outputs_dict['export'], analysis)
 
     except Exception as e:
         display_error(outputs_dict['system_params'], f"Error displaying complete analysis: {str(e)}")
