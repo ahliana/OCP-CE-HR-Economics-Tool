@@ -67,9 +67,44 @@ GLOBAL_CSS = """
     border-radius: 8px !important;
 }
 
-/* Force readable text colors on ipywidgets */
+/* Force readable text colors on ipywidgets - HIGH CONTRAST for dark mode */
 .widget-label, .widget-readout {
-    color: #333333 !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    text-shadow: 0 0 2px white, 0 0 4px white !important;
+}
+
+/* Style dropdown labels with background for visibility */
+.widget-label {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    margin-right: 8px !important;
+}
+
+/* Style the dropdown select element itself */
+.widget-dropdown > select,
+.widget-select > select {
+    background-color: white !important;
+    color: #000000 !important;
+    border: 2px solid #667eea !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    font-weight: 500 !important;
+}
+
+/* Dropdown hover and focus states */
+.widget-dropdown > select:hover,
+.widget-select > select:hover {
+    border-color: #764ba2 !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+}
+
+.widget-dropdown > select:focus,
+.widget-select > select:focus {
+    border-color: #764ba2 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
 }
 
 /* Style ipywidgets outputs */
