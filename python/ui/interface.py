@@ -107,7 +107,7 @@ def display_hxsimpledrawing(width: int = 600):
             <div style="text-align: center; margin: 20px 0; padding: 30px;
                         background-color: #f8f9fa; border: 2px dashed #dee2e6;
                         border-radius: 12px;">
-                <p style="color: #78909C; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <p style="color: #000000; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     📊 Heat Exchanger Diagram
                 </p>
             </div>
@@ -120,7 +120,7 @@ def display_hxsimpledrawing(width: int = 600):
         <div style="text-align: center; margin: 20px 0; padding: 30px;
                     background-color: #f8f9fa; border: 2px dashed #dee2e6;
                     border-radius: 12px;">
-            <p style="color: #78909C; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <p style="color: #000000; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                 📊 Heat Exchanger Diagram
             </p>
         </div>

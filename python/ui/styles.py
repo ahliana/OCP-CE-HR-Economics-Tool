@@ -31,11 +31,11 @@ COLORS = {
     'highlight_cyan': '#00838F',       # Darker cyan for emphasis on light bg
     'total_purple': '#5E35B1',         # Darker purple for totals (better contrast)
 
-    # DARK TEXT COLORS for light backgrounds (forced containers)
-    'label_dark': '#333333',           # Dark gray for labels - HIGH CONTRAST
-    'text_dark': '#1a1a1a',            # Near-black for body text
-    'text_secondary': '#424242',       # Medium-dark for secondary text
-    'text_muted': '#616161',           # For less important text (still readable)
+    # BLACK TEXT for light backgrounds (forced containers) - MAXIMUM CONTRAST
+    'label_dark': '#000000',           # Pure black for labels
+    'text_dark': '#000000',            # Pure black for body text
+    'text_secondary': '#000000',       # Pure black for secondary text
+    'text_muted': '#000000',           # Pure black for all text
 
     # Keep for reference but prefer dark colors
     'text_light': '#ECEFF1',           # Light text for dark/colored backgrounds only
@@ -297,9 +297,9 @@ def create_styled_table(data_rows, header_row=None, show_total=False):
             row_bg = COLORS['row_alt'] if i % 2 == 1 else "white"
             row_style = f"background-color: {row_bg};"
             border_style = "border-bottom: 1px solid #e0e0e0;" if not is_last else ""
-            # Use dark text colors for high contrast
-            label_style = f"padding: 10px 15px; font-weight: 600; color: {COLORS['label_dark']}; {border_style}"
-            value_style = f"padding: 10px 15px; color: {COLORS['currency_green']}; font-weight: 700; text-align: right; {border_style}"
+            # Use BLACK text for maximum contrast
+            label_style = f"padding: 10px 15px; font-weight: 600; color: #000000; {border_style}"
+            value_style = f"padding: 10px 15px; color: #000000; font-weight: 700; text-align: right; {border_style}"
 
         rows_html += f"""
         <tr style="{row_style}">

@@ -297,10 +297,10 @@ def display_calculation_summary(output_area, summary_data):
                     📊 Quick Summary
                 </div>
                 <div style="padding: 15px; text-align: center; background-color: white;">
-                    <p style="margin: 5px 0; font-size: 16px; color: #333333;">
-                        <strong style="color: #333333;">System Capacity:</strong>
+                    <p style="margin: 5px 0; font-size: 16px; color: #000000;">
+                        <strong style="color: #000000;">System Capacity:</strong>
                         <span style="color: #00C853; font-weight: bold;">{wha} MW</span> |
-                        <strong style="color: #333333;">Total Cost:</strong>
+                        <strong style="color: #000000;">Total Cost:</strong>
                         <span style="color: #00C853; font-weight: bold;">€{total_cost:,}</span>
                     </p>
                 </div>
@@ -343,21 +343,21 @@ def display_detailed_breakdown(output_area, analysis, show_validation=True):
                         🔬 Validation Results
                     </div>
                     <div style="padding: 15px; background-color: #fff8e1;">
-                        <p style="margin: 8px 0; color: #333333;">
-                            <strong style="color: #5D4037;">Calculated MW:</strong>
-                            <span style="color: #1B5E20; font-weight: 600;">{validation.get('calculated_mw', 'N/A')}</span>
+                        <p style="margin: 8px 0; color: #000000;">
+                            <strong style="color: #000000;">Calculated MW:</strong>
+                            <span style="color: #000000; font-weight: 600;">{validation.get('calculated_mw', 'N/A')}</span>
                         </p>
-                        <p style="margin: 8px 0; color: #333333;">
-                            <strong style="color: #5D4037;">Delta T TCS:</strong>
-                            <span style="color: #1B5E20; font-weight: 600;">{validation.get('itdt', 'N/A')}°C</span>
+                        <p style="margin: 8px 0; color: #000000;">
+                            <strong style="color: #000000;">Delta T TCS:</strong>
+                            <span style="color: #000000; font-weight: 600;">{validation.get('itdt', 'N/A')}°C</span>
                         </p>
-                        <p style="margin: 8px 0; color: #333333;">
-                            <strong style="color: #5D4037;">Delta T FWS:</strong>
-                            <span style="color: #1B5E20; font-weight: 600;">{validation.get('oftkrdt', 'N/A')}°C</span>
+                        <p style="margin: 8px 0; color: #000000;">
+                            <strong style="color: #000000;">Delta T FWS:</strong>
+                            <span style="color: #000000; font-weight: 600;">{validation.get('oftkrdt', 'N/A')}°C</span>
                         </p>
-                        <p style="margin: 8px 0; color: #333333;">
-                            <strong style="color: #5D4037;">Approach:</strong>
-                            <span style="color: #1B5E20; font-weight: 600;">{validation.get('approach_calculated', 'N/A')}</span>
+                        <p style="margin: 8px 0; color: #000000;">
+                            <strong style="color: #000000;">Approach:</strong>
+                            <span style="color: #000000; font-weight: 600;">{validation.get('approach_calculated', 'N/A')}</span>
                         </p>
                     </div>
                 </div>
@@ -388,13 +388,13 @@ def display_export_options(output_area, analysis):
                     📤 Export Options
                 </div>
                 <div style="padding: 15px; background-color: white;">
-                    <p style="color: #333333; margin: 10px 0; font-weight: 500;">Results are ready for export. Available formats:</p>
-                    <ul style="color: #333333; margin: 10px 0; padding-left: 25px;">
+                    <p style="color: #000000; margin: 10px 0; font-weight: 500;">Results are ready for export. Available formats:</p>
+                    <ul style="color: #000000; margin: 10px 0; padding-left: 25px;">
                         <li style="margin: 5px 0;">Charts: <span style="color: #00C853; font-weight: 600;">PNG/PDF format</span></li>
                         <li style="margin: 5px 0;">Data: <span style="color: #00C853; font-weight: 600;">CSV/Excel format</span></li>
                         <li style="margin: 5px 0;">Report: <span style="color: #00C853; font-weight: 600;">PDF summary</span></li>
                     </ul>
-                    <p style="color: #616161; font-size: 12px; margin-top: 15px;">
+                    <p style="color: #000000; font-size: 12px; margin-top: 15px;">
                         Contact your system administrator for export functionality.
                     </p>
                 </div>

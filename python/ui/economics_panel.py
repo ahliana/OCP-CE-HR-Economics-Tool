@@ -111,7 +111,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
                 <tr style="background-color: {row_bg};"
                     title="{tooltip}">
                     <td style="padding: 10px 15px; border-bottom: 1px solid #e0e0e0;
-                               color: #333333; font-weight: 600;">{row_label}</td>
+                               color: #000000; font-weight: 600;">{row_label}</td>
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
@@ -129,7 +129,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
     # Equipment Subtotal row - DARK text on light background
     html += """
                 <tr style="background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); font-weight: bold;">
-                    <td style="padding: 12px 15px; color: #1a237e; font-weight: 700;">Equipment Subtotal</td>
+                    <td style="padding: 12px 15px; color: #000000; font-weight: 700;">Equipment Subtotal</td>
     """
 
     # Calculate and validate equipment subtotals
@@ -151,7 +151,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
                                       data.get('valves', 0)) < 1 else "⚠"
 
         html += f"""
-                    <td style="padding: 12px 15px; text-align: right; color: #1a237e; font-weight: 700;">
+                    <td style="padding: 12px 15px; text-align: right; color: #000000; font-weight: 700;">
                         €{subtotal:>10,.0f} <span style="color: #00C853; font-size: 11px;">{validation_icon}</span>
                     </td>
         """
@@ -182,13 +182,13 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
                 <tr style="background-color: {row_bg};"
                     title="{tooltip}">
                     <td style="padding: 10px 15px; border-bottom: 1px solid #FFE0B2;
-                               color: #BF360C; font-weight: 600;">{row_label}</td>
+                               color: #000000; font-weight: 600;">{row_label}</td>
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
             html += f"""
                     <td style="padding: 10px 15px; text-align: right; border-bottom: 1px solid #FFE0B2;
-                               color: #E65100; font-weight: 600;">€{value:>10,.0f}</td>
+                               color: #000000; font-weight: 600;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
@@ -197,7 +197,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
     # I&C Subtotal row (Installation & Contingency subtotal) - DARK text
     html += """
                 <tr style="background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%); font-weight: bold;">
-                    <td style="padding: 12px 15px; color: #BF360C; font-weight: 700;">I&C Subtotal</td>
+                    <td style="padding: 12px 15px; color: #000000; font-weight: 700;">I&C Subtotal</td>
     """
 
     for approach in ['2C', '3C', '5C']:
@@ -209,7 +209,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         ])
 
         html += f"""
-                    <td style="padding: 12px 15px; text-align: right; color: #BF360C; font-weight: 700;">€{ic_subtotal:>10,.0f}</td>
+                    <td style="padding: 12px 15px; text-align: right; color: #000000; font-weight: 700;">€{ic_subtotal:>10,.0f}</td>
         """
     html += """
                 </tr>
@@ -280,13 +280,13 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
     html += """
                 <tr style="background-color: #E8F5E9;">
                     <td style="padding: 10px 15px; border-bottom: 1px solid #C8E6C9;
-                               color: #1B5E20; font-weight: 600;">Annual Operating Energy</td>
+                               color: #000000; font-weight: 600;">Annual Operating Energy</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_energy_kwh_year', 0)
         html += f"""
                     <td style="padding: 10px 15px; text-align: right; border-bottom: 1px solid #C8E6C9;
-                               color: #1B5E20; font-weight: 600;">{value:>10,.0f} kWh</td>
+                               color: #000000; font-weight: 600;">{value:>10,.0f} kWh</td>
         """
     html += """
                 </tr>
@@ -294,13 +294,13 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     html += """
                 <tr style="background-color: #C8E6C9; font-weight: bold;">
-                    <td style="padding: 12px 15px; color: #1B5E20; font-weight: 700;">Annual Energy Cost</td>
+                    <td style="padding: 12px 15px; color: #000000; font-weight: 700;">Annual Energy Cost</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_cost_eur_year', 0)
         html += f"""
                     <td style="padding: 12px 15px; text-align: right;
-                               color: #1B5E20; font-weight: 700;">€{value:>10,.0f}</td>
+                               color: #000000; font-weight: 700;">€{value:>10,.0f}</td>
         """
     html += """
                 </tr>
@@ -311,12 +311,12 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
     # Legend section with explicit background - DARK text
     html += """
         <div style="margin-top: 15px; padding: 12px 15px; background-color: white;
-                    border-radius: 6px; font-size: 12px; color: #333333;
+                    border-radius: 6px; font-size: 12px; color: #000000;
                     border: 1px solid #e0e0e0;">
-            <strong style="color: #333333;">Legend:</strong>
+            <strong style="color: #000000;">Legend:</strong>
             <span style="color: #00C853; font-weight: bold;">✓</span> = Calculations verified |
-            <span style="color: #E65100; font-weight: bold;">⚠</span> = Rounding adjustments applied |
-            <span style="font-style: italic; color: #616161;">Hover over items for details</span>
+            <span style="color: #000000; font-weight: bold;">⚠</span> = Rounding adjustments applied |
+            <span style="font-style: italic; color: #000000;">Hover over items for details</span>
         </div>
     </div>
     """
