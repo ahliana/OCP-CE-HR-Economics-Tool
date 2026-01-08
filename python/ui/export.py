@@ -446,7 +446,7 @@ def _render_economics_comparison_table(ax, comparison_data: dict, title: str):
     ax.set_title(title, fontsize=11, fontweight='bold', pad=5)
 
 
-def export_charts_png(analysis: dict, dpi: int = 150) -> bytes:
+def export_charts_png(analysis: dict, dpi: int = None) -> bytes:
     """
     Export ALL charts AND tables to PNG format - comprehensive export of entire UI.
 
@@ -465,13 +465,21 @@ def export_charts_png(analysis: dict, dpi: int = 150) -> bytes:
 
     Args:
         analysis: Complete analysis dictionary
-        dpi: Resolution (default 150 for reasonable file size)
+        dpi: Resolution (default 100 for Colab compatibility, 150 for local)
 
     Returns:
         PNG image as bytes
     """
     import numpy as np
     from .formatting import calculate_effectiveness
+
+    # Close any existing figures to free memory (important for Colab)
+    plt.close('all')
+
+    # Auto-detect DPI based on environment if not specified
+    # Colab has memory constraints, so use lower DPI there
+    if dpi is None:
+        dpi = 100 if is_colab() else 150
 
     system = analysis.get('system', {})
     costs = analysis.get('costs', {})
@@ -482,8 +490,10 @@ def export_charts_png(analysis: dict, dpi: int = 150) -> bytes:
     temp_rise = float(system.get('itdt', 10))
     approach = float(system.get('approach', 3))
 
-    # Create figure with GridSpec for flexible layout - LARGER to fit everything
-    fig = plt.figure(figsize=(18, 58))
+    # Create figure with GridSpec for flexible layout
+    # Reduced from (18, 58) to (14, 45) for Colab memory compatibility
+    # At 100 DPI this is ~6.3 megapixels vs ~23 megapixels before
+    fig = plt.figure(figsize=(14, 45))
 
     # Use GridSpec: 11 rows (added Cost Contrast Analysis)
     from matplotlib.gridspec import GridSpec
@@ -999,14 +1009,20 @@ def create_export_buttons(analysis: dict, output_area) -> widgets.HBox:
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 filename = f'heat_reuse_charts_{timestamp}.png'
 
-                # Generate PNG data
+                # Show progress message - important for Colab where this takes time
+                display(HTML('<p style="color: #666;">⏳ Generating charts... (this may take 5-15 seconds)</p>'))
+
+                # Generate PNG data (reduced size for Colab compatibility)
                 png_data = export_charts_png(analysis)
+
+                # Clear progress message and show result
+                output_area.clear_output()
 
                 if is_colab():
                     with open(filename, 'wb') as f:
                         f.write(png_data)
                     _download_colab(filename)
-                    display(HTML(f'<p style="color: #28a745;">Charts downloaded: {filename}</p>'))
+                    display(HTML(f'<p style="color: #28a745;">✓ Charts downloaded: {filename}</p>'))
                 else:
                     link = _create_download_link(png_data, filename, 'image/png')
                     display(HTML(f'''
@@ -1015,7 +1031,15 @@ def create_export_buttons(analysis: dict, output_area) -> widgets.HBox:
                         </div>
                     '''))
             except Exception as e:
-                display(HTML(f'<p style="color: #dc3545;">Export error: {str(e)}</p>'))
+                output_area.clear_output()
+                display(HTML(f'''
+                    <div style="padding: 10px; background: #f8d7da; border-radius: 8px; margin: 5px 0;">
+                        <p style="color: #721c24; margin: 0 0 5px 0;"><strong>Export failed:</strong> {str(e)}</p>
+                        <p style="color: #856404; margin: 0; font-size: 12px;">
+                            Tip: If in Colab, try Runtime → Restart runtime, then re-run the notebook.
+                        </p>
+                    </div>
+                '''))
 
     csv_button.on_click(on_csv_click)
     png_button.on_click(on_png_click)
