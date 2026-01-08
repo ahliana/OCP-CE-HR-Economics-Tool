@@ -324,8 +324,8 @@ def create_annual_costs_chart(data: list, output_area, title_suffix: str = ""):
 
     plt.tight_layout()
 
-    with output_area:
-        plt.show()
+    # Show directly - caller is already in output context
+    plt.show()
     plt.close()
 
 
@@ -391,8 +391,8 @@ def create_unit_cost_chart(data: list, output_area, title_suffix: str = ""):
 
     plt.tight_layout()
 
-    with output_area:
-        plt.show()
+    # Show directly - caller is already in output context
+    plt.show()
     plt.close()
 
 
@@ -458,8 +458,8 @@ def create_economy_of_scale_chart(data: list, output_area, title_suffix: str = "
 
     plt.tight_layout()
 
-    with output_area:
-        plt.show()
+    # Show directly - caller is already in output context
+    plt.show()
     plt.close()
 
 
