@@ -211,7 +211,7 @@ When adding new setup or environment tools:
 ## Requirements
 
 These tools require the same Python environment as the Heat Reuse Tool:
-- Python 3.8+
+- Python 3.10+
 - Standard library modules (json, subprocess, pathlib, etc.)
 - No additional dependencies beyond Heat Reuse Tool requirements
 

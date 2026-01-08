@@ -70,7 +70,7 @@ No software installation required.
 
 | Component | Minimum Version | How to Check |
 |-----------|-----------------|--------------|
-| Python | 3.8 | `python --version` |
+| Python | 3.10 | `python --version` |
 | pip | 20.0 | `pip --version` |
 | Git | 2.0 | `git --version` |
 
