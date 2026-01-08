@@ -100,7 +100,8 @@ def create_output_areas():
         'smart_recommendations': widgets.Output(), # NEW - separate section
         'visual_summary': widgets.Output(),     # Section for summary cards
         'charts': widgets.Output(),              # This will include gauges
-        'economics_analysis': widgets.Output()  # Economics Analysis panel
+        'economics_analysis': widgets.Output(),  # Economics Analysis panel
+        'advanced_economics': widgets.Output()     # Advanced Economic Analysis
     }
 
 
@@ -119,18 +120,23 @@ def create_interface_layout(widgets_dict, outputs_dict):
             widgets_dict['approach_widget']
         ])
     ])
-    
+
     # Complete vertical layout: inputs, button, then all outputs
-    return widgets.VBox([
+    layout_items = [
         input_grid,                                              # wha/T1, TempRise/Approach
         widgets_dict['calculate_button'],                        # Calculate button
         outputs_dict['system_params'],                           # 1. System Parameters
         outputs_dict['cost_analysis'],                           # 2. Cost Analysis (now separate)
         outputs_dict['economics_analysis'],                      # 3. Economics Analysis
         outputs_dict['charts'],                                  # 4. Charts
-        # outputs_dict.get('smart_recommendations', widgets.Output()), # 5. Smart Recommendations
-        outputs_dict.get('visual_summary', widgets.Output())    # 6. System Overview Cards
-    ], layout=widgets.Layout(margin='10px'))
+        outputs_dict.get('visual_summary', widgets.Output()),   # 5. System Overview Cards
+    ]
+
+    # Add advanced economics if it exists (controlled by SHOW_ADVANCED_ECONOMICS flag)
+    if 'advanced_economics' in outputs_dict:
+        layout_items.append(outputs_dict['advanced_economics'])    # 6. Advanced Economic Analysis
+
+    return widgets.VBox(layout_items, layout=widgets.Layout(margin='10px'))
 
 # =============================================================================
 # WIDGET VALUE EXTRACTION

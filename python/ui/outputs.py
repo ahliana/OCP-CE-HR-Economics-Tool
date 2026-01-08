@@ -143,6 +143,43 @@ def display_economics_panel(output_area, analysis):
     except Exception as e:
         display_error(output_area, f"Error displaying economics analysis: {str(e)}")
 
+
+def display_advanced_economics_panel(output_area, analysis):
+    """
+    Display Advanced Economic Analysis panel.
+
+    This analysis includes:
+    - Annualized Capital Cost
+    - Total Annualized Cost
+    - Normalized CapEx (€/MW)
+    - Unit Heat Recovery Cost (€/kWh)
+
+    Args:
+        output_area: Output widget to display in
+        analysis: Complete system analysis dictionary
+    """
+    try:
+        from .advanced_economics import display_advanced_economics, should_show_advanced_economics
+
+        # Check if advanced economics should be shown (master toggle)
+        if not should_show_advanced_economics():
+            return
+
+        # Extract parameters from analysis
+        system = analysis.get('system', {})
+        wha = system.get('wha', 1.0)
+        T1 = system.get('T1', 20)
+        temp_rise = system.get('itdt', 10)
+
+        # Display advanced economics (with default 5-year payback)
+        display_advanced_economics(output_area, wha, T1, temp_rise, payback_years=5.0)
+
+    except ImportError as e:
+        # If advanced_economics module not found, silently skip
+        pass
+    except Exception as e:
+        display_error(output_area, f"Error displaying advanced economics: {str(e)}")
+
 # =============================================================================
 # ERROR AND MESSAGE DISPLAY FUNCTIONS
 # =============================================================================
@@ -235,7 +272,11 @@ def display_complete_analysis(outputs_dict, analysis):
         # Visual summary at the bottom
         if 'visual_summary' in outputs_dict:
             display_visual_summary_cards(outputs_dict['visual_summary'], analysis)
-            
+
+        # Advanced Economic Analysis
+        if 'advanced_economics' in outputs_dict:
+            display_advanced_economics_panel(outputs_dict['advanced_economics'], analysis)
+
     except Exception as e:
         display_error(outputs_dict['system_params'], f"Error displaying complete analysis: {str(e)}")
         

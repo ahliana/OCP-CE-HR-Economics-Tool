@@ -1,7 +1,7 @@
 # Heat Reuse Economics Tool - UI Calculation Map
 
-**Version:** 2.0.0
-**Last Updated:** 2026-01-07
+**Version:** 2.2.0
+**Last Updated:** 2026-01-08
 **Author:** Ahliana Byrd
 
 This document explains **every number displayed in the UI** - where it comes from, how it's calculated, and what data sources are used. Written for engineers who work with heat exchangers and CDUs, not software developers.
@@ -18,8 +18,9 @@ This document explains **every number displayed in the UI** - where it comes fro
 | [4. Economics Analysis Table](#4-economics-analysis-table) | 3-column comparison (2°C, 3°C, 5°C) |
 | [5. Operating Costs](#5-operating-costs) | Annual energy consumption and costs |
 | [6. Charts](#6-charts) | What each visualization shows |
-| [7. Data Files](#7-data-sources) | CSV files and what's in them |
-| [8. Limitations](#8-known-limitations) | What's NOT included |
+| [7. Advanced Economic Analysis](#7-advanced-economic-analysis) | Unit cost, annualized costs, economy of scale |
+| [8. Data Files](#8-data-sources) | CSV files and what's in them |
+| [9. Limitations](#9-known-limitations) | What's NOT included |
 
 ---
 
@@ -409,9 +410,150 @@ Effectiveness = Actual Heat Transfer / Maximum Possible Heat Transfer
 
 ---
 
-## 7. Data Sources
+## 7. Advanced Economic Analysis
 
-### 7.1 CSV Data Files
+**Section Title:** "Advanced Economic Analysis"
+**Toggle:** `SHOW_ADVANCED_ECONOMICS = True` in `python/ui/advanced_economics.py` (line 27)
+**File:** `python/ui/advanced_economics.py`
+
+This section provides deeper economic insights including annualized costs, unit heat recovery cost (€/kWh), and economy of scale comparisons.
+
+### 7.1 New Calculations
+
+#### Annualized Capital Cost
+
+| Formula | Example |
+|---------|---------|
+| CapEx ÷ Payback Period | €1,351,000 ÷ 5 years = **€270,200/year** |
+
+**Default Payback Period:** 5 years (hardcoded in `advanced_economics.py`)
+
+#### Total Annualized Cost
+
+| Formula | Example |
+|---------|---------|
+| Annualized CapEx + Annual OpEx | €270,200 + €50,000 = **€320,200/year** |
+
+This is the key metric for comparing different system configurations on an annual basis.
+
+#### Normalized Capital Cost (€/MW)
+
+| Formula | Purpose |
+|---------|---------|
+| CapEx ÷ Capacity (MW) | Economy of scale comparison |
+
+**Example - Economy of Scale:**
+| System Size | CapEx | Normalized Cost | Better Value? |
+|-------------|-------|-----------------|---------------|
+| 1 MW | €1,000,000 | €1,000,000/MW | ❌ |
+| 5 MW | €3,500,000 | €700,000/MW | ✅ |
+
+#### Unit Heat Recovery Cost (€/kWh)
+
+| Formula | What It Tells You |
+|---------|-------------------|
+| Total Annualized Cost ÷ (MW × 1000 × 8760) | Cost per kWh of recovered heat |
+
+**This is "the most interesting number"** - it lets you compare heat recovery cost directly against energy prices.
+
+**Benchmark Comparisons:**
+| Unit Cost | Interpretation |
+|-----------|----------------|
+| < €0.05/kWh | ✅ Competitive with natural gas |
+| < €0.15/kWh | ✅ Competitive with EU electricity |
+| > €0.15/kWh | ⚠️ Above typical energy benchmarks |
+
+**Example Calculation:**
+```
+Total Annualized Cost = €320,200/year
+Capacity = 2 MW
+Annual Energy Potential = 2 MW × 1000 kW/MW × 8760 hrs = 17,520,000 kWh
+
+Unit Cost = €320,200 / 17,520,000 kWh = €0.0183/kWh
+```
+Result: **€0.018/kWh** - significantly cheaper than natural gas!
+
+### 7.2 Comparison Tables
+
+#### Table A: Fixed Capacity, Variable Approach
+
+Shows how approach temperature affects economics for a single system size.
+
+| Column | Meaning |
+|--------|---------|
+| Capacity (MW) | Same for all rows (your selected capacity) |
+| Approach (°C) | 2°C, 3°C, 5°C |
+| CapEx (K€) | Total capital cost |
+| OpEx (K€/yr) | Annual operating cost |
+| Annualized CapEx (K€/yr) | CapEx ÷ 5 years |
+| Total Ann. Cost (K€/yr) | Sum of annualized CapEx + OpEx |
+| Normalized CapEx (K€/MW) | CapEx per MW capacity |
+| Heat Recovery Cost (€/kWh) | **Key metric** for comparison |
+
+**Optimal row highlighted in green** = lowest Total Annualized Cost
+
+#### Table B: Fixed Approach, Variable Capacity
+
+Shows economy of scale - how unit cost decreases with larger systems.
+
+Uses 3°C approach (default) across capacities 1-5 MW.
+
+### 7.3 Charts
+
+#### Chart 1: Annual Costs vs. Approach Temperature
+
+**Dual Y-Axis Chart:**
+- Left axis (lines): OpEx, Annualized CapEx, Total Annualized Cost
+- Right axis (bars): Normalized CapEx (K€/MW)
+- Gold star marks the optimal point (lowest total cost)
+
+**Key Insight:** Shows the trade-off between CapEx and OpEx as approach changes.
+
+#### Chart 2: Unit Heat Recovery Cost vs. Approach Temperature
+
+**Dual Y-Axis Chart:**
+- Left axis (line): Heat Recovery Cost (€/kWh)
+- Right axis (bars): Normalized CapEx (K€/MW)
+- Benchmark lines at €0.05 (natural gas) and €0.15 (EU electricity)
+
+**Key Insight:** Shows whether your heat recovery is economically competitive.
+
+#### Chart 3: Economy of Scale
+
+**Dual Y-Axis Chart:**
+- Left axis (line): Unit Heat Recovery Cost vs. Capacity
+- Right axis (bars): Normalized CapEx (K€/MW)
+- Annotation shows % cost reduction from 1 MW to 5 MW
+
+**Key Insight:** Larger systems have significantly lower unit costs.
+
+### 7.4 Key Economic Insights Summary
+
+Auto-generated insights at the bottom of the section:
+- Optimal approach temperature for current capacity
+- Unit cost at optimal point
+- Economy of scale percentage (1→5 MW)
+- Competitiveness vs. energy benchmarks
+
+### 7.5 Assumptions & Limitations
+
+| Assumption | Value | Notes |
+|------------|-------|-------|
+| Payback period | 5 years | Hardcoded, not adjustable in UI |
+| Operating hours | 8,760/year | Assumes 100% on-stream (24/7) |
+| Electricity price | €0.15/kWh | Used for OpEx calculation |
+
+**What's NOT included in OpEx:**
+- Maintenance (typically 3-5% of CapEx/year)
+- Labor costs
+- Water treatment
+- Insurance
+
+---
+
+## 8. Data Sources
+
+### 8.1 CSV Data Files
 
 All located in `/Data/` folder:
 
@@ -425,7 +567,7 @@ All located in `/Data/` folder:
 | **IVALV.csv** | Isolation valve costs | DN size → € |
 | **JOINTS.csv** | Fittings costs | DN size → € per fitting |
 
-### 7.2 Hardcoded Values
+### 8.2 Hardcoded Values
 
 | Value | Location | Current Setting | Notes |
 |-------|----------|-----------------|-------|
@@ -443,9 +585,9 @@ All located in `/Data/` folder:
 
 ---
 
-## 8. Known Limitations
+## 9. Known Limitations
 
-### 8.1 Data Quality Issues
+### 9.1 Data Quality Issues
 
 | Issue | Impact | Notes |
 |-------|--------|-------|
@@ -453,7 +595,7 @@ All located in `/Data/` folder:
 | Pump costs | Estimates only | Hardcoded, not from quotes |
 | Room size values | Unclear units | May be m² or linear meters |
 
-### 8.2 What's NOT in Operating Costs
+### 9.2 What's NOT in Operating Costs
 
 | Missing Item | Typical Cost | Why It Matters |
 |--------------|--------------|----------------|
@@ -462,7 +604,7 @@ All located in `/Data/` folder:
 | **Water treatment** | €500-2,000/year | Chemicals, testing |
 | **Insurance** | 0.5-1% of CapEx/year | Asset protection |
 
-### 8.3 Simplifications in Calculations
+### 9.3 Simplifications in Calculations
 
 1. **Pump sizing** - Uses estimated pressure drops, not actual hydraulic calculations
 2. **Fittings count** - Assumes 20 fittings per system (may vary)
@@ -577,6 +719,24 @@ All located in `/Data/` folder:
 | Economics Analysis table | `create_economics_table()` | `python/ui/economics_panel.py` | ~50-325 |
 | Charts (all) | `display_charts()` | `python/ui/outputs.py` | ~200-280 |
 | Summary Cards | `display_visual_summary()` | `python/ui/outputs.py` | ~480-525 |
+| Advanced Economic Analysis | `display_advanced_economics()` | `python/ui/advanced_economics.py` | ~459-550 |
+
+### Advanced Economic Analysis Functions
+
+| UI Value | Function | File | Line |
+|----------|----------|------|------|
+| Annualized CapEx | `calculate_advanced_metrics()` | `python/ui/advanced_economics.py` | ~68 |
+| Total Annualized Cost | `calculate_advanced_metrics()` | `python/ui/advanced_economics.py` | ~71 |
+| Normalized CapEx (€/MW) | `calculate_advanced_metrics()` | `python/ui/advanced_economics.py` | ~74 |
+| Unit Heat Recovery Cost (€/kWh) | `calculate_advanced_metrics()` | `python/ui/advanced_economics.py` | ~79 |
+| Approach Comparison Data | `generate_approach_comparison_data()` | `python/ui/advanced_economics.py` | ~97-130 |
+| Capacity Comparison Data | `generate_capacity_comparison_data()` | `python/ui/advanced_economics.py` | ~133-166 |
+| Comparison Tables | `create_comparison_table()` | `python/ui/advanced_economics.py` | ~173-248 |
+| Annual Costs Chart | `create_annual_costs_chart()` | `python/ui/advanced_economics.py` | ~255-318 |
+| Unit Cost Chart | `create_unit_cost_chart()` | `python/ui/advanced_economics.py` | ~321-385 |
+| Economy of Scale Chart | `create_economy_of_scale_chart()` | `python/ui/advanced_economics.py` | ~388-452 |
+| Key Insights Summary | `create_insights_summary()` | `python/ui/advanced_economics.py` | ~561-608 |
+| Toggle Check | `should_show_advanced_economics()` | `python/ui/advanced_economics.py` | ~636 |
 
 ### Event Handlers
 
@@ -621,3 +781,4 @@ All located in `/Data/` folder:
 | 1.1 | 2025-10-08 | Added pie charts documentation |
 | 2.0 | 2026-01-07 | Complete rewrite for engineer audience - added formulas, trade-off explanations, limitations section, glossary |
 | 2.1 | 2026-01-07 | Added Technical Reference section with exact function locations for maintainers |
+| 2.2 | 2026-01-08 | Added Section 7: Advanced Economic Analysis - annualized costs, unit heat recovery cost (€/kWh), economy of scale charts, benchmark comparisons |

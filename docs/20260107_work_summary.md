@@ -1,6 +1,48 @@
-# Work Summary - 2026-01-07
+# Work Summary - 2026-01-07 & 2026-01-08
 
-## Changes Made
+## Changes Made (2026-01-08)
+
+### 6. Advanced Economic Analysis Module (NEW)
+
+Implemented comprehensive economic analysis per October 24, 2025 specification request.
+
+#### New File: `python/ui/advanced_economics.py`
+
+**4 New Calculations:**
+| Calculation | Formula | Purpose |
+|-------------|---------|---------|
+| Annualized Capital Cost | CapEx ÷ Payback Period (5 yrs) | Spread capital over time |
+| Total Annualized Cost | Annualized CapEx + OpEx | Annual cost comparison |
+| Normalized Capital Cost | CapEx ÷ Capacity (MW) | Economy of scale |
+| Unit Heat Recovery Cost | Total Ann. Cost ÷ (MW × 8760 × 1000) | €/kWh comparison |
+
+**2 Comparison Tables:**
+- Table A: Fixed capacity, variable approach (2°C, 3°C, 5°C)
+- Table B: Fixed approach (3°C), variable capacity (1-5 MW)
+
+**3 New Charts (Dual Y-Axis):**
+1. Annual Costs vs. Approach Temperature
+2. Unit Heat Recovery Cost vs. Approach (with €0.05 and €0.15 benchmark lines)
+3. Economy of Scale: Unit Cost vs. Capacity
+
+**Key Features:**
+- `SHOW_ADVANCED_ECONOMICS = True` toggle for visibility control
+- Optimal point highlighted with gold star in charts
+- Green row highlighting for lowest cost option in tables
+- Key Economic Insights summary auto-generated
+
+#### Files Modified:
+- `python/ui/advanced_economics.py` (NEW - 638 lines)
+- `python/ui/inputs.py` - Added `advanced_economics` output area
+- `python/ui/outputs.py` - Added `display_advanced_economics_panel()` function
+- `python/ui/__init__.py` - Exports `SHOW_ADVANCED_ECONOMICS` toggle (version 1.2.0)
+
+#### Documentation Updated:
+- `docs/UI_CALCULATION_MAP.md` - Added Section 7: Advanced Economic Analysis (version 2.2)
+
+---
+
+## Changes Made (2026-01-07)
 
 ### 1. Piping Cost Analysis Section Refactor
 - **Renamed** section from "Capital Cost Analysis" to "Piping Cost Analysis"
