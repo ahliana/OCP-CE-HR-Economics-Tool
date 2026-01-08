@@ -1,6 +1,6 @@
 # Heat Reuse Economics Tool - UI Calculation Map
 
-**Version:** 2.2.0
+**Version:** 2.3.0
 **Last Updated:** 2026-01-08
 **Author:** Ahliana Byrd
 
@@ -426,7 +426,7 @@ This section provides deeper economic insights including annualized costs, unit 
 |---------|---------|
 | CapEx ÷ Payback Period | €1,351,000 ÷ 5 years = **€270,200/year** |
 
-**Default Payback Period:** 5 years (hardcoded in `advanced_economics.py`)
+**Payback Period:** User-selectable (5, 10, 15, or 20 years). Default: 5 years. See Section 7.5.
 
 #### Total Annualized Cost
 
@@ -452,9 +452,11 @@ This is the key metric for comparing different system configurations on an annua
 
 | Formula | What It Tells You |
 |---------|-------------------|
-| Total Annualized Cost ÷ (MW × 1000 × 8760) | Cost per kWh of recovered heat |
+| Total Annualized Cost ÷ (MW × 1000 × on-stream hours) | Cost per kWh of recovered heat |
 
 **This is "the most interesting number"** - it lets you compare heat recovery cost directly against energy prices.
+
+**Note:** The on-stream hours are now user-selectable (see Section 7.5). Lower on-stream hours = higher unit cost.
 
 **Benchmark Comparisons:**
 | Unit Cost | Interpretation |
@@ -463,15 +465,23 @@ This is the key metric for comparing different system configurations on an annua
 | < €0.15/kWh | ✅ Competitive with EU electricity |
 | > €0.15/kWh | ⚠️ Above typical energy benchmarks |
 
-**Example Calculation:**
+**Example Calculation (100% on-stream):**
 ```
 Total Annualized Cost = €320,200/year
 Capacity = 2 MW
+On-stream hours = 8760 (100%)
 Annual Energy Potential = 2 MW × 1000 kW/MW × 8760 hrs = 17,520,000 kWh
 
 Unit Cost = €320,200 / 17,520,000 kWh = €0.0183/kWh
 ```
 Result: **€0.018/kWh** - significantly cheaper than natural gas!
+
+**Same example at 68% on-stream (6000 hrs):**
+```
+Annual Energy Potential = 2 MW × 1000 kW/MW × 6000 hrs = 12,000,000 kWh
+Unit Cost = €320,200 / 12,000,000 kWh = €0.0267/kWh
+```
+Result: **€0.027/kWh** - still competitive, but 46% higher than 100% scenario
 
 ### 7.2 Comparison Tables
 
@@ -535,12 +545,29 @@ Auto-generated insights at the bottom of the section:
 - Economy of scale percentage (1→5 MW)
 - Competitiveness vs. energy benchmarks
 
-### 7.5 Assumptions & Limitations
+### 7.5 User-Selectable Parameters
+
+Two parameters can be adjusted via dropdowns in the Advanced Economics section:
+
+| Parameter | Options | Default | Affects |
+|-----------|---------|---------|---------|
+| **Payback Period** | 5, 10, 15, 20 years | 5 years | Annualized CapEx, Total Annualized Cost, Unit Heat Recovery Cost |
+| **On-stream Hours** | 8760 (100%), 8000 (91%), 6000 (68%), 4000 (46%) | 8760 hrs | Unit Heat Recovery Cost |
+
+**On-stream Hours Options Explained:**
+| Hours | Capacity Factor | Use Case |
+|-------|-----------------|----------|
+| 8760 | 100% | Theoretical maximum (unrealistic) |
+| 8000 | 91% | High-availability datacenter |
+| 6000 | 68% | Seasonal district heating demand |
+| 4000 | 46% | Winter-only heating application |
+
+When you change these dropdowns, all tables, charts, and insights recalculate instantly.
+
+### 7.6 Fixed Assumptions
 
 | Assumption | Value | Notes |
 |------------|-------|-------|
-| Payback period | 5 years | Hardcoded, not adjustable in UI |
-| Operating hours | 8,760/year | Assumes 100% on-stream (24/7) |
 | Electricity price | €0.15/kWh | Used for OpEx calculation |
 
 **What's NOT included in OpEx:**
@@ -782,3 +809,4 @@ All located in `/Data/` folder:
 | 2.0 | 2026-01-07 | Complete rewrite for engineer audience - added formulas, trade-off explanations, limitations section, glossary |
 | 2.1 | 2026-01-07 | Added Technical Reference section with exact function locations for maintainers |
 | 2.2 | 2026-01-08 | Added Section 7: Advanced Economic Analysis - annualized costs, unit heat recovery cost (€/kWh), economy of scale charts, benchmark comparisons |
+| 2.3 | 2026-01-08 | Added user-selectable parameters (payback period, on-stream hours) with interactive dropdowns in Advanced Economics |

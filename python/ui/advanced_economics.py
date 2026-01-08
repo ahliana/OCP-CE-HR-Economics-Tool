@@ -54,7 +54,8 @@ def suppress_logging():
 # =============================================================================
 
 def calculate_advanced_metrics(capex_eur: float, opex_eur_year: float,
-                               capacity_mw: float, payback_years: float = 5.0) -> dict:
+                               capacity_mw: float, payback_years: float = 5.0,
+                               on_stream_hours: int = 8760) -> dict:
     """
     Calculate advanced economic metrics for heat recovery analysis.
 
@@ -63,6 +64,7 @@ def calculate_advanced_metrics(capex_eur: float, opex_eur_year: float,
         opex_eur_year: Annual operating cost in EUR/year
         capacity_mw: Heat recovery capacity in MW
         payback_years: Payback period in years (default 5)
+        on_stream_hours: Annual operating hours (default 8760 = 100% uptime)
 
     Returns:
         dict with all calculated metrics
@@ -76,16 +78,21 @@ def calculate_advanced_metrics(capex_eur: float, opex_eur_year: float,
     # 3. Normalized Capital Cost (EUR/MW)
     normalized_capex = capex_eur / capacity_mw
 
-    # 4. Unit Heat Recovery Cost at max capacity (EUR/kWh)
-    # = Total Annualized Cost / (MW × 1000 kW/MW × 8760 hrs/yr)
-    annual_energy_potential_kwh = capacity_mw * 1000 * 8760
+    # 4. Unit Heat Recovery Cost (EUR/kWh)
+    # = Total Annualized Cost / (MW × 1000 kW/MW × on_stream_hours)
+    annual_energy_potential_kwh = capacity_mw * 1000 * on_stream_hours
     unit_heat_recovery_cost = total_annualized / annual_energy_potential_kwh
+
+    # Calculate capacity factor for display
+    capacity_factor = (on_stream_hours / 8760) * 100
 
     return {
         'capex_eur': capex_eur,
         'opex_eur_year': opex_eur_year,
         'capacity_mw': capacity_mw,
         'payback_years': payback_years,
+        'on_stream_hours': on_stream_hours,
+        'capacity_factor_pct': capacity_factor,
         'annualized_capex_eur_year': annualized_capex,
         'total_annualized_eur_year': total_annualized,
         'normalized_capex_eur_per_mw': normalized_capex,
@@ -96,6 +103,7 @@ def calculate_advanced_metrics(capex_eur: float, opex_eur_year: float,
 
 def generate_approach_comparison_data(wha: float, T1: float, temp_rise: float,
                                        payback_years: float = 5.0,
+                                       on_stream_hours: int = 8760,
                                        approaches: list = None) -> list:
     """
     Generate comparison data across different approach temperatures.
@@ -105,6 +113,7 @@ def generate_approach_comparison_data(wha: float, T1: float, temp_rise: float,
         T1: Inlet temperature in °C
         temp_rise: Temperature rise in °C
         payback_years: Payback period in years
+        on_stream_hours: Annual operating hours (default 8760)
         approaches: List of approach temperatures (default [2, 3, 5])
 
     Returns:
@@ -123,7 +132,7 @@ def generate_approach_comparison_data(wha: float, T1: float, temp_rise: float,
             capex = estimate.get('capital_total', 0)
             opex = estimate.get('operating_cost_eur_year', 0)
 
-            metrics = calculate_advanced_metrics(capex, opex, wha, payback_years)
+            metrics = calculate_advanced_metrics(capex, opex, wha, payback_years, on_stream_hours)
             metrics['approach'] = approach
             results.append(metrics)
 
@@ -132,6 +141,7 @@ def generate_approach_comparison_data(wha: float, T1: float, temp_rise: float,
 
 def generate_capacity_comparison_data(T1: float, temp_rise: float, approach: float,
                                        payback_years: float = 5.0,
+                                       on_stream_hours: int = 8760,
                                        capacities: list = None) -> list:
     """
     Generate comparison data across different capacities.
@@ -141,6 +151,7 @@ def generate_capacity_comparison_data(T1: float, temp_rise: float, approach: flo
         temp_rise: Temperature rise in °C
         approach: Approach temperature in °C
         payback_years: Payback period in years
+        on_stream_hours: Annual operating hours (default 8760)
         capacities: List of capacities in MW (default [1, 2, 3, 4, 5])
 
     Returns:
@@ -159,7 +170,7 @@ def generate_capacity_comparison_data(T1: float, temp_rise: float, approach: flo
             capex = estimate.get('capital_total', 0)
             opex = estimate.get('operating_cost_eur_year', 0)
 
-            metrics = calculate_advanced_metrics(capex, opex, capacity, payback_years)
+            metrics = calculate_advanced_metrics(capex, opex, capacity, payback_years, on_stream_hours)
             metrics['approach'] = approach
             results.append(metrics)
 
@@ -456,47 +467,24 @@ def create_economy_of_scale_chart(data: list, output_area, title_suffix: str = "
 # MAIN DISPLAY FUNCTION
 # =============================================================================
 
-def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: float,
-                               payback_years: float = 5.0):
+def _render_analysis_content(content_output, wha: float, T1: float, temp_rise: float,
+                              payback_years: float, on_stream_hours: int):
     """
-    Display complete advanced economic analysis.
+    Internal function to render analysis content (tables and charts).
 
-    Args:
-        output_area: IPython output widget to display in
-        wha: Current system power in MW
-        T1: Inlet temperature in °C
-        temp_rise: Temperature rise in °C (itdt)
-        payback_years: Payback period in years (default 5)
+    Called by display_advanced_economics when parameters change.
     """
-    if not SHOW_ADVANCED_ECONOMICS:
-        return
+    content_output.clear_output(wait=True)
 
-    output_area.clear_output(wait=True)
-
-    with output_area:
+    with content_output:
         try:
-            # Section header
-            header_html = f"""
-            <div style="margin: 20px 0; background-color: #f8f9fa; padding: 0; border-radius: 12px;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-                            color: white; padding: 16px 24px; font-size: 20px; font-weight: 600;">
-                    📈 Advanced Economic Analysis
-                </div>
-                <div style="padding: 15px 24px; background: white; border-bottom: 1px solid #e0e0e0;">
-                    <p style="margin: 0; color: #333; font-size: 14px;">
-                        <strong>Payback Period:</strong> <span style="color: #00C853;">{payback_years:.0f} years</span> |
-                        <strong>Current System:</strong> <span style="color: #2196F3;">{wha} MW</span> |
-                        <strong>Assumes:</strong> 100% on-stream (8760 hrs/yr)
-                    </p>
-                </div>
-            </div>
-            """
-            display(HTML(header_html))
+            # Calculate capacity factor percentage for display
+            capacity_factor = (on_stream_hours / 8760) * 100
 
             # Table A: Fixed Capacity, Variable Approach
-            approach_data = generate_approach_comparison_data(wha, T1, temp_rise, payback_years)
+            approach_data = generate_approach_comparison_data(
+                wha, T1, temp_rise, payback_years, on_stream_hours
+            )
             if approach_data:
                 table_a = create_comparison_table(
                     approach_data,
@@ -512,7 +500,7 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
             </div>
             """
             display(HTML(chart_header_1))
-            create_annual_costs_chart(approach_data, output_area)
+            create_annual_costs_chart(approach_data, content_output)
 
             # Chart 2: Unit Cost vs Approach
             chart_header_2 = """
@@ -522,11 +510,13 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
             </div>
             """
             display(HTML(chart_header_2))
-            create_unit_cost_chart(approach_data, output_area)
+            create_unit_cost_chart(approach_data, content_output)
 
             # Table B: Fixed Approach (current), Variable Capacity
             current_approach = 3  # Default to 3°C for comparison
-            capacity_data = generate_capacity_comparison_data(T1, temp_rise, current_approach, payback_years)
+            capacity_data = generate_capacity_comparison_data(
+                T1, temp_rise, current_approach, payback_years, on_stream_hours
+            )
             if capacity_data:
                 table_b = create_comparison_table(
                     capacity_data,
@@ -542,10 +532,12 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
             </div>
             """
             display(HTML(chart_header_3))
-            create_economy_of_scale_chart(capacity_data, output_area)
+            create_economy_of_scale_chart(capacity_data, content_output)
 
-            # Key insights
-            insights_html = create_insights_summary(approach_data, capacity_data, wha)
+            # Key insights (updated to show user-selected parameters)
+            insights_html = create_insights_summary(
+                approach_data, capacity_data, wha, payback_years, on_stream_hours
+            )
             display(HTML(insights_html))
 
         except Exception as e:
@@ -558,12 +550,110 @@ def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: fl
             display(HTML(error_html))
 
 
-def create_insights_summary(approach_data: list, capacity_data: list, current_mw: float) -> str:
+def display_advanced_economics(output_area, wha: float, T1: float, temp_rise: float,
+                               payback_years: float = 5.0, on_stream_hours: int = 8760):
+    """
+    Display complete advanced economic analysis with interactive parameter selection.
+
+    Args:
+        output_area: IPython output widget to display in
+        wha: Current system power in MW
+        T1: Inlet temperature in °C
+        temp_rise: Temperature rise in °C (itdt)
+        payback_years: Initial payback period in years (default 5)
+        on_stream_hours: Initial on-stream hours (default 8760)
+    """
+    if not SHOW_ADVANCED_ECONOMICS:
+        return
+
+    output_area.clear_output(wait=True)
+
+    with output_area:
+        # Create parameter selection dropdowns
+        payback_dropdown = create_payback_dropdown()
+        payback_dropdown.value = payback_years
+
+        on_stream_dropdown = create_on_stream_dropdown()
+        on_stream_dropdown.value = on_stream_hours
+
+        # Create output area for the analysis content (tables/charts)
+        content_output = widgets.Output()
+
+        # Section header with dropdowns
+        header_html = f"""
+        <div style="margin: 20px 0 0 0; background-color: #f8f9fa; padding: 0; border-radius: 12px 12px 0 0;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                        color: white; padding: 16px 24px; font-size: 20px; font-weight: 600;">
+                📈 Advanced Economic Analysis
+            </div>
+            <div style="padding: 10px 24px; background: white; border-bottom: 1px solid #e0e0e0;">
+                <p style="margin: 0 0 8px 0; color: #333; font-size: 14px;">
+                    <strong>Current System:</strong> <span style="color: #2196F3;">{wha} MW</span>
+                </p>
+            </div>
+        </div>
+        """
+        display(HTML(header_html))
+
+        # Display dropdowns in a horizontal box
+        param_label = widgets.HTML(
+            value='<span style="font-size: 13px; color: #666; margin-right: 10px;">Adjust parameters:</span>'
+        )
+        dropdown_box = widgets.HBox(
+            [param_label, payback_dropdown, on_stream_dropdown],
+            layout=widgets.Layout(
+                padding='10px 24px',
+                background='white',
+                border='1px solid #e0e0e0',
+                margin='0 0 10px 0'
+            )
+        )
+        display(dropdown_box)
+
+        # Display content area
+        display(content_output)
+
+        # Define update function for dropdown changes
+        def update_analysis(change):
+            _render_analysis_content(
+                content_output,
+                wha, T1, temp_rise,
+                payback_dropdown.value,
+                on_stream_dropdown.value
+            )
+
+        # Attach observers to dropdowns
+        payback_dropdown.observe(update_analysis, names='value')
+        on_stream_dropdown.observe(update_analysis, names='value')
+
+        # Initial render with default/provided values
+        _render_analysis_content(
+            content_output,
+            wha, T1, temp_rise,
+            payback_years,
+            on_stream_hours
+        )
+
+
+def create_insights_summary(approach_data: list, capacity_data: list, current_mw: float,
+                            payback_years: float = 5.0, on_stream_hours: int = 8760) -> str:
     """
     Create summary of key economic insights.
+
+    Args:
+        approach_data: List of metrics for different approach temperatures
+        capacity_data: List of metrics for different capacities
+        current_mw: Current system capacity in MW
+        payback_years: User-selected payback period
+        on_stream_hours: User-selected on-stream hours
     """
     if not approach_data or not capacity_data:
         return ""
+
+    # Calculate capacity factor for display
+    capacity_factor = (on_stream_hours / 8760) * 100
 
     # Find optimal approach
     optimal_approach = min(approach_data, key=lambda x: x['total_annualized_eur_year'])
@@ -603,14 +693,14 @@ def create_insights_summary(approach_data: list, capacity_data: list, current_mw
             <li><strong>Competitiveness:</strong> {competitive_status}</li>
         </ul>
         <p style="margin: 15px 0 0 0; font-size: 12px; color: #666; font-style: italic;">
-            Assumes {optimal_approach['payback_years']:.0f}-year payback period and 100% on-stream operation.
+            Based on <strong>{payback_years:.0f}-year</strong> payback period and <strong>{on_stream_hours:,} hrs/yr</strong> ({capacity_factor:.0f}%) on-stream operation.
         </p>
     </div>
     """
 
 
 # =============================================================================
-# PAYBACK PERIOD WIDGET
+# PARAMETER SELECTION WIDGETS
 # =============================================================================
 
 def create_payback_dropdown():
@@ -621,11 +711,38 @@ def create_payback_dropdown():
         ipywidgets.Dropdown
     """
     return widgets.Dropdown(
-        options=[5, 10, 15, 20],
+        options=[('5 years', 5), ('10 years', 10), ('15 years', 15), ('20 years', 20)],
         value=5,
-        description='Payback (yrs):',
-        style={'description_width': '100px'},
-        layout=widgets.Layout(width='200px')
+        description='Payback Period:',
+        style={'description_width': '110px'},
+        layout=widgets.Layout(width='220px')
+    )
+
+
+def create_on_stream_dropdown():
+    """
+    Create on-stream hours dropdown widget.
+
+    Options represent common operating scenarios:
+    - 8760 hrs = 100% uptime (theoretical max)
+    - 8000 hrs = 91% uptime (high availability)
+    - 6000 hrs = 68% uptime (seasonal demand)
+    - 4000 hrs = 46% uptime (winter heating only)
+
+    Returns:
+        ipywidgets.Dropdown
+    """
+    return widgets.Dropdown(
+        options=[
+            ('8760 hrs (100%)', 8760),
+            ('8000 hrs (91%)', 8000),
+            ('6000 hrs (68%)', 6000),
+            ('4000 hrs (46%)', 4000)
+        ],
+        value=8760,
+        description='On-stream:',
+        style={'description_width': '110px'},
+        layout=widgets.Layout(width='220px')
     )
 
 

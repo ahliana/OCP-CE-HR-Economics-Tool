@@ -8,31 +8,39 @@ Implemented comprehensive economic analysis per October 24, 2025 specification r
 
 #### New File: `python/ui/advanced_economics.py`
 
-**4 New Calculations:**
+**4 Calculations:**
 | Calculation | Formula | Purpose |
 |-------------|---------|---------|
-| Annualized Capital Cost | CapEx ÷ Payback Period (5 yrs) | Spread capital over time |
+| Annualized Capital Cost | CapEx ÷ Payback Period | Spread capital over time |
 | Total Annualized Cost | Annualized CapEx + OpEx | Annual cost comparison |
 | Normalized Capital Cost | CapEx ÷ Capacity (MW) | Economy of scale |
-| Unit Heat Recovery Cost | Total Ann. Cost ÷ (MW × 8760 × 1000) | €/kWh comparison |
+| Unit Heat Recovery Cost | Total Ann. Cost ÷ (MW × on-stream hrs × 1000) | €/kWh comparison |
+
+**2 User-Selectable Parameters (added 2026-01-08):**
+| Parameter | Options | Default |
+|-----------|---------|---------|
+| Payback Period | 5, 10, 15, 20 years | 5 years |
+| On-stream Hours | 8760 (100%), 8000 (91%), 6000 (68%), 4000 (46%) | 8760 hrs |
 
 **2 Comparison Tables:**
 - Table A: Fixed capacity, variable approach (2°C, 3°C, 5°C)
 - Table B: Fixed approach (3°C), variable capacity (1-5 MW)
 
-**3 New Charts (Dual Y-Axis):**
+**3 Charts (Dual Y-Axis):**
 1. Annual Costs vs. Approach Temperature
 2. Unit Heat Recovery Cost vs. Approach (with €0.05 and €0.15 benchmark lines)
 3. Economy of Scale: Unit Cost vs. Capacity
 
 **Key Features:**
 - `SHOW_ADVANCED_ECONOMICS = True` toggle for visibility control
+- Interactive dropdowns for payback period and on-stream hours
+- Tables and charts recalculate when parameters change
 - Optimal point highlighted with gold star in charts
 - Green row highlighting for lowest cost option in tables
-- Key Economic Insights summary auto-generated
+- Key Economic Insights summary auto-generated with user-selected values
 
 #### Files Modified:
-- `python/ui/advanced_economics.py` (NEW - 638 lines)
+- `python/ui/advanced_economics.py` (NEW - ~750 lines)
 - `python/ui/inputs.py` - Added `advanced_economics` output area
 - `python/ui/outputs.py` - Added `display_advanced_economics_panel()` function
 - `python/ui/__init__.py` - Exports `SHOW_ADVANCED_ECONOMICS` toggle (version 1.2.0)
