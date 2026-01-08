@@ -6,11 +6,13 @@ Created: 2025-10-08
 """
 Output Display Functions
 Extracted from Interactive Analysis Tool.ipynb
+Updated 2026-01-07: High-contrast colors for light/dark mode compatibility
 """
 
 from IPython.display import display, HTML
-import matplotlib.pyplot as plt  # Add this line
+import matplotlib.pyplot as plt
 from .config import OUTPUT_CONFIG
+from .styles import COLORS, inject_global_styles
 from .formatting import (
     create_result_html, create_error_html, create_validation_errors_html,
     extract_formatted_system_params, extract_formatted_cost_analysis, 
@@ -254,16 +256,19 @@ def clear_all_displays(outputs_dict):
 def display_loading_message(output_area, message="Calculating..."):
     """
     Display a loading message while calculations are in progress.
-    
+    Uses explicit styling for visibility on light/dark backgrounds.
+
     Args:
         output_area: Output widget to display in
         message: Loading message to display
     """
     with output_area:
         html_content = f"""
-        <div style="background-color: #e3f2fd; color: #0d47a1; padding: 15px; 
-                    border-radius: 8px; border: 2px solid #bbdefb; margin: 10px 0; text-align: center;">
-            <strong>⏳ {message}</strong>
+        <div style="background-color: #e3f2fd; color: #0d47a1; padding: 15px 20px;
+                    border-radius: 8px; border: 2px solid #2196F3; margin: 10px 0; text-align: center;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <strong style="color: #0d47a1;">⏳ {message}</strong>
         </div>
         """
         display(HTML(html_content))
@@ -271,7 +276,8 @@ def display_loading_message(output_area, message="Calculating..."):
 def display_calculation_summary(output_area, summary_data):
     """
     Display a quick calculation summary.
-    
+    Uses explicit styling for visibility on light/dark backgrounds.
+
     Args:
         output_area: Output widget to display in
         summary_data: Dictionary with summary information
@@ -280,19 +286,28 @@ def display_calculation_summary(output_area, summary_data):
         try:
             wha = summary_data.get('wha', 'N/A')
             total_cost = summary_data.get('total_cost_eur', 'N/A')
-            
+
             html_content = f"""
-            <div style="background-color: #f8f9fa; color: #343a40; padding: 15px; 
-                        border-radius: 8px; border: 2px solid #dee2e6; margin: 10px 0; text-align: center;">
-                <h4 style="margin-top: 0; color: #495057;">📊 Quick Summary</h4>
-                <p style="margin: 5px 0; font-size: 16px;">
-                    <strong>System wha:</strong> {wha} MW | 
-                    <strong>Total Cost:</strong> €{total_cost:,} 
-                </p>
+            <div style="background-color: #f8f9fa; padding: 0; border-radius: 12px;
+                        border: 2px solid #dee2e6; margin: 10px 0; overflow: hidden;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 12px 20px; font-size: 16px; font-weight: 600; text-align: center;">
+                    📊 Quick Summary
+                </div>
+                <div style="padding: 15px; text-align: center; background-color: white;">
+                    <p style="margin: 5px 0; font-size: 16px; color: #37474F;">
+                        <strong style="color: #37474F;">System Capacity:</strong>
+                        <span style="color: #00C853; font-weight: bold;">{wha} MW</span> |
+                        <strong style="color: #37474F;">Total Cost:</strong>
+                        <span style="color: #00C853; font-weight: bold;">€{total_cost:,}</span>
+                    </p>
+                </div>
             </div>
             """
             display(HTML(html_content))
-            
+
         except Exception as e:
             display_error(output_area, f"Error displaying summary: {str(e)}")
 
@@ -317,15 +332,34 @@ def display_detailed_breakdown(output_area, analysis, show_validation=True):
             # Display validation if available and requested
             if show_validation and 'validation' in analysis:
                 validation = analysis['validation']
-                
+
                 validation_html = f"""
-                <div style="background-color: #fff3cd; color: #856404; padding: 10px; 
-                            border-radius: 5px; margin: 10px 0; border: 1px solid #ffeaa7;">
-                    <h4 style="margin-top: 0;">🔬 Validation Results</h4>
-                    <p><strong>Calculated MW:</strong> {validation.get('calculated_mw', 'N/A')}</p>
-                    <p><strong>Delta T TCS:</strong> {validation.get('itdt', 'N/A')}°C</p>
-                    <p><strong>Delta T FWS:</strong> {validation.get('oftkrdt', 'N/A')}°C</p>
-                    <p><strong>Approach:</strong> {validation.get('approach_calculated', 'N/A')}</p>
+                <div style="background-color: #fff3cd; padding: 0; border-radius: 8px;
+                            margin: 10px 0; border: 2px solid #ffc107; overflow: hidden;
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                    <div style="background: linear-gradient(135deg, #ffc107 0%, #FF9800 100%);
+                                color: white; padding: 10px 15px; font-size: 14px; font-weight: 600;">
+                        🔬 Validation Results
+                    </div>
+                    <div style="padding: 15px; background-color: #fff8e1;">
+                        <p style="margin: 8px 0; color: #37474F;">
+                            <strong style="color: #856404;">Calculated MW:</strong>
+                            <span style="color: #00C853; font-weight: 600;">{validation.get('calculated_mw', 'N/A')}</span>
+                        </p>
+                        <p style="margin: 8px 0; color: #37474F;">
+                            <strong style="color: #856404;">Delta T TCS:</strong>
+                            <span style="color: #00C853; font-weight: 600;">{validation.get('itdt', 'N/A')}°C</span>
+                        </p>
+                        <p style="margin: 8px 0; color: #37474F;">
+                            <strong style="color: #856404;">Delta T FWS:</strong>
+                            <span style="color: #00C853; font-weight: 600;">{validation.get('oftkrdt', 'N/A')}°C</span>
+                        </p>
+                        <p style="margin: 8px 0; color: #37474F;">
+                            <strong style="color: #856404;">Approach:</strong>
+                            <span style="color: #00C853; font-weight: 600;">{validation.get('approach_calculated', 'N/A')}</span>
+                        </p>
+                    </div>
                 </div>
                 """
                 display(HTML(validation_html))
@@ -336,7 +370,8 @@ def display_detailed_breakdown(output_area, analysis, show_validation=True):
 def display_export_options(output_area, analysis):
     """
     Display export options for the analysis results.
-    
+    Uses explicit styling for visibility on light/dark backgrounds.
+
     Args:
         output_area: Output widget to display in
         analysis: Complete system analysis dictionary
@@ -344,20 +379,29 @@ def display_export_options(output_area, analysis):
     with output_area:
         try:
             export_html = f"""
-            <div style="background-color: #e8f5e8; color: #2e7d32; padding: 15px; 
-                        border-radius: 8px; border: 2px solid #c8e6c9; margin: 10px 0;">
-                <h4 style="margin-top: 0;">📤 Export Options</h4>
-                <p>Results are ready for export. Available formats:</p>
-                <ul>
-                    <li>Charts: PNG/PDF format</li>
-                    <li>Data: CSV/Excel format</li>
-                    <li>Report: PDF summary</li>
-                </ul>
-                <p><small>Contact your system administrator for export functionality.</small></p>
+            <div style="background-color: #f8f9fa; padding: 0; border-radius: 12px;
+                        border: 2px solid #4CAF50; margin: 10px 0; overflow: hidden;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                            color: white; padding: 12px 20px; font-size: 16px; font-weight: 600;">
+                    📤 Export Options
+                </div>
+                <div style="padding: 15px; background-color: white;">
+                    <p style="color: #37474F; margin: 10px 0;">Results are ready for export. Available formats:</p>
+                    <ul style="color: #37474F; margin: 10px 0; padding-left: 25px;">
+                        <li style="margin: 5px 0;">Charts: <span style="color: #00C853; font-weight: 600;">PNG/PDF format</span></li>
+                        <li style="margin: 5px 0;">Data: <span style="color: #00C853; font-weight: 600;">CSV/Excel format</span></li>
+                        <li style="margin: 5px 0;">Report: <span style="color: #00C853; font-weight: 600;">PDF summary</span></li>
+                    </ul>
+                    <p style="color: #78909C; font-size: 12px; margin-top: 15px;">
+                        Contact your system administrator for export functionality.
+                    </p>
+                </div>
             </div>
             """
             display(HTML(export_html))
-            
+
         except Exception as e:
             display_error(output_area, f"Error displaying export options: {str(e)}")
 

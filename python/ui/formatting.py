@@ -6,9 +6,11 @@ Created: 2025-10-08
 """
 Display Formatting and Input Validation
 Extracted from Interactive Analysis Tool.ipynb
+Updated 2026-01-07: High-contrast colors for light/dark mode compatibility
 """
 
 from .config import DISPLAY_ROUNDING, VALIDATION_RULES, MESSAGE_STYLES
+from .styles import COLORS, wrap_in_container, create_styled_table
 
 # =============================================================================
 # DISPLAY FORMATTING FUNCTIONS
@@ -62,73 +64,140 @@ def format_display_value(value, rounding_type, include_units=True, units=""):
 def create_result_html(title, data_rows, border_color, title_color):
     """
     Generate HTML for result displays with consistent styling.
-    
+    Uses explicit backgrounds and high-contrast colors for light/dark mode compatibility.
+
     Args:
         title: Section title
         data_rows: List of (label, value) tuples
         border_color: CSS color for border
         title_color: CSS color for title
-    
+
     Returns:
         HTML string for display
     """
     rows_html = ""
     for i, (label, value) in enumerate(data_rows):
-        border_style = "border-bottom: 1px solid #eee;" if i < len(data_rows) - 1 else ""
-        if i == len(data_rows) - 1 and "TOTAL" in label.upper():
-            # Special styling for total row
+        is_last = i == len(data_rows) - 1
+        is_total = is_last and "TOTAL" in label.upper()
+
+        if is_total:
+            # Total row - highly visible purple on gradient background
             rows_html += f"""
-            <tr><td style="padding: 10px; font-weight: bold; font-size: 18px; color: #f44336; border-bottom: 2px solid #333;">{label}</td>
-                <td style="padding: 10px; font-weight: bold; font-size: 18px; color: #f44336; border-bottom: 2px solid #333;">{value}</td></tr>"""
+            <tr style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <td style="padding: 14px 15px; font-weight: bold; font-size: 18px; color: white;">{label}</td>
+                <td style="padding: 14px 15px; font-weight: bold; font-size: 18px; color: white; text-align: right;">{value}</td>
+            </tr>"""
         else:
+            # Regular row - alternating backgrounds for visibility
+            row_bg = "#ECEFF1" if i % 2 == 1 else "white"
+            border_style = "border-bottom: 1px solid #e0e0e0;" if not is_last else ""
             rows_html += f"""
-            <tr><td style="padding: 8px; font-weight: bold; {border_style}">{label}</td>
-                <td style="padding: 8px; {border_style}">{value}</td></tr>"""
-    
+            <tr style="background-color: {row_bg};">
+                <td style="padding: 10px 15px; font-weight: 600; color: #37474F; {border_style}">{label}</td>
+                <td style="padding: 10px 15px; color: #00C853; font-weight: 600; text-align: right; {border_style}">{value}</td>
+            </tr>"""
+
+    # Title gradient based on color
+    if '#4CAF50' in title_color or 'green' in title_color.lower():
+        title_gradient = "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)"
+    elif '#2196F3' in title_color or 'blue' in title_color.lower():
+        title_gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    else:
+        title_gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+
     return f"""
-    <div style="background-color: white; padding: 15px; border-radius: 8px; border: 2px solid {border_color}; margin: 10px 0;">
-        <h3 style="color: {title_color}; margin-top: 0;">{title}</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-            {rows_html}
-        </table>
+    <div style="background-color: #f8f9fa; padding: 0; border-radius: 12px;
+                border: 2px solid {border_color}; margin: 10px 0;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                overflow: hidden;">
+        <div style="background: {title_gradient}; color: white;
+                    padding: 14px 20px; margin: 0; font-size: 16px; font-weight: 600;">
+            {title}
+        </div>
+        <div style="padding: 15px; background-color: #f8f9fa;">
+            <table style="width: 100%; border-collapse: collapse; background: white;
+                          border-radius: 8px; overflow: hidden;">
+                {rows_html}
+            </table>
+        </div>
     </div>
     """
 
 def create_error_html(message, message_type='error'):
     """
     Generate error/warning/info HTML with consistent styling.
-    
+    Uses explicit colors for visibility on both light and dark backgrounds.
+
     Args:
         message: Message to display
         message_type: Type of message ('error', 'warning', 'info', 'success')
-    
+
     Returns:
         HTML string for display
     """
-    style = MESSAGE_STYLES.get(message_type, MESSAGE_STYLES['error'])
-    
+    # High-contrast message styles
+    styles = {
+        'success': {
+            'bg': '#d4edda',
+            'border': '#28a745',
+            'text': '#155724',
+            'icon': '✅'
+        },
+        'error': {
+            'bg': '#f8d7da',
+            'border': '#dc3545',
+            'text': '#721c24',
+            'icon': '❌'
+        },
+        'warning': {
+            'bg': '#fff3cd',
+            'border': '#ffc107',
+            'text': '#856404',
+            'icon': '⚠️'
+        },
+        'info': {
+            'bg': '#e3f2fd',
+            'border': '#2196F3',
+            'text': '#0d47a1',
+            'icon': 'ℹ️'
+        }
+    }
+
+    s = styles.get(message_type, styles['error'])
+
     return f"""
-    <div style="background-color: {style['background_color']}; color: {style['text_color']}; 
-                padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid {style['border_color']};">
-        <strong>{style['icon']} {message}</strong>
+    <div style="background-color: {s['bg']}; color: {s['text']};
+                padding: 15px 20px; border-radius: 8px; margin: 10px 0;
+                border: 2px solid {s['border']};
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <strong>{s['icon']} {message}</strong>
     </div>
     """
 
 def create_validation_errors_html(errors):
     """
     Generate HTML for multiple validation errors.
-    
+    Uses explicit styling for visibility on both light and dark backgrounds.
+
     Args:
         errors: List of error messages
-    
+
     Returns:
         HTML string for display
     """
-    error_list = "<br>".join([f"• {error}" for error in errors])
+    error_list = "".join([f"<li style='margin: 5px 0; color: #721c24;'>{error}</li>" for error in errors])
     return f"""
-    <div style="background-color: #ffe6e6; color: #990000; padding: 10px; border-radius: 5px; margin: 10px 0;">
-        <strong>Input Validation Errors:</strong><br>
-        {error_list}
+    <div style="background-color: #f8d7da; color: #721c24;
+                padding: 15px 20px; border-radius: 8px; margin: 10px 0;
+                border: 2px solid #dc3545;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <strong style="color: #721c24;">❌ Input Validation Errors:</strong>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+            {error_list}
+        </ul>
     </div>
     """
 
@@ -368,32 +437,41 @@ def estimate_cost_per_mw(target_mw):
 def create_recommendations_html(recommendations, border_color="#4CAF50", title_color="#2E7D32"):
     """
     Create HTML for recommendations display matching cost analysis style.
-    
+    Uses explicit backgrounds and high-contrast colors for visibility.
+
     Args:
         recommendations: List of recommendation strings
         border_color: Border color for the box
         title_color: Title color
-    
+
     Returns:
         HTML string for recommendations
     """
     rec_rows = ""
-    for rec in recommendations:
+    for i, rec in enumerate(recommendations):
+        row_bg = "#ECEFF1" if i % 2 == 1 else "white"
         rec_rows += f"""
-        <tr>
-            <td style="padding: 8px 0; color: #333; font-size: 14px;">
+        <tr style="background-color: {row_bg};">
+            <td style="padding: 12px 15px; color: #37474F; font-size: 14px;
+                       border-bottom: 1px solid #e0e0e0;">
                 {rec}
             </td>
         </tr>"""
-    
+
     return f"""
-    <div style="border: 2px solid {border_color}; border-radius: 12px; padding: 20px; margin: 15px 0; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h3 style="color: {title_color}; margin: 0 0 15px 0; font-size: 18px; font-weight: bold; text-align: center;">
-            Smart Recommendations
-        </h3>
-        <table style="width: 100%; border-collapse: collapse;">
-            {rec_rows}
-        </table>
+    <div style="background-color: #f8f9fa; border-radius: 12px; margin: 15px 0;
+                border: 2px solid {border_color};
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                    color: white; padding: 14px 20px; font-size: 16px; font-weight: 600; text-align: center;">
+            💡 Smart Recommendations
+        </div>
+        <div style="padding: 15px; background-color: #f8f9fa;">
+            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+                {rec_rows}
+            </table>
+        </div>
     </div>
     """
     
@@ -478,63 +556,88 @@ def calculate_effectiveness(analysis):
 def create_summary_cards_html(wha, total_cost, cost_per_mw, effectiveness, rating_info, eu_compliant):
     """
     Create HTML for visual summary cards.
+    Uses explicit backgrounds and high-contrast colors for visibility on light/dark modes.
     """
     return f"""
-    <div style="margin: 20px 0;">
-        <h3 style="color: #2E7D32; margin: 0 0 20px 0; font-size: 20px; font-weight: bold; text-align: center;">
-            System Overview
-        </h3>
-        <div style="display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap;">
-            
+    <div style="margin: 20px 0; background-color: #f8f9fa; padding: 20px; border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+
+        <!-- Section Header -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white; padding: 14px 20px; border-radius: 8px;
+                    font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 20px;">
+            📊 System Overview
+        </div>
+
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+
             <!-- System Performance Card -->
-            <div style="border: 2px solid #4CAF50; padding: 20px; border-radius: 12px; flex: 1; min-width: 280px; background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h4 style="color: #2E7D32; margin: 0 0 15px 0; font-size: 16px; display: flex; align-items: center;">
+            <div style="border: 2px solid #4CAF50; padding: 20px; border-radius: 12px;
+                        flex: 1; min-width: 280px; background: white;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                            color: white; padding: 10px 15px; border-radius: 6px;
+                            margin: -20px -20px 15px -20px; font-size: 14px; font-weight: 600;">
                     🏢 System Performance
-                </h4>
-                <div style="margin-bottom: 10px;">
-                    <strong>{wha} MW</strong> Heat Recovery System
                 </div>
-                <div style="margin-bottom: 10px;">
-                    Effectiveness: <strong>{effectiveness:.1%}</strong>
-                    <div style="background: #e0e0e0; height: 8px; border-radius: 4px; margin-top: 5px;">
-                        <div style="background: #4CAF50; height: 8px; border-radius: 4px; width: {effectiveness*100}%;"></div>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    <span style="color: #00C853; font-weight: bold; font-size: 18px;">{wha} MW</span>
+                    <span style="color: #78909C;"> Heat Recovery System</span>
+                </div>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    Effectiveness: <span style="color: #00C853; font-weight: bold;">{effectiveness:.1%}</span>
+                    <div style="background: #e0e0e0; height: 10px; border-radius: 5px; margin-top: 6px;">
+                        <div style="background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+                                    height: 10px; border-radius: 5px; width: {min(effectiveness*100, 100)}%;"></div>
                     </div>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    EU Compliant: <strong>{"✅ Yes" if eu_compliant else "❌ No"}</strong>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    EU Compliant: <span style="color: {'#00C853' if eu_compliant else '#f44336'}; font-weight: bold;">
+                        {"✅ Yes" if eu_compliant else "❌ No"}</span>
                 </div>
-                <div style="color: {rating_info['color']}; font-weight: bold; font-size: 12px;">
+                <div style="color: {rating_info['color']}; font-weight: bold; font-size: 13px;
+                            padding: 8px 12px; background: #f8f9fa; border-radius: 6px; text-align: center;">
                     {rating_info['rating']}
                 </div>
             </div>
-            
+
             <!-- Investment Summary Card -->
-            <div style="border: 2px solid #2196F3; padding: 20px; border-radius: 12px; flex: 1; min-width: 280px; background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h4 style="color: #1976D2; margin: 0 0 15px 0; font-size: 16px; display: flex; align-items: center;">
+            <div style="border: 2px solid #2196F3; padding: 20px; border-radius: 12px;
+                        flex: 1; min-width: 280px; background: white;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 10px 15px; border-radius: 6px;
+                            margin: -20px -20px 15px -20px; font-size: 14px; font-weight: 600;">
                     💰 Investment Summary
-                </h4>
-                <div style="margin-bottom: 10px;">
-                    Total Cost: <strong>€{total_cost:,.0f}</strong>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    Cost/MW: <strong>€{cost_per_mw:,.0f}</strong>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    Total Cost: <span style="color: #00C853; font-weight: bold; font-size: 18px;">€{total_cost:,.0f}</span>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    Cost/kW: <strong>€{cost_per_mw/1000:,.0f}</strong>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    Cost/MW: <span style="color: #00C853; font-weight: bold;">€{cost_per_mw:,.0f}</span>
+                </div>
+                <div style="margin-bottom: 12px; color: #37474F;">
+                    Cost/kW: <span style="color: #00C853; font-weight: bold;">€{cost_per_mw/1000:,.0f}</span>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <div style="background: #e0e0e0; height: 20px; border-radius: 10px; position: relative; overflow: hidden;">
-                        <div style="background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 50%, #FFC107 100%); height: 20px; border-radius: 10px; width: 70%;"></div>
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">
+                    <div style="background: #e0e0e0; height: 24px; border-radius: 12px; position: relative; overflow: hidden;">
+                        <div style="background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 50%, #FFC107 100%);
+                                    height: 24px; border-radius: 12px; width: 70%;"></div>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                                    display: flex; align-items: center; justify-content: center;
+                                    color: white; font-weight: bold; font-size: 11px;
+                                    text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
                             Cost Efficiency
                         </div>
                     </div>
                 </div>
-                <div style="color: {rating_info['color']}; font-weight: bold; font-size: 12px;">
+                <div style="color: {rating_info['color']}; font-weight: bold; font-size: 13px;
+                            padding: 8px 12px; background: #f8f9fa; border-radius: 6px; text-align: center;">
                     Performance Rating: {rating_info['cost_score']}/5 ⭐
                 </div>
             </div>
-            
+
         </div>
     </div>
     """

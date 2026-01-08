@@ -6,6 +6,7 @@ Created: 2025-10-08
 """
 Economics Analysis Panel
 Order of Magnitude Estimate comparison and visualization
+Updated 2026-01-07: High-contrast colors for light/dark mode compatibility
 """
 
 from IPython.display import display, HTML
@@ -15,6 +16,7 @@ import logging
 import io
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 from core.costs import compare_approaches
+from .styles import COLORS
 
 @contextmanager
 def suppress_logging():
@@ -65,16 +67,20 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     approaches_data = comparison['approaches']
 
-    # Build table HTML with new transparent structure
+    # Build table HTML with explicit backgrounds for light/dark mode compatibility
+    # Wrap entire table in a container with forced light background
     html = """
-    <div style="margin: 20px 0; font-family: 'Segoe UI', Arial, sans-serif;">
-        <table style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="margin: 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background-color: #f8f9fa; padding: 20px; border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <table style="width: 100%; border-collapse: collapse; background: white;
+                      border-radius: 8px; overflow: hidden;">
             <thead>
-                <tr style="background-color: #2196F3; color: white;">
-                    <th style="padding: 14px; text-align: left; border: 1px solid #1976D2; font-size: 14px;">Cost Component</th>
-                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">2°C Approach</th>
-                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">3°C Approach</th>
-                    <th style="padding: 14px; text-align: right; border: 1px solid #1976D2; font-size: 14px;">5°C Approach</th>
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <th style="padding: 14px; text-align: left; color: white; font-size: 14px; font-weight: 600;">Cost Component</th>
+                    <th style="padding: 14px; text-align: right; color: white; font-size: 14px; font-weight: 600;">2°C Approach</th>
+                    <th style="padding: 14px; text-align: right; color: white; font-size: 14px; font-weight: 600;">3°C Approach</th>
+                    <th style="padding: 14px; text-align: right; color: white; font-size: 14px; font-weight: 600;">5°C Approach</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,9 +88,9 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Section header: EQUIPMENT COSTS (Base)
     html += """
-                <tr style="background-color: #E3F2FD;">
-                    <td colspan="4" style="padding: 10px; border: 1px solid #BBDEFB; font-weight: bold;
-                                         color: #1565C0; font-size: 13px; letter-spacing: 0.5px;">
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <td colspan="4" style="padding: 12px 15px; font-weight: 600;
+                                         color: white; font-size: 13px; letter-spacing: 0.5px;">
                         EQUIPMENT COSTS (Base)
                     </td>
                 </tr>
@@ -99,11 +105,13 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         ('Valves', 'valves', 'Control valves and isolation valves'),
     ]
 
-    for row_label, key, tooltip in base_rows:
+    for idx, (row_label, key, tooltip) in enumerate(base_rows):
+        row_bg = "#ECEFF1" if idx % 2 == 1 else "white"
         html += f"""
-                <tr style="background-color: #FAFAFA;"
+                <tr style="background-color: {row_bg};"
                     title="{tooltip}">
-                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">{row_label}</td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #e0e0e0;
+                               color: #37474F; font-weight: 500;">{row_label}</td>
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
@@ -111,8 +119,8 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
             if key == 'valves':
                 value = round(value / 100) * 100
             html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Segoe UI', Arial, sans-serif;">€{value:>10,.0f}</td>
+                    <td style="padding: 10px 15px; text-align: right; border-bottom: 1px solid #e0e0e0;
+                               color: #00C853; font-weight: 600;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
@@ -120,8 +128,8 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Equipment Subtotal row
     html += """
-                <tr style="background-color: #E8EAF6; font-weight: bold;">
-                    <td style="padding: 11px; border: 1px solid #C5CAE9; padding-left: 20px;">Equipment Subtotal</td>
+                <tr style="background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); font-weight: bold;">
+                    <td style="padding: 12px 15px; color: #3949AB; font-weight: 600;">Equipment Subtotal</td>
     """
 
     # Calculate and validate equipment subtotals
@@ -143,9 +151,8 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
                                       data.get('valves', 0)) < 1 else "⚠"
 
         html += f"""
-                    <td style="padding: 11px; text-align: right; border: 1px solid #C5CAE9;
-                               font-family: 'Segoe UI', Arial, sans-serif;">
-                        €{subtotal:>10,.0f} <span style="color: #4CAF50; font-size: 11px;">{validation_icon}</span>
+                    <td style="padding: 12px 15px; text-align: right; color: #7C4DFF; font-weight: bold;">
+                        €{subtotal:>10,.0f} <span style="color: #00C853; font-size: 11px;">{validation_icon}</span>
                     </td>
         """
     html += """
@@ -154,9 +161,9 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Section header: INSTALLATION & CONTINGENCY
     html += """
-                <tr style="background-color: #FFF3E0;">
-                    <td colspan="4" style="padding: 10px; border: 1px solid #FFE0B2; font-weight: bold;
-                                         color: #E65100; font-size: 13px; letter-spacing: 0.5px;">
+                <tr style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">
+                    <td colspan="4" style="padding: 12px 15px; font-weight: 600;
+                                         color: white; font-size: 13px; letter-spacing: 0.5px;">
                         INSTALLATION & CONTINGENCY
                     </td>
                 </tr>
@@ -169,17 +176,19 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         ('Contingency (10%)', 'contingency_cost', 'Unforeseen costs and scope changes'),
     ]
 
-    for row_label, key, tooltip in contingency_rows:
+    for idx, (row_label, key, tooltip) in enumerate(contingency_rows):
+        row_bg = "#FFF8E1" if idx % 2 == 0 else "#FFF3E0"
         html += f"""
-                <tr style="background-color: #FFF8E1;"
+                <tr style="background-color: {row_bg};"
                     title="{tooltip}">
-                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px; color: #F57C00;">{row_label}</td>
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #FFE0B2;
+                               color: #E65100; font-weight: 500;">{row_label}</td>
         """
         for approach in ['2C', '3C', '5C']:
             value = approaches_data.get(approach, {}).get(key, 0)
             html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Segoe UI', Arial, sans-serif; color: #F57C00;">€{value:>10,.0f}</td>
+                    <td style="padding: 10px 15px; text-align: right; border-bottom: 1px solid #FFE0B2;
+                               color: #FF9800; font-weight: 600;">€{value:>10,.0f}</td>
             """
         html += """
                 </tr>
@@ -187,8 +196,8 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # I&C Subtotal row (Installation & Contingency subtotal)
     html += """
-                <tr style="background-color: #FFE0B2; font-weight: bold;">
-                    <td style="padding: 11px; border: 1px solid #FFCC80; padding-left: 20px;">I&C Subtotal</td>
+                <tr style="background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%); font-weight: bold;">
+                    <td style="padding: 12px 15px; color: #E65100; font-weight: 600;">I&C Subtotal</td>
     """
 
     for approach in ['2C', '3C', '5C']:
@@ -200,8 +209,7 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         ])
 
         html += f"""
-                    <td style="padding: 11px; text-align: right; border: 1px solid #FFCC80;
-                               font-family: 'Segoe UI', Arial, sans-serif;">€{ic_subtotal:>10,.0f}</td>
+                    <td style="padding: 12px 15px; text-align: right; color: #FF6D00; font-weight: bold;">€{ic_subtotal:>10,.0f}</td>
         """
     html += """
                 </tr>
@@ -209,15 +217,15 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Separator row
     html += """
-                <tr style="background-color: #FFFFFF;">
-                    <td colspan="4" style="padding: 2px; border: none; border-top: 3px double #2196F3;"></td>
+                <tr style="background-color: white;">
+                    <td colspan="4" style="padding: 4px; border-top: 3px solid #667eea;"></td>
                 </tr>
     """
 
-    # CAPITAL TOTAL row (highlighted and bold)
+    # CAPITAL TOTAL row (highlighted and bold) - using gradient for visibility
     html += """
-                <tr style="background-color: #1976D2; color: white; font-weight: bold; font-size: 15px;">
-                    <td style="padding: 14px; border: 1px solid #1565C0; text-transform: uppercase;">CAPITAL TOTAL</td>
+                <tr style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); font-weight: bold; font-size: 15px;">
+                    <td style="padding: 16px 15px; color: white; text-transform: uppercase; font-weight: 700;">CAPITAL TOTAL</td>
     """
 
     for approach in ['2C', '3C', '5C']:
@@ -243,9 +251,8 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         validation_icon = "✓" if abs(capital_total - expected_total) <= 500 else "⚠"
 
         html += f"""
-                    <td style="padding: 14px; text-align: right; border: 1px solid #1565C0;
-                               font-family: 'Segoe UI', Arial, sans-serif;">
-                        €{capital_total:>10,.0f} <span style="font-size: 12px;">{validation_icon}</span>
+                    <td style="padding: 16px 15px; text-align: right; color: white; font-weight: 700; font-size: 16px;">
+                        €{capital_total:>10,.0f} <span style="font-size: 13px;">{validation_icon}</span>
                     </td>
         """
     html += """
@@ -254,16 +261,16 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Empty row for spacing
     html += """
-                <tr style="background-color: #FFFFFF;">
-                    <td colspan="4" style="padding: 8px; border: none;"></td>
+                <tr style="background-color: white;">
+                    <td colspan="4" style="padding: 10px;"></td>
                 </tr>
     """
 
     # Section header: OPERATING COSTS
     html += """
-                <tr style="background-color: #E8F5E9;">
-                    <td colspan="4" style="padding: 10px; border: 1px solid #C8E6C9; font-weight: bold;
-                                         color: #2E7D32; font-size: 13px; letter-spacing: 0.5px;">
+                <tr style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <td colspan="4" style="padding: 12px 15px; font-weight: 600;
+                                         color: white; font-size: 13px; letter-spacing: 0.5px;">
                         OPERATING COSTS (Annual)
                     </td>
                 </tr>
@@ -271,28 +278,29 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
     # Operating cost rows
     html += """
-                <tr style="background-color: #F1F8E9;">
-                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">Annual Operating Energy</td>
+                <tr style="background-color: #E8F5E9;">
+                    <td style="padding: 10px 15px; border-bottom: 1px solid #C8E6C9;
+                               color: #2E7D32; font-weight: 500;">Annual Operating Energy</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_energy_kwh_year', 0)
         html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Segoe UI', Arial, sans-serif;">{value:>10,.0f} kWh</td>
+                    <td style="padding: 10px 15px; text-align: right; border-bottom: 1px solid #C8E6C9;
+                               color: #00C853; font-weight: 600;">{value:>10,.0f} kWh</td>
         """
     html += """
                 </tr>
     """
 
     html += """
-                <tr style="background-color: #F1F8E9; font-weight: bold;">
-                    <td style="padding: 10px; border: 1px solid #E0E0E0; padding-left: 20px;">Annual Energy Cost</td>
+                <tr style="background-color: #C8E6C9; font-weight: bold;">
+                    <td style="padding: 12px 15px; color: #1B5E20; font-weight: 600;">Annual Energy Cost</td>
     """
     for approach in ['2C', '3C', '5C']:
         value = approaches_data.get(approach, {}).get('operating_cost_eur_year', 0)
         html += f"""
-                    <td style="padding: 10px; text-align: right; border: 1px solid #E0E0E0;
-                               font-family: 'Segoe UI', Arial, sans-serif;">€{value:>10,.0f}</td>
+                    <td style="padding: 12px 15px; text-align: right;
+                               color: #00C853; font-weight: bold;">€{value:>10,.0f}</td>
         """
     html += """
                 </tr>
@@ -300,14 +308,15 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
         </table>
     """
 
-    # Legend section
+    # Legend section with explicit background
     html += """
-        <div style="margin-top: 15px; padding: 12px; background-color: #F5F5F5;
-                    border-radius: 4px; font-size: 12px; color: #616161;">
-            <strong>Legend:</strong>
-            <span style="color: #4CAF50; font-weight: bold;">✓</span> = Calculations verified |
+        <div style="margin-top: 15px; padding: 12px 15px; background-color: white;
+                    border-radius: 6px; font-size: 12px; color: #37474F;
+                    border: 1px solid #e0e0e0;">
+            <strong style="color: #37474F;">Legend:</strong>
+            <span style="color: #00C853; font-weight: bold;">✓</span> = Calculations verified |
             <span style="color: #FF9800; font-weight: bold;">⚠</span> = Rounding adjustments applied |
-            <span style="font-style: italic;">Hover over items for details</span>
+            <span style="font-style: italic; color: #78909C;">Hover over items for details</span>
         </div>
     </div>
     """
@@ -316,11 +325,13 @@ def create_economics_comparison_table(wha: float, T1: float, temp_rise: float) -
 
 
 def create_error_table(error_message: str) -> str:
-    """Create an error message table."""
+    """Create an error message table with explicit styling."""
     return f"""
-    <div style="margin: 20px 0; padding: 15px; background-color: #f8d7da;
-                border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
-        <strong>⚠️ Error:</strong> {error_message}
+    <div style="margin: 20px 0; padding: 15px 20px; background-color: #f8d7da;
+                border: 2px solid #dc3545; border-radius: 8px; color: #721c24;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <strong style="color: #721c24;">⚠️ Error:</strong> {error_message}
     </div>
     """
 
@@ -521,13 +532,15 @@ def display_economics_analysis(output_area, wha: float, T1: float, temp_rise: fl
 
     with output_area:
         try:
-            # Section header
+            # Section header with gradient and explicit background
             header_html = """
-            <div style="margin: 20px 0;">
-                <h2 style="color: #2196F3; border-bottom: 3px solid #2196F3;
-                           padding-bottom: 10px; margin-bottom: 20px;">
+            <div style="margin: 20px 0; background-color: #f8f9fa; padding: 0; border-radius: 12px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 16px 24px; font-size: 20px; font-weight: 600;">
                     💰 Economics Analysis - Order of Magnitude Estimate
-                </h2>
+                </div>
             </div>
             """
             display(HTML(header_html))
@@ -536,23 +549,31 @@ def display_economics_analysis(output_area, wha: float, T1: float, temp_rise: fl
             table_html = create_economics_comparison_table(wha, T1, temp_rise)
             display(HTML(table_html))
 
-            # Display cost contrast chart
+            # Display cost contrast chart with styled header
             chart_title_html = """
-            <div style="margin: 30px 0 15px 0;">
-                <h3 style="color: #1976D2;">📈 Cost Contrast Analysis</h3>
+            <div style="margin: 30px 0 15px 0; background-color: #f8f9fa; padding: 0; border-radius: 8px;
+                        overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 12px 20px; font-size: 16px; font-weight: 600;">
+                    📈 Cost Contrast Analysis
+                </div>
             </div>
             """
             display(HTML(chart_title_html))
 
             create_cost_contrast_chart(wha, T1, temp_rise, output_area)
 
-            # Display equipment cost breakdown charts
+            # Display equipment cost breakdown charts with styled header
             breakdown_title_html = """
-            <div style="margin: 30px 0 15px 0;">
-                <h3 style="color: #1976D2;">🔧 Equipment Cost Breakdown by Approach</h3>
-                <p style="color: #616161; font-size: 14px; margin-top: 5px;">
-                    Comparison of cost distribution across equipment categories for different approach temperatures
-                </p>
+            <div style="margin: 30px 0 15px 0; background-color: #f8f9fa; padding: 0; border-radius: 8px;
+                        overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 12px 20px;">
+                    <div style="font-size: 16px; font-weight: 600;">🔧 Equipment Cost Breakdown by Approach</div>
+                    <div style="font-size: 13px; margin-top: 4px; opacity: 0.9;">
+                        Comparison of cost distribution across equipment categories for different approach temperatures
+                    </div>
+                </div>
             </div>
             """
             display(HTML(breakdown_title_html))
@@ -561,9 +582,11 @@ def display_economics_analysis(output_area, wha: float, T1: float, temp_rise: fl
 
         except Exception as e:
             error_html = f"""
-            <div style="margin: 20px 0; padding: 15px; background-color: #f8d7da;
-                        border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
-                <strong>⚠️ Error displaying economics analysis:</strong> {str(e)}
+            <div style="margin: 20px 0; padding: 15px 20px; background-color: #f8d7da;
+                        border: 2px solid #dc3545; border-radius: 8px; color: #721c24;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                <strong style="color: #721c24;">⚠️ Error displaying economics analysis:</strong> {str(e)}
             </div>
             """
             display(HTML(error_html))

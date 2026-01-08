@@ -6,6 +6,7 @@ Created: 2025-10-08
 """
 UI Interface Module - Main Interface Logic
 Contains the logo display and interface creation functions
+Updated 2026-01-07: Added global style injection for light/dark mode compatibility
 """
 
 from IPython.display import display, Image, HTML
@@ -13,6 +14,7 @@ import os
 from .inputs import create_input_widgets, create_output_areas, create_interface_layout
 from .handlers import create_handlers_suite
 from .outputs import display_error
+from .styles import inject_global_styles
 
 # =============================================================================
 # LOGO AND BRANDING FUNCTIONS
@@ -44,19 +46,27 @@ def display_logo(width: int = 600):
             # Display the logo image
             display(Image(filename=logo_path, width=width))
         else:
-            # Fallback if logo not found - simple text header
+            # Fallback if logo not found - styled text header with explicit background
             fallback_html = """
-            <div style="text-align: center; margin: 20px 0;">
-                <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+            <div style="text-align: center; margin: 20px 0; padding: 20px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <h1 style="color: white; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    🔧 Heat Reuse Economics Tool
+                </h1>
             </div>
             """
             display(HTML(fallback_html))
-            
+
     except Exception as e:
-        # Error fallback - simple text header
+        # Error fallback - styled text header with explicit background
         error_html = """
-        <div style="text-align: center; margin: 20px 0;">
-            <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+        <div style="text-align: center; margin: 20px 0; padding: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h1 style="color: white; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                🔧 Heat Reuse Economics Tool
+            </h1>
         </div>
         """
         display(HTML(error_html))
@@ -89,22 +99,30 @@ def display_hxsimpledrawing(width: int = 600):
                 break
         
         if drawing_path:
-            # Display the logo image
+            # Display the drawing image
             display(Image(filename=drawing_path, width=width))
         else:
-            # Fallback if logo not found - simple text header
+            # Fallback if drawing not found - styled placeholder with explicit background
             fallback_html = """
-            <div style="text-align: center; margin: 20px 0;">
-                <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+            <div style="text-align: center; margin: 20px 0; padding: 30px;
+                        background-color: #f8f9fa; border: 2px dashed #dee2e6;
+                        border-radius: 12px;">
+                <p style="color: #78909C; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    📊 Heat Exchanger Diagram
+                </p>
             </div>
             """
             display(HTML(fallback_html))
-            
+
     except Exception as e:
-        # Error fallback - simple text header
+        # Error fallback - styled placeholder with explicit background
         error_html = """
-        <div style="text-align: center; margin: 20px 0;">
-            <h1 style="color: #2196F3; margin: 0;">🔧 Heat Reuse Economics Tool</h1>
+        <div style="text-align: center; margin: 20px 0; padding: 30px;
+                    background-color: #f8f9fa; border: 2px dashed #dee2e6;
+                    border-radius: 12px;">
+            <p style="color: #78909C; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                📊 Heat Exchanger Diagram
+            </p>
         </div>
         """
         display(HTML(error_html))
@@ -157,28 +175,33 @@ def create_heat_reuse_interface(options=None):
 def display_interface(options=None):
     """
     Display the complete interface with logo - main function called from notebook.
-    
+    Injects global CSS styles for light/dark mode compatibility.
+
     Args:
         options: Dictionary of interface options
-    
+
     Returns:
         Interface components dictionary
     """
     try:
-        # Display logo first
+        # IMPORTANT: Inject global CSS styles FIRST for light/dark mode compatibility
+        # This ensures all subsequent HTML displays have proper styling
+        inject_global_styles()
+
+        # Display logo
         display_logo()
-        
+
         # Display the simple heat exchanger drawing
         display_hxsimpledrawing()
-        
+
         # Create and display interface
         interface_components = create_heat_reuse_interface(options)
-        
+
         if interface_components:
             display(interface_components['interface'])
-        
+
         return interface_components
-        
+
     except Exception as e:
         print(f"Error displaying interface: {str(e)}")
         return None

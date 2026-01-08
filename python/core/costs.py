@@ -387,16 +387,9 @@ def calculate_operating_energy(system_data: Dict, approach: float,
     annual_energy_kwh = pump_power_kw * operating_hours
 
     # Get energy price (€/kWh)
-    energy_price = 0.15  # Default €0.15/kWh
-
-    try:
-        if is_csv_loaded('MW PRICE DATA'):
-            price_df = get_csv_data('MW PRICE DATA')
-            if price_df is not None and len(price_df) > 0:
-                # Use first price as reference
-                energy_price = universal_float_convert(price_df.iloc[0, 1]) / 1000  # Convert to €/kWh
-    except Exception as e:
-        logger.warning(f"Could not load energy price: {e}")
+    # Default €0.15/kWh is a reasonable European industrial electricity rate
+    # Note: MW PRICE DATA.csv contains system costs per MW, NOT electricity prices
+    energy_price = 0.15
 
     annual_cost = annual_energy_kwh * energy_price
 
